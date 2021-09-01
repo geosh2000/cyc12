@@ -7,4 +7,17 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'cycOasis';
+
+  sb_open = false;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  menuChange(){
+    // console.log('Menu clicked', !this.sb_open)
+    this.sb_open = !this.sb_open
+  }
 }
+

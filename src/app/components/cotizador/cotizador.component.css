@@ -1,0 +1,26 @@
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding-top: 10px!important;
+}
+
+:host ::ng-deep .mat-tab-header {
+    z-index:100000;
+    position: fixed;
+    width:100%;
+    background: white;
+}
+
+.cotizador-content {
+    top: 112px;
+    padding: 0px;
+    position: fixed;
+    overflow: auto!important;
+    width:  100%;
+    height: calc(100% - 112px);
+    transition: width 1s;
+    transition-timing-function: ease-out;
+}   

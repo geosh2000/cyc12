@@ -1,0 +1,40 @@
+<div class="container-fluid p-0">
+
+        <!-- <mat-progress-bar mode="query" *ngIf="loading['services']"></mat-progress-bar> -->
+        <mat-tab-group mat-stretch-tabs color='accent' (selectedTabChange)="matChange($event)">
+        <!-- <mat-tab-group (selectedTabChange)="tabChg($event.index)" mat-stretch-tabs [color]="'warn'" *ngIf="!loading['services']"> -->
+            <!-- <ng-container *ngFor="let m of products"> -->
+                <mat-tab *ngIf="loading['services']">
+                    <ng-template mat-tab-label>
+                        <div class="container-fluid">
+                            <mat-progress-bar mode="buffer"></mat-progress-bar>
+                        </div>
+                    </ng-template>
+                    
+                    
+               </mat-tab>
+                <mat-tab [id]="i['id']" *ngFor="let i of products" [disabled]="i['enabled'] != 1 || !(i['all'] == 1 || _init.checkSingleCredential('app_all_quote'))">
+                    <ng-template mat-tab-label>
+                        <mat-icon style="margin-right: 8px;">{{ i['icon'] }}</mat-icon>
+                        {{ i['title'] }}
+                    </ng-template>
+                    
+                    
+               </mat-tab>
+        </mat-tab-group>
+
+</div>
+
+<!-- LOADER -->
+<div class="cotizador-content p-5 d-flex justify-content-center" *ngIf="loading['services']">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<!-- MODULOS DE COTIZACION -->
+<div class="cotizador-content p-2" *ngIf="!loading['services']">
+    <cotiza-conciertos *ngIf="displayModule == 'conciertos'"    (rsv)="rsv($event)"></cotiza-conciertos>
+    <cotiza-hotel      *ngIf="displayModule == 'hotel'"         (rsv)="rsv($event)"></cotiza-hotel>
+    <cotiza-tours      *ngIf="displayModule == 'tours'"         (rsv)="rsv($event)"></cotiza-tours>
+    <cotiza-traslados  *ngIf="displayModule == 'traslados'"     (rsv)="rsv($event)"></cotiza-traslados>
+    <cotiza-vcm        *ngIf="displayModule == 'vcm'"           (rsv)="rsv($event)"></cotiza-vcm>
+</div>

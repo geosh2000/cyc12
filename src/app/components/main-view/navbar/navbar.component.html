@@ -1,0 +1,37 @@
+<div class="p-1 d-flex justify-content-start align-items-center" [style.width.%]="100">
+    <button mat-icon-button color="light" (click)="menuClick()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <button mat-raised-button color="accent" class="ms-2" [routerLink]="['/cotizar']">Cotizar</button>
+
+
+    <!-- DIV END -->
+    <div class="d-flex justify-content-end ms-auto align-items-center">
+        <!-- SEARCH LOC -->
+        <div class="p-1 mx-1">
+            <!-- <app-go-to-loc></app-go-to-loc> -->
+        </div>
+    
+        <!-- RROUND -->
+        <div class="p-1 mx-1">
+            <!-- <app-rrobin></app-rrobin> -->
+        </div>
+    
+        <!-- SETTINGS -->
+        <div class="p-1 mx-1">
+            <button mat-icon-button data-toggle="modal"  data-target="#preferencesModal" *ngIf="token">
+                <mat-icon>settings</mat-icon>
+            </button>
+        </div>
+    
+        <!-- LOGIN / LOGOUT -->
+        <div class="p-1 mx-1">
+            <button mat-fab color="primary"  data-toggle="modal" data-target="#loginModal" *ngIf="!token">
+                <mat-icon>login</mat-icon>
+            </button>
+            <button mat-fab color="warn"  (click)="logout()" *ngIf="token">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

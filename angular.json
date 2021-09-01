@@ -20,6 +20,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "moment-timezone",
+              "moment/locale/es-mx"
+            ],
             "outputPath": "dist/cycOasis",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -30,7 +34,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -98,7 +103,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.css"
             ],
             "scripts": []
