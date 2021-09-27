@@ -1,0 +1,9 @@
+<!-- <mat-form-field class="example-form-field" style='height:10px; margin-top: -23px'  *ngIf="!loading['searchLoc']"> -->
+<mat-form-field style="zoom: 0.8;" *ngIf="!loading['searchLoc']">
+    <mat-label><small>Ir a Localizador</small></mat-label> 
+    <input matInput type="text" [(ngModel)]=" searchVal " (keyup.enter)="searchConf( searchVal )">
+    <button mat-button *ngIf=" searchVal " matSuffix mat-icon-button aria-label="Search" (click)="searchConf( searchVal )">
+      <mat-icon>search</mat-icon>
+    </button>
+</mat-form-field>
+<mat-progress-bar mode="buffer" [style.width.px]="200" *ngIf="loading['searchLoc']"></mat-progress-bar>

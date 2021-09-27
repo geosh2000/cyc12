@@ -1,1 +1,377 @@
-<p>hotel works!</p>
+<div class="container">
+    <mat-card>
+        <form [formGroup]="hotelSearch">
+        <mat-card-content>
+            <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
+
+                <!-- HABITACIONES -->
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
+                    <mat-label>Habitaciones</mat-label>
+                    <input matInput class="text-center" type="number" formControlName="habs" min=1 max=10 autocomplete="off">
+                    <mat-error *ngIf="hotelSearch.controls['habs'].invalid">{{ getErrorMessage('habs') }}</mat-error>
+                </mat-form-field>
+                
+                <!-- FECHA -->
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="300">
+                    <mat-label>Fecha</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate readonly autocomplete="off" [min]="minDate" [max]="maxDate" formControlName="inicio" placeholder="Inicio">
+                        <input matEndDate   readonly autocomplete="off" [max]="maxDate" formControlName="fin" placeholder="Fin">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                    <mat-error *ngIf="hotelSearch.controls['inicio'].invalid">{{ getErrorMessage('inicio') }}</mat-error>
+                    <mat-error *ngIf="hotelSearch.controls['fin'].invalid">{{ getErrorMessage('fin') }}</mat-error>
+                </mat-form-field>
+
+                <!-- GRUPO -->
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170">
+                    <mat-label>Grupo</mat-label>
+                    <mat-select formControlName="grupo" fname="grupo">
+                        <mat-option>Selecciona</mat-option>
+                        <ng-container *ngFor="let g of grupos">
+                            <mat-option [value]="g">
+                                {{ g['grupo'] }}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                    <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
+                    <mat-error *ngIf="hotelSearch.controls['grupo'].invalid">{{ getErrorMessage('grupo') }}</mat-error>
+                </mat-form-field>
+                
+                <!-- NACIONALIDAD -->
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170">
+                    <mat-label>Nacionalidad</mat-label>
+                    <mat-select formControlName="nacionalidad" fname="nacionalidad">
+                        <mat-option>Selecciona</mat-option>
+                        <ng-container *ngFor="let n of nacionalidad">
+                            <mat-option [value]="n">
+                                {{ n }}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                    <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
+                    <mat-error *ngIf="hotelSearch.controls['nacionalidad'].invalid">{{ getErrorMessage('nacionalidad') }}</mat-error>
+                </mat-form-field>
+
+                <!-- Switches -->
+                <div class="ms-auto d-flex flex-wrap justify-content-end">
+                    <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
+                    <mat-slide-toggle class="mx-1 mb-2" formControlName="noRestrict" *ngIf="_init.checkSingleCredential('app_cotizador_noRestrict')">Sin Restricciones</mat-slide-toggle>
+                    <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="hotelSearch.invalid || loading['cotizar']">Cotizar</button>
+                </div>
+
+                
+
+            </div>  
+            <mat-accordion >
+                <mat-expansion-panel [expanded]="filterExpanded">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Pax por habitación
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <!-- <mat-panel-description> -->
+                        <div class="container" formGroupName="habitaciones">
+            
+                            <!-- PAX -->
+                            <div class="pt-3  mx-3 d-flex justify-content-start flex-wrap align-items-center" [formGroupName]="'hab' + (i+1)" *ngFor="let h of hotelSearch.controls.habitaciones.value | keys, index as i">
+                                <h3>Hab. {{ i + 1 }}</h3>
+                                <mat-form-field class="ms-3 me-1 mb-2" appearance="outline" [style.width.px]="100">
+                                    <mat-label>Adultos</mat-label>
+                                    <input matInput class="text-center" type="number" formControlName="adultos" min=1 max=4 autocomplete="off">
+                                    <mat-hint>> de 12 años</mat-hint>
+                                    <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.adultos').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.adultos') }}</mat-error>
+                                </mat-form-field>
+                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
+                                    <mat-label>Menores</mat-label>
+                                    <input matInput class="text-center" type="number" formControlName="menores" min=0 max=3 autocomplete="off">
+                                    <mat-hint>0 a 11 años</mat-hint>
+                                    <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
+                                </mat-form-field>
+                                <ng-container formGroupName="edades">
+                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
+                                        <mat-label>Edad 1</mat-label>
+                                        <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=11 autocomplete="off">
+                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
+                                        <mat-label>Edad 2</mat-label>
+                                        <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=11 autocomplete="off">
+                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
+                                    </mat-form-field>
+                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
+                                        <mat-label>Edad 3</mat-label>
+                                        <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=11 autocomplete="off">
+                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                    </mat-form-field>
+                                </ng-container>
+                                <!-- <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                    <mat-label>Adultos</mat-label>
+                                    <input matInput class="text-center" type="number" formControlName="adultos" min=0 autocomplete="off">
+                                    <mat-hint>> 12 años</mat-hint>
+                                    <mat-error *ngIf="xferSearch.controls['adultos'].invalid">{{ getErrorMessage('adultos') }}</mat-error>
+                                </mat-form-field>
+                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                    <mat-label>Niños</mat-label>
+                                    <input matInput class="text-center" type="number" formControlName="children" min=0 autocomplete="off">
+                                    <mat-hint>1 a 12 años</mat-hint>
+                                    <mat-error *ngIf="xferSearch.controls['children'].invalid">{{ getErrorMesssage('children') }}</mat-error>
+                                </mat-form-field>
+                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                    <mat-label>Bebés</mat-label>
+                                    <input matInput class="text-center" type="number" formControlName="babies" min=0 autocomplete="off">
+                                    <mat-hint>hasta 11 meses</mat-hint>
+                                    <mat-error *ngIf="xferSearch.controls['babies'].invalid">{{ getErrorMessage('babies') }}</mat-error>
+                                </mat-form-field> -->
+                            </div>
+            
+                        </div>
+                    <!-- </mat-panel-description> -->
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            </mat-card-content>
+            <mat-card-actions>
+                <div class="container-fluid d-flex justify-content-end mt-0 pt-0 flex-wrap">
+                    <div>
+                        <!-- <button mat-raised-button class="me-2" color="warn" (click)="resetValues()">Reset</button> -->
+                    </div>
+                    <div>
+                        <!-- <button mat-raised-button color="primary" (click)="cotizar()" [disabled]="noDispo || noTours || tourSearch.invalid">Cotizar</button> -->
+                    </div>
+                </div>
+            </mat-card-actions>
+        </form>
+        <mat-card-footer>
+            <mat-progress-bar mode="indeterminate" *ngIf="loading['cotizar']"></mat-progress-bar>
+        </mat-card-footer>
+    </mat-card>
+
+    <!-- RESULTADOS -->
+    <mat-card class="mt-3" *ngIf="!loading['cotizar'] && cotizacion.length > 0">
+
+        <!-- RESUMEN BUSQUEDA -->
+        <mat-card-header>
+            <!-- <div mat-card-avatar class="example-header-image"></div> -->
+            <mat-card-title><span class="text-primary">{{ summarySearch['fin'].diff(summarySearch['inicio'], 'days') }}</span> noches del <span class="text-primary">{{ summarySearch['inicio'].format('DD MMM YYYY') }} al {{ summarySearch['fin'].format('DD MMM YYYY') }}</span>, grupo <span class="text-success">{{ summarySearch['grupo']['gpoTitle'] }}</span>, cliente 
+                <button mat-stroked-button color="primary" [matMenuTriggerFor]="nation">{{ summarySearch['nacionalidad'] }}</button>
+                <mat-menu #nation="matMenu">
+                    <button mat-menu-item *ngFor="let n of nacionalidad" (click)="changeSumNation( n )">{{ n }}</button>
+                </mat-menu>
+                &nbsp;cobertura 
+                <button mat-stroked-button color="primary" [matMenuTriggerFor]="cobert">{{ summarySearch['cobertura'] }}</button>
+                <mat-menu #cobert="matMenu">
+                    <button mat-menu-item (click)="summarySearch['cobertura']='normal'">normal</button>
+                    <button mat-menu-item (click)="summarySearch['cobertura']='extendida'" *ngIf="summarySearch['nacionalidad'] == 'internacional'">extendida</button>
+                </mat-menu>
+            </mat-card-title>
+            <mat-card-subtitle>
+                <span>{{ summarySearch['habs'] }} habitaciones (</span>
+                <span>{{ summarySearch['habitaciones']['hab1']['adultos'] }}.{{ summarySearch['habitaciones']['hab1']['menores'] }}</span>
+                <ng-container *ngFor="let hbs of summarySearch['habitaciones'] | keys">
+                    <span *ngIf="hbs != 'hab1'">, {{ summarySearch['habitaciones'][hbs]['adultos'] }}.{{ summarySearch['habitaciones'][hbs]['menores'] }}</span>
+                </ng-container>
+                <span>)</span>
+            </mat-card-subtitle>
+        </mat-card-header>
+
+        <!-- OPCIONES -->
+        <mat-card-content>
+            <div class="container-fluid">
+                <mat-card class="pt-0 px-0 mb-1" *ngFor="let c of cotizacion">
+                    <mat-card-content class="mb-0">
+                        <!-- <pre>{{ c['habs'] | json }}</pre>
+                        <pre>{{ c['tarifas'] | json }}</pre> -->
+                        <div class="row align-items-center px-3 pt-3 pb-1">
+                            <div class="col-xs-12 col-lg-6 d-flex justify-content-start align-items-center">
+                                <mat-accordion [style.width.%]="100">
+                                    <mat-expansion-panel class="py-3" [expanded]="filterExpanded">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                                <div class="hotelImage d-none d-sm-inline" [style.background-image]="c['hotelUrl']"></div>
+                                                <div class="hotelImageResponsive d-inline d-sm-none" [style.background-image]="c['hotelUrl']"></div>
+                                                <div class="ms-4">
+                                                    <p class="m-0"><b><span class="d-none d-sm-inline">{{ c['hotel'] }}</span> {{ c['habName'] }}</b></p>
+                                                    <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
+                                                </div>
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        <div class="container">
+                                            <!-- <section>
+                                                <mat-button-toggle-group [(ngModel)]="selectedLevel" aria-label="Nivel Elegido">
+                                                    <mat-button-toggle value="1" >Lv 1</mat-button-toggle>
+                                                    <mat-button-toggle value="2" >Lv 2</mat-button-toggle>
+                                                    <mat-button-toggle value="3" >Lv 3</mat-button-toggle>
+                                                    <mat-button-toggle value="4" >Lv 4</mat-button-toggle>
+                                                </mat-button-toggle-group>
+                                            </section> -->
+                                            <mat-list>
+                                                <mat-list-item *ngFor="let hab of c['habs']['porHabitacion'] | keys; index as i">
+                                                  <mat-icon mat-list-icon>folder</mat-icon>
+                                                  <div mat-line>Habitación {{ i + 1 }}</div>
+                                                  <div mat-line> {{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }}.{{ c['habs']['porHabitacion'][hab]['occ']['menores'] }} </div>
+                                                </mat-list-item>
+                                              </mat-list>
+                                            <!-- <pre>{{ c['habs']['porHabitacion'] | json }}</pre> -->
+                                        </div>
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </div>
+                            <ng-container *ngIf="!c['habs']['hasErrors'] || (c['habs']['hasErrors'] && c['habs']['skippableErrors'] && hotelSearch.get('noRestrict').value == true)">
+                                <div class="col-xs-12 col-lg-4 text-end">
+                                    <mat-radio-group aria-label="Select an option" [(ngModel)]="selectdLevel">
+                                        <div class="row my-1 align-items-center">
+                                            <ng-container *ngIf="c['habs']['total']['levels']['n1']['active']">
+                                                <div class="col-2 col-lg-1">
+                                                    <span class="text-success"><b>{{ c['habs']['total']['monto']['n1']['relativeDisc'] | percent:'.0-0' }}</b></span>
+                                                </div>
+                                                <div class="col-10 col-lg-5">
+                                                    <mat-chip-list class="mat-chip-list-stacked">
+                                                        <mat-chip class="chips">
+                                                            <mat-radio-button color="warn" value="1" [disabled]="!c['habs']['total']['levels']['n1']['enabled']">
+                                                                {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                            </mat-radio-button>
+                                                        </mat-chip>
+                                                    </mat-chip-list>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="c['habs']['total']['levels']['n2']['active']">
+                                                <div class="col-2 col-lg-1">
+                                                    <span class="text-success"><b>{{ c['habs']['total']['monto']['n2']['relativeDisc'] | percent:'.0-0' }}</b></span>
+                                                </div>
+                                                <div class="col-10 col-lg-5">
+                                                    <mat-chip-list class="mat-chip-list-stacked">
+                                                        <mat-chip class="chips" color="primary" selected>
+                                                            <mat-radio-button color="accent" value="2" [disabled]="!c['habs']['total']['levels']['n2']['enabled']">
+                                                                {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                            </mat-radio-button>
+                                                        </mat-chip>
+                                                    </mat-chip-list>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                        <div class="row align-items-center">
+                                            <ng-container *ngIf="c['habs']['total']['levels']['n3']['active']">
+                                                <div class="col-2 col-lg-1">
+                                                    <span class="text-success"><b>{{ c['habs']['total']['monto']['n3']['relativeDisc'] | percent:'.0-0' }}</b></span>
+                                                </div>
+                                                <div class="col-10 col-lg-5">
+                                                    <mat-chip-list class="mat-chip-list-stacked">
+                                                        <mat-chip class="chips" color="accent" selected>
+                                                            <mat-radio-button color="primary" value="3" [disabled]="!c['habs']['total']['levels']['n3']['enabled']">
+                                                                {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n3']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                            </mat-radio-button>
+                                                        </mat-chip>
+                                                    </mat-chip-list>
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngIf="c['habs']['total']['levels']['n4']['active']">
+                                                <div class="col-2 col-lg-1">
+                                                    <span class="text-success"><b>{{ c['habs']['total']['monto']['n4']['relativeDisc'] | percent:'.0-0' }}</b></span>
+                                                </div>
+                                                <div class="col-10 col-lg-5">
+                                                    <mat-chip-list class="mat-chip-list-stacked">
+                                                        <mat-chip class="chips" color="warn" selected>
+                                                            <mat-radio-button color="accent" value="4" [disabled]="!c['habs']['total']['levels']['n4']['enabled']">
+                                                                {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n4']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                            </mat-radio-button>
+                                                        </mat-chip>
+                                                    </mat-chip-list>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </mat-radio-group>
+                                </div>
+                                <div class="col-xs-12 col-lg-2 text-end">
+                                    <div class="row my-1">
+                                        <div class="col-12">
+                                            <button mat-raised-button color="primary">Reservar</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button mat-raised-button class="me-1" color="accent">Enviar Cotizacion</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="c['habs']['hasErrors']">
+                                <div class="col-xs-12 col-lg-6 text-end">
+                                    <ng-container *ngFor="let hb of c['habs']['porHabitacion'] | keys">
+                                        <p *ngIf="countKeys(c['habs']['porHabitacion'][hb]['errors']['errors']) > 0"><span class="text-secondary" *ngIf="c['habs']['porHabitacion'][hb]['errors']['flag']">
+                                            Error <span class="text-bold text-danger">{{ hb }}</span>: 
+                                            <ng-container *ngFor="let err of c['habs']['porHabitacion'][hb]['errors']['errors'] | keys">
+                                                <span *ngIf="err != 'dispo' && err != 'sinTarifaFecha' && err != 'minNights'">{{ c['habs']['porHabitacion'][hb]['errors']['errors'][err] }} | </span>
+                                            </ng-container>
+                                        </span></p>
+                                    </ng-container>
+                                    <p *ngIf="c['habs']['porHabitacion']['hab1']['errors']['dispo']">
+                                        <b class="text-danger">Cierre de fechas: </b>{{ c['habs']['porHabitacion']['hab1']['errors']['dispo'] }}
+                                    </p>
+                                    <p *ngIf="c['habs']['porHabitacion']['hab1']['errors']['sinTarifaFecha']">
+                                        <b class="text-danger">No existen tarifas cargadas</b> para estas fechas: {{ c['habs']['porHabitacion']['hab1']['errors']['sinTarifaFecha'] }}
+                                    </p>
+                                    <p *ngIf="c['habs']['porHabitacion']['hab1']['errors']['minNights']">
+                                        <b class="text-danger">Mínimo de noches</b> para reservar es de: {{ c['habs']['porHabitacion']['hab1']['errors']['minNights'] }}
+                                    </p>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <!-- <pre>{{ c | json }}</pre> -->
+                    </mat-card-content>
+                    <mat-card-footer class="px-4 pb-1">
+                        <div class="row align-items-center px-3 pt-3 pb-1">
+                            <div class="col-xs-12 col-lg-3 d-flex justify-content-start align-items-center">
+                                <div class="m-0 p-0" *ngIf="!c['habs']['hasErrors'] && extraInfo['grupo']['hasInsurance'] == '1'">
+                                    <mat-slide-toggle class="mx-1 mb-2" (toggleChange)="confirmRemoveInsurance()" [(ngModel)]="extraInfo['grupo']['insuranceIncluded']">
+                                        <small [ngClass]="{'text-success': extraInfo['grupo']['insuranceIncluded'],'text-danger text-decoration-line-through': !extraInfo['grupo']['insuranceIncluded']}">
+                                            Seguro {{ summarySearch['nacionalidad'] }} {{ summarySearch['cobertura'] }}
+                                            <br>
+                                            {{ extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['pax'] }} pax/{{ extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['dias'] }} días 
+                                            (<span class="text-decoration-line-through">
+                                                {{  ( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci']) | currency:'USD':'symbol-narrow':'.2-2' }}
+                                            </span> 
+                                            {{  ( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['public_ci']) | currency:'USD':'symbol-narrow':'.2-2' }}) 
+                                            <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                        </small>
+                                    </mat-slide-toggle>
+                                </div>
+                            </div>
+                            <div class="d-xs-block d-lg-none col-xs-12" [style.height.px]="20"></div>
+                            <div class="col-xs-12 col-lg-3 d-flex justify-content-start align-items-center">
+                                <div class="m-0 p-0" *ngIf="!c['habs']['hasErrors']">
+                                    <mat-slide-toggle [disabled]="!(extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1)" class="mx-1 mb-2" [(ngModel)]="c['habs']['hasTransfer']">
+                                        <small [ngClass]="{'text-success': c['habs']['hasTransfer'],'text-danger text-decoration-line-through': !c['habs']['hasTransfer']}">
+                                            Traslado redondo para {{ c['habs']['total']['pax'] }} pax
+                                            <br>
+                                            con valor de {{ (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                            <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                        </small>
+                                    </mat-slide-toggle>
+                                </div>
+                            </div>
+                            <div class="d-xs-block d-lg-none col-xs-12" [style.height.px]="20"></div>
+                            <div class="col-xs-12 col-lg-4 d-flex justify-content-center align-items-center">
+                                <div class="m-0 p-0 text-center" *ngIf="!c['habs']['hasErrors']">
+                                    <small [ngClass]="{'text-success': c['habs']['hasTransfer'] || extraInfo['grupo']['insuranceIncluded'],'text-danger text-decoration-line-through': !c['habs']['hasTransfer'] && !extraInfo['grupo']['insuranceIncluded']}">
+                                        Valor real de extras: {{ (c['habs']['hasTransfer'] ? (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) : 0) + (extraInfo['grupo']['insuranceIncluded'] ? ( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci']) : 0) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                        <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                        <br>
+                                        Valor en paquete: {{ (c['habs']['hasTransfer'] ? 0 : 0) + (extraInfo['grupo']['insuranceIncluded'] ? ( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']) : 0) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                        <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                </small></div>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </mat-card-footer>
+                </mat-card>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+</div>
+

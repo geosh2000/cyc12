@@ -1,17 +1,27 @@
 <mat-toolbar class='matNavbar' role="heading" [style.paddingBottom.px]="10" color="primary">
-  <main-navbar (menuChange)="menuChange()" [style.width.%]="100"></main-navbar>
+    <main-navbar (menuChange)="menuChange()" [style.width.%]="100"></main-navbar>
 </mat-toolbar>
-
+  
 <!-- SIDEBAR -->
 <mat-drawer-container class="sidebar-container">
-  <!-- <mat-drawer #sidenav mode="side" [(opened)]="sb_open" position="start" [fixedInViewport]="true" [fixedTopGap]="60" [style.width.px]="350" > -->
-  <mat-drawer #sidenav mode="over" [(opened)]="sb_open" position="start" [style.width.px]="290" >
-    <main-menu (sideBar)="sb_open = $event"></main-menu>
-  </mat-drawer>
+    <!-- <mat-drawer #sidenav mode="side" [(opened)]="sb_open" position="start" [fixedInViewport]="true" [fixedTopGap]="60" [style.width.px]="350" > -->
+    <mat-drawer #sidenav mode="over" [(opened)]="sb_open" position="start" [style.width.px]="290" >
+        <main-menu (sideBar)="sb_open = $event"></main-menu>
+    </mat-drawer>
+        
+    <mat-drawer-content >
+        <div class="container-fluid p-0" >
+                
+            <!-- NOT LOGGED -->
+            <div class="alert alert-danger mx-2 text-center" role="alert" *ngIf="!_init.isLogin">
+                Por favor inicia sesión para tener acceso al sistema
+            </div>
+    
+            <router-outlet *ngIf="_init.isLogin"></router-outlet>
+        </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
 
-  <mat-drawer-content >
-    <div class="container-fluid p-0" >
-      <router-outlet></router-outlet>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+  <snack-bar></snack-bar>
+  <app-login></app-login>
+  

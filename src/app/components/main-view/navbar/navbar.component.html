@@ -2,14 +2,16 @@
     <button mat-icon-button color="light" (click)="menuClick()">
         <mat-icon>menu</mat-icon>
     </button>
-    <button mat-raised-button color="accent" class="ms-2" [routerLink]="['/cotizar']">Cotizar</button>
+    <div class="d-none d-sm-block ms-2">
+        <button mat-raised-button color="accent" [routerLink]="['/cotizar']">Cotizar</button>
+    </div>
 
 
     <!-- DIV END -->
     <div class="d-flex justify-content-end ms-auto align-items-center">
         <!-- SEARCH LOC -->
         <div class="p-1 mx-1">
-            <!-- <app-go-to-loc></app-go-to-loc> -->
+            <app-go-to-loc></app-go-to-loc>
         </div>
     
         <!-- RROUND -->
@@ -26,12 +28,14 @@
     
         <!-- LOGIN / LOGOUT -->
         <div class="p-1 mx-1">
-            <button mat-fab color="primary"  data-toggle="modal" data-target="#loginModal" *ngIf="!token">
+            <button mat-icon-button color="accent"  data-bs-toggle="modal" data-bs-target="#loginModal" *ngIf="!token">
                 <mat-icon>login</mat-icon>
             </button>
-            <button mat-fab color="warn"  (click)="logout()" *ngIf="token">
+              
+            <button mat-icon-button color="warn"  (click)="logout()" *ngIf="token">
                 <mat-icon>logout</mat-icon>
             </button>
         </div>
     </div>
 </div>
+

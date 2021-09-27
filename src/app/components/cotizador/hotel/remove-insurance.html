@@ -1,0 +1,36 @@
+<h1 mat-dialog-title>Realmente deseas eliminar seguro de AssistCard</h1>
+<div mat-dialog-content>
+  <p>Menciona al cliente al menos tres de los beneficios de Assistcard y márcalos para poder eliminar el seguro</p>
+  <mat-selection-list #benefits>
+    <mat-list-option checkboxPosition="before">Asistencia Médica en caso de Accidente * <span class="text-danger"> (Hasta USD 60,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Asistencia Médica en caso de Enfermedad no preexistente (incluido COVID-19)* <span class="text-danger"> (Hasta USD 60,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Primera Atención Médica en caso de Enfermedad preexistente * <span class="text-danger"> (Hasta USD 300)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Odontología de urgencia <span class="text-danger"> (Hasta USD 500)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Medicamentos ambulatorios <span class="text-danger"> (Hasta USD 1,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Medicamentos en caso de hospitalización <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Práctica de deportes* <span class="text-danger"> (Hasta USD 10,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Estado de embarazo *<span class="text-danger"> (Hasta USD 10,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Prótesis y ortesis <span class="text-danger"> (Hasta USD 2,500)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Traslados Sanitarios <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Repatriaciones (Sanitaria o funeraria) <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Regreso de Acompañante del titular repatriado <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Traslado de un familiar <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Estancia de un familiar <span class="text-danger"> (Por día USD 100 | Máximo USD 400 / 500)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Gastos de Hotel por reposo forzoso luego de una hospitalización <span class="text-danger"> (Por día USD 180 | Máximo USD 900 / 1,100)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Acompañamiento de menores o mayores <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Regreso anticipado por siniestro grave en el domicilio <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Diferencia de tarifa por viaje de regreso retrasado o anticipado <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Asistencia legal por responsabilidad en un accidente <span class="text-danger"> (Préstamo | Hasta USD 8,000 / 10,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Anticipo de fondos para fianzas <span class="text-danger"> (Préstamo | Hasta USD 8,000 / 10,000)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Asistencia en caso de robo o extravío de documentos, etc. <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Localización de equipajes <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Telemedicina - Consultas médicas online <span class="text-danger"> (Incluido)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Indemnización por pérdida de equipaje <span class="text-danger"> (Complementario - USD 40 por Kg | Hasta USD 1,200)</span></mat-list-option>
+    <mat-list-option checkboxPosition="before">Indemnización por demora en la entrega del equipaje <span class="text-danger"> (Más de 8 hrs | Hasta USD 200)</span></mat-list-option>
+  </mat-selection-list>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-end flex-wrap">
+  <button class="ms-2" mat-flat-button color="primary" (click)="onNoClick()">Mantener Seguro</button>
+  <button class="ms-2" mat-flat-button color="warn" [mat-dialog-close]="false" cdkFocusInitial [disabled]="benefits.selectedOptions.selected.length < 3">Elminar Seguro</button>
+</div>
+

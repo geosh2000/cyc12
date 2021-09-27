@@ -2,10 +2,12 @@
 <div class="d-flex container justify-content-center mt-5"  *ngIf="loading['menu']">
     <mat-spinner color="accent"></mat-spinner>
 </div>
+
+<div class="d-block d-sm-none my-2 text-center" >
+    <button mat-raised-button color="accent" class="ms-2" [style.width.%]="80" [routerLink]="['/cotizar']">Cotizar</button><br>
+</div>
 <div class='container-fluid pt-2'>
-    <div class="d-flex justify-content-center" *ngIf="loading['menu']">
-        <mat-spinner></mat-spinner>
-    </div>
+
 
     <mat-accordion #menuAccordion>
 
