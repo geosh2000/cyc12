@@ -5,6 +5,14 @@ import { environment } from '../environments/environment';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 const config: SocketIoConfig = { url: environment.wsUrl, options: {} };
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule } from '@angular/common';
+import { ToastrModule } from 'ngx-toastr';
+import { OrderModule } from 'ngx-order-pipe';
+
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -32,43 +40,37 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDialogModule } from '@angular/material/dialog';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MainViewComponent } from './components/main-view/main-view.component';
-import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { NavbarComponent } from './components/main-view/navbar/navbar.component';
+import { NavbarComponent,LoginDialog } from './components/main-view/navbar/navbar.component';
 import { MenuComponent } from './components/main-view/menu/menu.component';
-import { ApiService } from './services/api.service';
-import { ToastrModule } from 'ngx-toastr';
-import { InitService } from './services/init.service';
-import { ZonaHorariaService } from './services/zona-horaria.service';
 import { CotizadorComponent } from './components/cotizador/cotizador.component';
 import { CotizaHotelComponent, RemoveInsuranceDialog } from './components/cotizador/hotel/hotel.component';
 import { CotizaVcmComponent } from './components/cotizador/vcm/vcm.component';
 import { CotizaToursComponent } from './components/cotizador/tours/tours.component';
 import { CotizaTrasladosComponent } from './components/cotizador/traslados/traslados.component';
 import { CotizaConciertosComponent } from './components/cotizador/conciertos/conciertos.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-
-import { CapitalizadoPipe } from './pipes/capitalizado.pipe';
-import { LowercasePipe } from './pipes/lowercase.pipe';
-import { OrderModule } from 'ngx-order-pipe';
-import { KeysPipe } from './pipes/keys.pipe';
+import { MainViewComponent } from './components/main-view/main-view.component';
 import { GoToLocComponent } from './components/main-view/go-to-loc/go-to-loc.component';
 import { SnackBarComponent } from './shared/snack-bar/snack-bar.component';
 import { SnackBarTemplateComponent } from './shared/snack-bar-template/snack-bar-template.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './shared/login/login.component';
-import { LoginService } from './services/login.service';
+
+import { ApiService } from './services/api.service';
+import { InitService } from './services/init.service';
+import { ZonaHorariaService } from './services/zona-horaria.service';
 import { WsService } from './services/ws.service';
+
+import { CapitalizadoPipe } from './pipes/capitalizado.pipe';
+import { LowercasePipe } from './pipes/lowercase.pipe';
+import { KeysPipe } from './pipes/keys.pipe';
+import { LoginService } from './services/login.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainViewComponent,
-    NavbarComponent,
+    NavbarComponent, LoginDialog,
     MenuComponent,
     CotizadorComponent,
     CotizaHotelComponent, RemoveInsuranceDialog,
@@ -83,6 +85,7 @@ import { WsService } from './services/ws.service';
     SnackBarComponent,
     SnackBarTemplateComponent,
     LoginComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

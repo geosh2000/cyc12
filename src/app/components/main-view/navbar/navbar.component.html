@@ -28,7 +28,7 @@
     
         <!-- LOGIN / LOGOUT -->
         <div class="p-1 mx-1">
-            <button mat-icon-button color="accent"  data-bs-toggle="modal" data-bs-target="#loginModal" *ngIf="!token">
+            <button mat-icon-button color="accent"  (click)="loginDialog()" *ngIf="!token">
                 <mat-icon>login</mat-icon>
             </button>
               

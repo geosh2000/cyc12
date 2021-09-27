@@ -1,0 +1,25 @@
+.matNavbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding-top: 10px!important;
+}
+
+.main-container {
+    height: calc(100% - 64px);
+    overflow: auto;
+    padding: 0px;
+    background: antiquewhite;
+    top: 64px;
+    width: 100%;
+    position: absolute;
+}
+
+.sidebar-container {
+    width: 100%;
+    top: 63px;
+    height: calc(100% - 64px);
+    /* border: 1px solid rgba(0, 0, 0, 0.5); */
+}

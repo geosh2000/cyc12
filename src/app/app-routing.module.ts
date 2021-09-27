@@ -1,15 +1,22 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CotizadorComponent } from './components/cotizador/cotizador.component';
+import { CotizadorComponent } from './components/cotizador/cotizador.component'
 import { MainViewComponent } from './components/main-view/main-view.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 
 const routes: Routes = [
 
-  // { path: '', component: MainViewComponent }
+  { 
+    path: '', 
+    component: MainViewComponent ,
+    children: [
+      { path: 'cotizar', component: CotizadorComponent },
+      { path: '', redirectTo: '/cotizar', pathMatch: 'full' },
+    ]
+  },
 
-  { path: 'cotizar', component: CotizadorComponent },
-
+  { path: '**', component: NotFoundComponent },
   
 
 ];
