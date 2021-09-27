@@ -80,7 +80,7 @@ export class CotizaTrasladosComponent implements OnInit {
       ],
     'Compartido': [
       {name: 'Redondo- Aeropuerto - Hotel - Aeropuerto',  arrival: true, departure: true, open: false, flight: true, origin: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}, destination: null},
-      {name: 'Hacia el Aeropuerto',                       arrival: false, departure: true, open: false, flight: true, origin: null, destination: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}},
+      {name: 'Hacia al Aeropuerto',                       arrival: false, departure: true, open: false, flight: true, origin: null, destination: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}},
       {name: 'Desde el Aeropuerto',                       arrival: true, departure: false, open: false, flight: true, origin: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}, destination: null},
     ],
     'Abierto': [
@@ -370,12 +370,20 @@ export class CotizaTrasladosComponent implements OnInit {
 
     let defaults = {
       destino: this.xferSearch.get('destino').disabled,
-      origen: this.xferSearch.get('origen').disabled
+      origen: this.xferSearch.get('origen').disabled,
+      tipo: this.xferSearch.get('tipo').disabled
     }
+    console.log('origen', this.xferSearch.get('origen').disabled)
+    console.log('destino', this.xferSearch.get('destino').disabled)
+    console.log('tipo', this.xferSearch.get('tipo').disabled)
 
-    
     this.xferSearch.get('origen').enable()
     this.xferSearch.get('destino').enable()
+    // this.xferSearch.get('tipo').enable()
+
+    console.log('origen', this.xferSearch.get('origen').disabled)
+    console.log('destino', this.xferSearch.get('destino').disabled)
+    console.log('tipo', this.xferSearch.get('tipo').disabled)
 
     this.cotizacion = []
 
@@ -393,6 +401,9 @@ export class CotizaTrasladosComponent implements OnInit {
                   }
                   if( defaults['destino'] ){
                     this.xferSearch.get('destino').disable()
+                  }
+                  if( defaults['tipo'] ){
+                    this.xferSearch.get('tipo').disable()
                   }
 
 

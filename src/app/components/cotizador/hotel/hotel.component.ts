@@ -64,6 +64,7 @@ export class CotizaHotelComponent implements OnInit {
 
   cotizacion = []
   extraInfo = {}
+  selectedLevel = 1
 
   constructor( 
           private _api: ApiService, 
@@ -234,6 +235,8 @@ export class CotizaHotelComponent implements OnInit {
       'grupo': null,
       'seguros': null
     }
+    this.selectedLevel = 1
+    
     // VALIDATE DATES
 
     let inicio = moment(f.get('inicio').value.format('YYYY-MM-DD'))
