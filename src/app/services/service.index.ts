@@ -1,3 +1,4 @@
+
 export { ApiService } from './api.service';
 // export { AsesoresService } from './asesores.service';
 // export { CredentialsService } from './credentials.service';
@@ -7,5 +8,6 @@ export { LoginService } from './login.service';
 // export { NavbarService } from './navbar.service';
 // export { TokenCheckService } from './token-check.service';
 export { ZonaHorariaService } from './zona-horaria.service';
+export { AuthService } from './auth.service';
 // export { RrobinService } from './rrobin.service';
 

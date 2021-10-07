@@ -1,0 +1,74 @@
+<mat-accordion>
+  <ng-container *ngFor="let lv of menu">
+
+    <ng-container *ngIf="lv.parent == 0">
+      <mat-expansion-panel hideToggle *ngIf="lv.sub.length == 0" [routerLink]="lv.v2link">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ lv.titulo }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    
+      <mat-expansion-panel *ngIf="lv.sub.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ lv.titulo }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        
+        <!-- ****** INICIA NIVEL 1 ****** -->
+        <ng-container *ngFor="let lvA of lv.sub">
+
+          <ng-container *ngIf="lvA.parent == lv.id">
+        
+            <mat-accordion>
+              <mat-expansion-panel hideToggle *ngIf="lvA.sub.length == 0" [routerLink]="lvA.v2link">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ lvA.titulo }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+              </mat-expansion-panel>
+            
+              <mat-expansion-panel *ngIf="lvA.sub.length > 0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ lvA.titulo }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+              
+                <!-- ****** INICIA NIVEL 2 ****** -->
+                <ng-container *ngFor="let lvB of lvA.sub">
+
+                  <ng-container *ngIf="lvB.parent == lvA.id">
+                
+                    <mat-accordion>
+                      <mat-expansion-panel hideToggle [routerLink]="lvB.v2link">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            {{ lvB.titulo }}
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                      </mat-expansion-panel>
+
+                    </mat-accordion>
+                
+                  </ng-container>
+                
+                </ng-container>
+                <!-- ****** TERMINA NIVEL 2 ****** -->
+
+              </mat-expansion-panel>
+            </mat-accordion>
+        
+          </ng-container>
+        
+        </ng-container>
+        <!-- ****** TERMINA NIVEL 1 ****** -->
+
+      </mat-expansion-panel>
+    </ng-container>
+  
+  </ng-container>
+</mat-accordion>

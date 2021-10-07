@@ -10,15 +10,23 @@
     </mat-drawer>
         
     <mat-drawer-content >
+        <app-breadcrumbs></app-breadcrumbs>
         <div class="container-fluid p-0" >
                 
             <!-- NOT LOGGED -->
             <div class="alert alert-danger mx-2 text-center" role="alert" *ngIf="!_init.isLogin">
                 Por favor inicia sesión para tener acceso al sistema
             </div>
+
+            <mat-card class="mt-5" *ngIf="loadingRouteConfig">
+                <mat-card-footer>
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </mat-card-footer>
+            </mat-card>
     
-            <router-outlet *ngIf="_init.isLogin"></router-outlet>
+            <router-outlet *ngIf="_init.isLogin && !loadingRouteConfig"></router-outlet>
         </div>
+
     </mat-drawer-content>
   </mat-drawer-container>
 

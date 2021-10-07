@@ -1,0 +1,4 @@
+:host ::ng-deep .mat-expansion-panel-body {
+    padding-left: 24px;
+    padding-right: 0px;
+}

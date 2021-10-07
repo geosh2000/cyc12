@@ -1,0 +1,177 @@
+<div class="container">
+
+    <div class="container text-center">
+        <h3>Busca de usuarios de Zendesk</h3>
+    </div>
+
+    <mat-stepper #zdUserSearchStepper
+        class="example-stepper"
+        [selectedIndex]="step"
+        [linear]="true"
+        [orientation]="(stepperOrientation | async)!"
+        (selectionChange)="stepChange( $event )">
+        <mat-step [stepControl]="firstFormGroup" label="Campo de búsqueda">
+            <form [formGroup]="firstFormGroup">
+                <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                    <mat-label>Usuario / Ticket</mat-label>
+                    <input matInput type="text" placeholder="Nombre, correo ticket" formControlName="inputVal">
+                </mat-form-field>
+                <div class="d-flex justify-content-between flex-wrap">
+                    <mat-slide-toggle class="mx-1 mb-2" formControlName="byTicket">Desde Ticket</mat-slide-toggle>
+                    <button mat-button color="primary" matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup" label="Selecciona el usuario correcto">
+            <form [formGroup]="secondFormGroup">
+                <div style="max-height: 235px; overflow:auto">
+                    <mat-progress-bar mode="indeterminate" *ngIf="loading['search']"></mat-progress-bar>
+                    <!-- <pre>{{ usersFound | json }}</pre> -->
+                    <div class="alert alert-warning text-wrap" role="alert" *ngIf="usersFound.length == 0 && !loading['search']">
+                        No existen usuarios con este nombre / correo.
+                    </div>
+                    <ng-container *ngIf="usersFound.length > 0 && !loading['search']">
+                        <label id="user-radio-group-label">Selecciona un usuario</label>
+                        <mat-radio-group
+                            aria-labelledby="user-radio-group-label"
+                            class="user-radio-group"
+                            formControlName="userSelected">
+                            <mat-radio-button class="user-radio-button" *ngFor="let usr of usersFound" [value]="usr">
+                                <mat-card>
+                                    <mat-card-content>
+                                        <div class="row">
+                                            <div class="align-items-center col-xs-12 col-md-5 text-truncate">
+                                                <span [matTooltip]="usr['name']" matTooltipPosition="above"><mat-icon color="primary">account_circle</mat-icon> {{ usr['name'] }}</span><br>
+                                                <span [matTooltip]="usr['email']" matTooltipPosition="above"><mat-icon color="primary">mail</mat-icon> {{ usr['email'] }}</span>
+                                            </div>
+                                            <div class="align-items-center col-xs-12 col-md-4 text-truncate">
+                                                <span [matTooltip]="usr['phone']" matTooltipPosition="above"><mat-icon color="primary">call</mat-icon> {{ usr['phone'] }}</span><br>
+                                                <span [matTooltip]="usr['user_fields']['whatsapp']" matTooltipPosition="above"><mat-icon color="primary">whatsapp</mat-icon> {{ usr['user_fields']['whatsapp'] }}</span>
+                                            </div>
+                                            <div class="align-items-center col-xs-12 col-md-3 text-truncate">
+                                                <span [matTooltip]="usr['user_fields']['idioma_cliente']" matTooltipPosition="above"><mat-icon color="primary">translate</mat-icon> {{ usr['user_fields']['idioma_cliente'] }}</span><br>
+                                                <span [matTooltip]="usr['user_fields']['nacionalidad']" matTooltipPosition="above"><mat-icon color="primary">language</mat-icon> {{ usr['user_fields']['nacionalidad'] }}</span>
+                                            </div>
+                                        </div>
+                                    </mat-card-content>
+                                </mat-card>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+                </div>
+                <div class="d-flex justify-content-end  flex-wrap">
+                    <button mat-button color="warn" matStepperPrevious>Back</button>
+                    <button mat-flat-button color="warn" (click)="create()">Crear</button>
+                    <button mat-button color="primary" [disabled]="secondFormGroup.invalid" matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup" label="Editar Usuario" [optional]="optionalEdit">
+            <!-- <pre>{{ thirdFormGroup.value | json }}</pre> -->
+            <form [formGroup]="thirdFormGroup" (ngSubmit)="createSaveZdUser()" #selectedUserForm>
+                <div class="row" style="max-height: 235px; overflow:auto" *ngIf="loading['update']">
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </div>
+                <div class="row" style="max-height: 235px; overflow:auto" *ngIf="!loading['update']">
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput type="text" formControlName="name" name="fakeusernameremembered" autocomplete="off">
+                            <mat-error *ngIf="thirdFormGroup.get('name').invalid">{{ getErrorMessage('name', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Correo</mat-label>
+                            <input matInput type="text" formControlName="email" name="fakeusernameremembered" autocomplete="off">
+                            <mat-error *ngIf="thirdFormGroup.get('email').invalid">{{ getErrorMessage('email', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Telefono</mat-label>
+                            <input matInput type="text" formControlName="phone" name="fakeusernameremembered" autocomplete="off">
+                            <mat-hint>Formato +############</mat-hint>
+                            <mat-error *ngIf="thirdFormGroup.get('phone').invalid">{{ getErrorMessage('phone', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Whatsapp</mat-label>
+                            <input matInput type="text" formControlName="whatsapp" name="fakeusernameremembered" autocomplete="off">
+                            <mat-hint>Formato +############</mat-hint>
+                            <mat-error *ngIf="thirdFormGroup.get('whatsapp').invalid">{{ getErrorMessage('whatsapp', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Idioma</mat-label>
+                            <mat-select formControlName="idioma_cliente" fname="idioma_cliente">
+                                <mat-option>Selecciona</mat-option>
+                                <mat-option value="idioma_es">Español</mat-option>
+                                <mat-option value="idioma_en">Inglés</mat-option>
+                                <mat-option value="idioma_pt">Portugués</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="thirdFormGroup.get('idioma_cliente').invalid">{{ getErrorMessage('idioma_cliente', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                            <mat-label>Nacionalidad</mat-label>
+                            <mat-select formControlName="nacionalidad" fname="nacionalidad">
+                                <mat-option>Selecciona</mat-option>
+                                <mat-option value="nacional">Nacional</mat-option>
+                                <mat-option value="internacional">Internacional</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="thirdFormGroup.get('nacionalidad').invalid">{{ getErrorMessage('nacionalidad', thirdFormGroup) }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button mat-button color="warn" matStepperPrevious>Back</button>
+                    <button mat-button color="primary" [disabled]="loading['update']" type="submit">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step label="Comprobar y Seleccionar" #doneStep>
+            <mat-card>
+                <mat-card-content>
+                    <div class="row">
+                        <div class="my-1 align-items-center col-xs-12 col-md-5 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('name').value" matTooltipPosition="above"><mat-icon color="primary">account_circle</mat-icon> {{ thirdFormGroup.get('name').value }}</span>
+                        </div>
+                        <div class="my-1 align-items-center col-xs-12 col-md-4 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('phone').value" matTooltipPosition="above"><mat-icon color="primary">call</mat-icon> {{ thirdFormGroup.get('phone').value }}</span>
+                        </div>
+                        <div class="my-1 align-items-center col-xs-12 col-md-3 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('idioma_cliente').value" matTooltipPosition="above"><mat-icon color="primary">translate</mat-icon> {{ thirdFormGroup.get('idioma_cliente').value }}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="my-1 align-items-center col-xs-12 col-md-5 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('email').value" matTooltipPosition="above"><mat-icon color="primary">mail</mat-icon> {{ thirdFormGroup.get('email').value }}</span>
+                        </div>
+                        <div class="my-1 align-items-center col-xs-12 col-md-4 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('whatsapp').value" matTooltipPosition="above"><mat-icon color="primary">whatsapp</mat-icon> {{ thirdFormGroup.get('whatsapp').value }}</span>
+                        </div>
+                        <div class="my-1 align-items-center col-xs-12 col-md-3 text-truncate">
+                            <span [matTooltip]="thirdFormGroup.get('nacionalidad').value" matTooltipPosition="above"><mat-icon color="primary">language</mat-icon> {{ thirdFormGroup.get('nacionalidad').value }}</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <div class="mt-2 d-flex justify-content-end flex-wrap">
+                <button mat-button color="warn" matStepperPrevious>Back</button>
+                <button mat-flat-button color="accent" (click)="edit()">Editar</button>
+                <button mat-button color="primary">Seleccionar</button>
+            </div>
+        </mat-step>
+    </mat-stepper>
+
+<!-- <div mat-dialog-actions class="d-flex justify-content-end flex-wrap">
+    <button mat-flat-button class="ms-2" color="primary" aria-label="Close" >Buscar Usuario</button>
+    <button mat-flat-button class="ms-2" color="primary" aria-label="Close" >Buscar por Ticket</button>
+</div> -->
+
+
+</div>

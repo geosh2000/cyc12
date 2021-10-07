@@ -5,12 +5,15 @@ import { ApiService } from './api.service';
 import { ZonaHorariaService } from './zona-horaria.service';
 declare var jQuery:any;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class InitService {
 
   preferences:any = {}
   currentUser:any
   isLogin:boolean = false
+  agentName = ''
   
   token = new BehaviorSubject( false )
   snack = new BehaviorSubject( { status: false, msg: '', title: '', t: '' } )
@@ -23,6 +26,8 @@ export class InitService {
       jQuery('.modal').modal('hide')
       this.hideMenu.next( true )
     })
+
+    this.agentName = localStorage.getItem('nombre')
   }
 
   copyToClipboard( t ) {
@@ -33,6 +38,7 @@ export class InitService {
 
   getPreferences(){
     if( localStorage.getItem('currentUser') ){
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser'))
       this._api.restfulGet( '', 'Preferences/userPreferences' )
           .subscribe( res => {
             this.preferences = res['data']
@@ -65,11 +71,13 @@ export class InitService {
       return false
     }
 
-    if(currentUser.credentials['allmighty'] == 1 && !test){
+    let cred = JSON.parse(atob(currentUser.creds))
+
+    if(cred['allmighty'] == 1 && !test){
       return true
     }
 
-    if(currentUser.credentials[credential] == 1){
+    if(cred[credential] == 1){
       return true
     }else{
       this.displayNoCredentials( main )
@@ -90,16 +98,21 @@ export class InitService {
   }
 
   checkSingleCredential( credential, main:boolean=false, test:boolean = false ){
+
+    
+    
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if( currentUser == null){
       return false
     }
+    
+    let cred = JSON.parse(atob(currentUser.creds))
 
-    if(currentUser.credentials['allmighty'] == 1 && !test){
+    if(cred['allmighty'] == 1 && !test){
       return true
     }
 
-    if(currentUser.credentials[credential] == 1){
+    if(cred[credential] == 1){
       return true
     }else{
       return false

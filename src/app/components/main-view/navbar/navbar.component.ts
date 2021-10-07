@@ -2,6 +2,9 @@ import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@ang
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+
+import Swal from 'sweetalert2'
+
 import { InitService, LoginService } from 'src/app/services/service.index';
 declare var jQuery:any
 
@@ -18,19 +21,16 @@ export class NavbarComponent implements OnInit {
   @Output() _login = new EventEmitter<any>()
 
   constructor( private _init: InitService,
-    public dialog: MatDialog) { 
+    public dialog: MatDialog, private _li: LoginService) { 
     
   }
 
   ngOnInit(): void {
     this._init.token.subscribe( t => {
 
-      console.log( "token", t )
       this.token = t
 
       if( !t ){
-        console.log( "show modal" )
-        // jQuery('#loginModal').modal('show')
         this.loginDialog()
       }
     })
@@ -47,25 +47,25 @@ export class NavbarComponent implements OnInit {
   }
   
   logout(){
-      localStorage.removeItem('currentUser');
-      this._init.currentUser = null
-      this._init.preferences = {}
-      this._init.isLogin = false
-      this._init.token.next( false )
+      this._li.logout()
   }
 
   loginDialog(): void {
-    const dialogRef = this.dialog.open(LoginDialog, { disableClose: true });
+    
+    if(this.dialog.openDialogs.length==0){
+      const dialogRef = this.dialog.open(LoginDialog, { disableClose: true });
+      
+      dialogRef.afterClosed().subscribe(result => {
+        // console.log('The dialog was closed', result);
+  
+        // if( typeof result == 'undefined' ){
+        //   this.extraInfo['grupo']['insuranceIncluded'] = true;
+        // }else{
+        //   this.extraInfo['grupo']['insuranceIncluded'] = result;
+        // }
+      });
+    }
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
-
-      // if( typeof result == 'undefined' ){
-      //   this.extraInfo['grupo']['insuranceIncluded'] = true;
-      // }else{
-      //   this.extraInfo['grupo']['insuranceIncluded'] = result;
-      // }
-    });
   }
 
   
@@ -95,7 +95,7 @@ export class LoginDialog {
   ngOnInit(){
     // this.loading = this._login.loading
     // this.log = this._login.log
-    console.log(this._login)
+    // console.log(this._login)
   }
 
   onNoClick(): void {
@@ -105,9 +105,10 @@ export class LoginDialog {
   createForm(){
 
     this.log =  new FormGroup({
-      ['username']:   new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
+      ['username']:   new FormControl({ value: localStorage.getItem('username') || '',  disabled: false }, [ Validators.required ]),
       ['password']:   new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['remember']:   new FormControl({ value: false,  disabled: false }, [ Validators.required ])
+      ['remember']:   new FormControl({ value: (localStorage.getItem('username') || '0') == '1',  disabled: false }, [ Validators.required ]),
+      ['saveLocal']:  new FormControl({ value: localStorage.getItem('username') ? true : false,  disabled: false }, [ Validators.required ])
     })
 
   }
@@ -131,9 +132,9 @@ export class LoginDialog {
       remember: this.log.controls['remember'].value
     }
 
-    console.log(login)
-    console.log(this.log.value)
-    console.log(this.log.controls['username'].value)
+    // console.log(login)
+    // console.log(this.log.value)
+    // console.log(this.log.controls['username'].value)
 
     // console.log(this.login)
     this._login.loginCyC( login )
@@ -147,8 +148,15 @@ export class LoginDialog {
           }else{
             this.loginError=false;
             this.loginMsg='';
-            // jQuery('#loginModal').modal('hide');
-            console.log('close emited')
+
+            if( this.log.get('saveLocal').value ){
+              localStorage.setItem('username', this.log.get('username').value )
+            }else{
+              localStorage.removeItem('username')
+            }
+            
+            localStorage.setItem('remember', this.log.get('remember').value ? '1' : '0' )
+            
             this.onNoClick()
 
             if( res['isAffiliate'] ){
@@ -164,10 +172,10 @@ export class LoginDialog {
 
         if(err){
           this.loading['login'] = false
-          let error = err.error
-          this.loginError=true;
-          this.loginMsg=error.msg;
 
+          
+          let error = err.error
+          Swal.fire('Logueo Incorrecto', error.msg, 'error')
           console.error(err.statusText, error.msg)
 
         }

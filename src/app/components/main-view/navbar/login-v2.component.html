@@ -19,13 +19,12 @@
                         <mat-error *ngIf="log.controls['password'].invalid">{{ getErrorMessage('password') }}</mat-error>
                     </mat-form-field>
 
-                    <div class="d-block text-center">
+                    <div class="d-block text-start">
+
                             <mat-checkbox  formControlName="remember">Mantener sesión abierta</mat-checkbox>
+                            <mat-checkbox  formControlName="saveLocal">Recordar Usuario</mat-checkbox>
                     </div>
 
-                    <div class="alert alert-danger mx-auto text-center text-wrap" role="alert" *ngIf="loginError">
-                        <small>{{ loginMsg }}</small>
-                    </div>
                 </mat-card-content>
                 <mat-card-actions>
                     <div class="d-flex justify-content-end flex-wrap">

@@ -5,6 +5,7 @@ import { ApiService, InitService } from 'src/app/services/service.index';
 @Component({
   selector: 'main-menu',
   templateUrl: './menu.component.html',
+  // template: `Hola Mundo`,
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
@@ -14,6 +15,7 @@ export class MenuComponent implements OnInit {
 
   loading = {}
   menuData = []
+  menu = []
   closed:Object = {}
 
   constructor( private _api: ApiService, private toastr: ToastrService, public _init: InitService ) { }
@@ -31,6 +33,7 @@ export class MenuComponent implements OnInit {
           this.loading['menu'] = false
 
           let menu =  this.buildLevel( res['data'] )
+          this.buildMenu( res['data'] )
 
           for( let item of menu['1'] ){
             item['sub'] = []
@@ -77,6 +80,10 @@ export class MenuComponent implements OnInit {
     }
 
     return arr
+  }
+
+  buildMenu( r ){
+    this.menu = r
   }
 
 }

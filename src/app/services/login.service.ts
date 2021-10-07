@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { getMatIconFailedToSanitizeUrlError } from '@angular/material/icon';
+import { BehaviorSubject, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import { InitService } from './init.service';
 import { WsService } from './ws.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class LoginService {
 
   co = new BehaviorSubject( null )
@@ -17,8 +20,9 @@ export class LoginService {
 
   loginCyC( logInfo ){
 
-    console.log(logInfo)
+    // console.log(logInfo)
     return this._api.restfulPut( logInfo, 'Login/login', false ).pipe(
+      
       map( res => {
         localStorage.setItem(
           'currentUser',
@@ -27,11 +31,15 @@ export class LoginService {
                           tokenExpire: res['tokenExpire'],
                           username: res['username'],
                           hcInfo: res['hcInfo'],
-                          credentials: res['credentials']
+                          creds: btoa( JSON.stringify(res['credentials'])),
+                          credentialsTest: res['credentials']
                         })
         );
+        localStorage.setItem('token', res['token'])
+        localStorage.setItem('nombre', res['hcInfo']['Nombre_Corto'])
         this.ws.cargarStorage()
         this._init.getPreferences()
+        this._init.agentName = res['hcInfo']['Nombre_Corto']
         return { status: true, msg: 'Logueo Correcto', err: 'NA', isAffiliate: res['credentials']['viewOnlyAffiliates'] == '1' ? true : false}
       }, err => {
 
@@ -45,6 +53,52 @@ export class LoginService {
     )
       
 
+  }
+
+  validateToken( cred: string = '' ){
+
+    const token = localStorage.getItem('token')
+    const remember = localStorage.getItem('remember')
+
+    return this._api.restfulPut( {token, remember}, 'Login/tokenRenew', false)
+      .pipe(
+        tap( (resp: any) => {
+          if( resp.token['token'] ){
+            localStorage.setItem('token', resp.token['token'] )
+          }else{
+            this.logout()
+          }
+        }),
+        map( respo => {
+
+          const localData = JSON.parse(localStorage.getItem('currentUser'))
+          
+          if( cred == '' ){
+            return true
+          }
+
+          let credS = JSON.parse(atob(localData.creds))
+
+          if( credS[cred] == "1" ){
+            return true
+          }else{
+            return false
+          }
+
+        }),
+        catchError( err => of( false ))
+      )
+
+  }
+
+  logout(){
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
+    localStorage.removeItem('nombre');
+    this._init.currentUser = null
+    this._init.preferences = {}
+    this._init.isLogin = false
+    this._init.token.next( false )
   }
 
   

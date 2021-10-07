@@ -12,24 +12,12 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 
-import { NotFoundComponent } from './components/not-found/not-found.component';
-
-
-import { ApiService } from './services/api.service';
-import { InitService } from './services/init.service';
-import { ZonaHorariaService } from './services/zona-horaria.service';
-import { WsService } from './services/ws.service';
-
-import { LoginService } from './services/login.service';
-// import { CotizadorModule } from './components/cotizador/cotizador.module';
 import { MainViewModule } from './components/main-view/main-view.module';
+import { PublicModule } from './public/public.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-
-    NotFoundComponent,
-    
   ],
   imports: [
     BrowserModule,
@@ -41,16 +29,11 @@ import { MainViewModule } from './components/main-view/main-view.module';
     SocketIoModule.forRoot(config),
 
     AppRoutingModule,
-    // CotizadorModule,
+
     MainViewModule,
+    PublicModule
   ],
-  providers: [
-    ApiService,
-    InitService,
-    ZonaHorariaService,
-    LoginService,
-    WsService,
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

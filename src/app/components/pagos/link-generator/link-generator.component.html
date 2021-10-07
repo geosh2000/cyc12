@@ -1,0 +1,80 @@
+<div class="container mt-4">
+
+    <mat-card>
+        <form [formGroup]="linkForm" #linkFormDom="ngForm" (ngSubmit)="genLink()">
+            <mat-card-title>
+                <h2>Generación de Ligas de Pago</h2>
+            </mat-card-title>
+            <mat-card-subtitle>Ingresa los datos necesarios para la generación de una liga de pago protegida por 3DSecure</mat-card-subtitle>
+            <mat-card-content>
+
+                <!-- Fields -->
+                <div class="pt-3 row">
+                    <div class="col-xs-12 col-sm-4 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Empresa</mat-label>
+                            <mat-select formControlName="empresa">
+                                <mat-option value="cancun">Cancun</mat-option>
+                                <mat-option value="palm">Palm</mat-option>
+                                <mat-option value="smart">Smart</mat-option>
+                                <mat-option value="vcm">VCM</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="linkForm.get('empresa').invalid && linkForm.get('empresa').touched">{{ getErrorMessage('empresa') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-lg-2">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Grupo</mat-label>
+                            <mat-select formControlName="grupo" [disabled]="!_init.checkSingleCredential('payment_anyGroup')">
+                                <mat-option [value]="g['id']" *ngFor="let g of groups">{{ g['departamento'] }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="linkForm.get('grupo').invalid && linkForm.get('grupo').touched">{{ getErrorMessage('grupo') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Referencia</mat-label>
+                            <input type="text" matInput autocomplete="nope" formControlName="referencia" name="fakeusernameremembered" autocomplete="off">
+                            <mat-hint *ngIf="linkForm.get('referencia').status == 'PENDING'">Revisando que no esté duplicada...</mat-hint>
+                            <mat-error *ngIf="linkForm.get('referencia').invalid && linkForm.get('referencia').touched">{{ getErrorMessage('referencia') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-lg-2">
+                        <mat-form-field appearance="outline" class="d-block" floatLabel="always">
+                            <mat-label>Monto</mat-label>
+                            <input matInput type="number" class="text-end" placeholder="0" autocomplete="off" formControlName="monto">
+                            <span matPrefix>$&nbsp;</span>
+                            <mat-error *ngIf="linkForm.get('monto').invalid && linkForm.get('monto').touched">{{ getErrorMessage('monto') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-lg-2">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Moneda</mat-label>
+                            <mat-select formControlName="moneda">
+                                <mat-option value="mxn">MXN</mat-option>
+                                <mat-option value="usd">USD</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="linkForm.get('moneda').invalid && linkForm.get('moneda').touched">{{ getErrorMessage('moneda') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <mat-progress-bar class="d-xs-block d-md-none" mode="indeterminate"  *ngIf="loading['generating']"></mat-progress-bar>
+            </mat-card-content>
+
+            <!-- Actions -->
+            <mat-card-actions>
+                
+                <div class="d-flex justify-content-end">
+                    <button mat-raised-button color="warn" type="button" (click)="resetValues()">Reset</button>
+                    <button mat-raised-button color="primary" type="submit" [disabled]="!linkForm.valid || loading['generating']">Generar</button>
+                </div>
+            </mat-card-actions>
+
+            <!-- Progressbar -->
+            <mat-card-footer>
+                <mat-progress-bar mode="indeterminate" *ngIf="loading['generating']"></mat-progress-bar>
+            </mat-card-footer>
+        </form>
+    </mat-card>
+
+</div>

@@ -12,7 +12,7 @@
                 </mat-form-field>
                 
                 <!-- FECHA -->
-                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="300">
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
                     <mat-label>Fecha</mat-label>
                     <mat-date-range-input [rangePicker]="picker">
                         <input matStartDate readonly autocomplete="off" [min]="minDate" [max]="maxDate" formControlName="inicio" placeholder="Inicio">
@@ -52,6 +52,15 @@
                     </mat-select>
                     <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
                     <mat-error *ngIf="hotelSearch.controls['nacionalidad'].invalid">{{ getErrorMessage('nacionalidad') }}</mat-error>
+                </mat-form-field>
+
+                <!-- FECHA COTIZACION -->
+                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="160" *ngIf="hotelSearch.get('noRestrict').value">
+                    <mat-label>Fecha Cotizacion</mat-label>
+                    <input matInput [matDatepicker]="cotDate" formControlName="bwDate" autocomplete="off">
+                    <mat-datepicker-toggle matSuffix [for]="cotDate"></mat-datepicker-toggle>
+                    <mat-datepicker #cotDate disabled="false"></mat-datepicker>
+                    <mat-error *ngIf="hotelSearch.get('bwDate').invalid">{{ getErrorMessage('bwDate') }}</mat-error>
                 </mat-form-field>
 
                 <!-- Switches -->
@@ -372,6 +381,8 @@
             </div>
         </mat-card-content>
     </mat-card>
+
+    <button mat-raised-button color="primary" (click)="doRsv()">Search User</button>
 
 </div>
 

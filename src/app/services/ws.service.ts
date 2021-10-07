@@ -13,138 +13,160 @@ export class WsService {
   public router: Router;
 
   constructor(
-    private socket: Socket
+    // private socket: Socket
   ) {
-    this.cargarStorage();
-    this.checkStatus();
-    this.socket.connect()
+    // this.cargarStorage();
+    // this.checkStatus();
+    // this.socket.connect()
   }
 
-  checkStatus() {
+  // checkStatus() {
 
-    console.log(this.socket.ioSocket.connected)
-    this.socket.on('connect', () => {
-      this.cargarStorage();
-      console.log('Conectado al servidor');
-      this.socketStatus = true;
-    });
+  //   console.log(this.socket.ioSocket.connected)
+  //   this.socket.on('connect', () => {
+  //     this.cargarStorage();
+  //     console.log('Conectado al servidor');
+  //     this.socketStatus = true;
+  //   });
 
-    this.socket.on('disconnect', () => {
-      console.log('Desconectado al servidor');
-      this.socketStatus = false;
-    });
+  //   this.socket.on('disconnect', () => {
+  //     console.log('Desconectado al servidor');
+  //     this.socketStatus = false;
+  //   });
 
-  }
+  // }
 
-  emit( evento: string, payload?: any, callback?: Function ) {
+  // emit( evento: string, payload?: any, callback?: Function ) {
 
-    console.log('Emitiendo', evento);
-    // emit('EVENTO', payload, callback?)
-    this.socket.emit( evento, payload, callback );
+  //   console.log('Emitiendo', evento);
+  //   // emit('EVENTO', payload, callback?)
+  //   this.socket.emit( evento, payload, callback );
 
-  }
-
-
-  listen( evento: string ) {
-
-    return this.socket.fromEvent( evento );
-
-  }
-
-  loginWS( nombre: string ) {
-
-    return new Promise<void>( (resolve, reject ) => {
-
-      this.emit( 'configurar-usuario', { nombre }, res => {
-
-        this.usuario = new Usuario( nombre );
-        this.guardarStorage();
-
-        resolve();
-
-      });
-
-    });
+  // }
 
 
-  }
+  // listen( evento: string ) {
+
+  //   return this.socket.fromEvent( evento );
+
+  // }
+
+  // loginWS( nombre: string ) {
+
+  //   return new Promise<void>( (resolve, reject ) => {
+
+  //     this.emit( 'configurar-usuario', { nombre }, res => {
+
+  //       this.usuario = new Usuario( nombre );
+  //       this.guardarStorage();
+
+  //       resolve();
+
+  //     });
+
+  //   });
+
+
+  // }
 
   // setUrl( url: string = window.location.origin ) {
+  // setUrl( url: string = window.location.href + ' -- ' + window.navigator.userAgent ) {
+
+  //   return new Promise<void>( (resolve, reject ) => {
+
+  //     this.emit( 'desde-url', { url }, res => {
+
+  //       // this.usuario = new Usuario( url );
+  //       // this.guardarStorage();
+
+  //       resolve();
+
+  //     });
+
+  //   });
+
+
+  // }
+
+  // setTicket( ticket: string ) {
+
+  //   return new Promise<void>( (resolve, reject ) => {
+
+  //     this.emit( 'activar-ticket', { ticket }, res => {
+
+  //       this.usuario = new Usuario( ticket );
+  //       // this.guardarStorage();
+
+  //       resolve();
+
+  //     });
+
+  //   });
+
+
+  // }
+
+
+  // guardarStorage() {
+
+  //   localStorage.setItem( 'usuario', JSON.stringify( this.usuario ) );
+
+  // }
+
+  // cargarStorage() {
+
+  //   if ( localStorage.getItem( 'currentUser' ) ) {
+  //     this.usuario = JSON.parse( localStorage.getItem( 'currentUser' ) );
+  //     this.loginWS( this.usuario['username'] )
+  //     this.setUrl( )
+  //   }
+
+  // }
+
+  // getUsuario(){
+
+  //   return this.usuario;
+
+  // }
+
+  // logoutWS() {
+  //   this.usuario = null;
+  //   localStorage.removeItem( 'usuario' );
+
+  //   const payload = { nombre: 'Unknown' };
+  //   return new Promise<void>( (resolve, reject ) => {
+
+  //     this.emit( 'configurar-usuario', payload , res => {
+
+  //       localStorage.removeItem( 'usuario' );
+
+  //       resolve();
+
+  //     });
+
+  //   });
+
+  // }
+
+  cargarStorage(){}
+
   setUrl( url: string = window.location.href + ' -- ' + window.navigator.userAgent ) {
 
     return new Promise<void>( (resolve, reject ) => {
 
-      this.emit( 'desde-url', { url }, res => {
+      // this.emit( 'desde-url', { url }, res => {
 
-        // this.usuario = new Usuario( url );
-        // this.guardarStorage();
+      //   // this.usuario = new Usuario( url );
+      //   // this.guardarStorage();
 
-        resolve();
+      //   resolve();
 
-      });
+      // });
 
-    });
-
-
-  }
-
-  setTicket( ticket: string ) {
-
-    return new Promise<void>( (resolve, reject ) => {
-
-      this.emit( 'activar-ticket', { ticket }, res => {
-
-        this.usuario = new Usuario( ticket );
-        // this.guardarStorage();
-
-        resolve();
-
-      });
+      resolve();
 
     });
 
-
-  }
-
-
-  guardarStorage() {
-
-    localStorage.setItem( 'usuario', JSON.stringify( this.usuario ) );
-
-  }
-
-  cargarStorage() {
-
-    if ( localStorage.getItem( 'currentUser' ) ) {
-      this.usuario = JSON.parse( localStorage.getItem( 'currentUser' ) );
-      this.loginWS( this.usuario['username'] )
-      this.setUrl( )
-    }
-
-  }
-
-  getUsuario(){
-
-    return this.usuario;
-
-  }
-
-  logoutWS() {
-    this.usuario = null;
-    localStorage.removeItem( 'usuario' );
-
-    const payload = { nombre: 'Unknown' };
-    return new Promise<void>( (resolve, reject ) => {
-
-      this.emit( 'configurar-usuario', payload , res => {
-
-        localStorage.removeItem( 'usuario' );
-
-        resolve();
-
-      });
-
-    });
 
   }
 

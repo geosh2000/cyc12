@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ApiService, InitService } from 'src/app/services/service.index';
 
@@ -70,6 +70,7 @@ export class CotizaHotelComponent implements OnInit {
           private _api: ApiService, 
           public _init: InitService, 
           public dialog: MatDialog,
+          private fb: FormBuilder,
           private sanitization:DomSanitizer,
           private order: OrderPipe ) { 
       moment.locale('es-mx');
@@ -99,27 +100,59 @@ export class CotizaHotelComponent implements OnInit {
     return day > this.minDate
   }
 
+  dateValidation( a: string, b: string ){
+    return ( formGroup: FormGroup ) => {
+
+      const inicio = formGroup.get(a)
+      const fin = formGroup.get(b)
+
+      if( inicio.value < fin.value ){
+        fin.setErrors(null)
+      }else{
+        fin.setErrors({ finMenorIgual: true })
+      }
+
+      if( inicio.value < moment(moment().format('YYYY-MM-DD')) && !formGroup.get('noRestrict').value ){
+        inicio.setErrors({ inicioPasado: true })
+      }
+    }
+  }
+
   resetValues(){
     this.hotelSearch.reset({})
     this.createForm()
   }
 
   createForm(){
-    this.hotelSearch =  new FormGroup({
-      ['inicio']:       new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['fin']:          new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['habs']:         new FormControl({ value: '',   disabled: false }, [ Validators.required ]),
-      ['grupo']:        new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['nacionalidad']: new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['noRestrict']:   new FormControl({ value: false,  disabled: false }, [ Validators.required ]),
-      ['isUSD']:        new FormControl({ value: false,  disabled: false }, [ Validators.required ]),
-      ['habitaciones']: new FormGroup({})
+    this.hotelSearch =  this.fb.group({
+      inicio:       [{ value: '',  disabled: false }, [ Validators.required ] ],
+      fin:          [{ value: '',  disabled: false }, [ Validators.required ] ],
+      habs:         [{ value: '',   disabled: false }, [ Validators.required ] ],
+      grupo:        [{ value: '',  disabled: false }, [ Validators.required ] ],
+      nacionalidad: [{ value: '',  disabled: false }, [ Validators.required ] ],
+      noRestrict:   [{ value: false,  disabled: false }, [ Validators.required ] ],
+      isUSD:        [{ value: false,  disabled: false }, [ Validators.required ] ],
+      bwDate:       [{ value: false,  disabled: true }, [] ],
+      habitaciones: this.fb.group({})
+    },{
+      validators: this.dateValidation('inicio', 'fin')
     })
 
     this.hotelSearch.controls['habs'].valueChanges.subscribe( x => { 
 
       this.roomsControls(x)
 
+    })
+
+    
+    this.hotelSearch.get('noRestrict').valueChanges.subscribe( x => { 
+      if( x ){
+        this.hotelSearch.get('bwDate').enable()
+      }else{
+        this.hotelSearch.get('bwDate').disable()
+        this.hotelSearch.get('bwDate').reset()
+      }
+      
     })
 
     this.hotelSearch.controls['habs'].setValue(1)
@@ -222,6 +255,14 @@ export class CotizaHotelComponent implements OnInit {
     
     if (form.get(ctrl).hasError('pattern')) {
       return 'Formato HH:MM 24hrs';
+    }
+    
+    if (form.get(ctrl).hasError('finMenorIgual')) {
+      return 'La fecha final debe ser mayor al inicio';
+    }
+    
+    if (form.get(ctrl).hasError('inicioPasado')) {
+      return 'La fecha inicial no puede ser en el pasado';
     }
     
     return 'El campo tiene errores';
@@ -348,7 +389,7 @@ export class CotizaHotelComponent implements OnInit {
 
     let r = i['tarifas']
     let htl = i['hotel']
-    let noR = this._init.checkSingleCredential('app_cotizador_allLevels', false, true)
+    let noR = this._init.checkSingleCredential('app_cotizador_allLevels')
     
     for( let h in b['porHabitacion']){
       for( let f in r ){
@@ -586,7 +627,10 @@ export class CotizaHotelComponent implements OnInit {
 
   removeInsurance(){
     this.extraInfo['grupo']['insuranceIncluded'] = false
-    jQuery('#removeInsurance').modal('hide')
+  }
+
+  doRsv(){
+    this.rsv.emit({ action: 'doRsv', data: {}})
   }
 
 

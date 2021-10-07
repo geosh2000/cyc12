@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Title, DomSanitizer } from '@angular/platform-browser';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Title } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
@@ -14,7 +15,13 @@ export class CotizadorComponent implements OnInit {
   products = []
   displayModule = 'hotel'
 
-  constructor( private ttl: Title, private _api: ApiService, private toastr: ToastrService, public _init: InitService ) { }
+  constructor( 
+      private ttl: Title, 
+      private _api: ApiService, 
+      private toastr: ToastrService, 
+      public dialog: MatDialog,
+      public _init: InitService 
+    ) { }
 
   ngOnInit(): void {
     this.ttl.setTitle('CyC - Cotizador');
@@ -29,6 +36,12 @@ export class CotizadorComponent implements OnInit {
 
   rsv( e ){
     console.log( e )
+
+    switch( e['action'] ){
+      case 'doRsv':
+        this.rsvDialog( e['data'] )
+        break;
+    }
   }
 
   getServices(){
@@ -51,5 +64,33 @@ export class CotizadorComponent implements OnInit {
                 });
   }
 
+  rsvDialog( d:any ): void {
+    const dialogRef = this.dialog.open(RsvCreateDialog, {
+      // width: '250px',
+      data: d,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
+  }
+
+
+}
+
+@Component({
+  selector: 'create-rsv',
+  templateUrl: '/modals/create-rsv.html',
+})
+export class RsvCreateDialog {
+
+  constructor(
+    public rsvDialog: MatDialogRef<RsvCreateDialog>,
+    @Inject(MAT_DIALOG_DATA) public data) {}
+
+  onNoClick(): void {
+    this.rsvDialog.close();
+  }
 
 }

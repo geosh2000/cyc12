@@ -12,7 +12,9 @@ declare global {
   }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
 
   localIp = sessionStorage.getItem('LOCAL_IP');
@@ -40,7 +42,7 @@ export class ApiService {
 
     if( loginReq ){
       let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      url += `?token=${currentUser ? currentUser.token : 'noToken'}`
+      url += `?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}`
       url += `&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}`
       url += `&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
 
@@ -64,7 +66,7 @@ export class ApiService {
   postFromApi( params, apiRoute, alternativeRoute? ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let url = `${ this.apiUrl }${ apiRoute }.json.php?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    let url = `${ this.apiUrl }${ apiRoute }.json.php?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
     let urlOK = this.transform( url )
 
     let body = JSON.stringify( params );
@@ -79,7 +81,7 @@ export class ApiService {
   postToApi( params, apiRoute ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let url = `${ this.apiPostUrl }${ apiRoute }.post.php?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    let url = `${ this.apiPostUrl }${ apiRoute }.post.php?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
     let urlOK = this.transform( url )
 
     let body = JSON.stringify( params );
@@ -98,7 +100,7 @@ export class ApiService {
 
     if( loginReq ){
       let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+      url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
     }else{
       url = `${ this.apiRestful }${ apiRoute }`
     }
@@ -125,7 +127,7 @@ export class ApiService {
     let headers:any
 
     if( !alterRoute ){
-      url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+      url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
       headers = new HttpHeaders({
         'Content-Type':'application/json'
       });
@@ -172,7 +174,7 @@ export class ApiService {
   restfulImgPost( params, apiRoute ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    let url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
 
     let urlOK = this.transform( url )
 
@@ -185,7 +187,7 @@ export class ApiService {
   restfulDelete( id, apiRoute ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let url = `${ this.apiRestful }${ apiRoute }/${ id }?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    let url = `${ this.apiRestful }${ apiRoute }/${ id }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
 
     let urlOK = this.transform( url )
 
@@ -202,7 +204,7 @@ export class ApiService {
   restfulGet( id, apiRoute ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let url = `${ this.apiRestful }${ apiRoute }/${ id }?token=${currentUser ? currentUser.token : 'noToken'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    let url = `${ this.apiRestful }${ apiRoute }/${ id }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
 
     let urlOK = this.transform( url )
 

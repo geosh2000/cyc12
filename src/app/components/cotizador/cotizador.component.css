@@ -9,18 +9,19 @@
 
 :host ::ng-deep .mat-tab-header {
     z-index:100000;
+    top: 100px;
     position: fixed;
     width:100%;
     background: white;
 }
 
 .cotizador-content {
-    top: 112px;
+    top: 160px;
     padding: 0px;
     position: fixed;
     overflow: auto!important;
     width:  100%;
-    height: calc(100% - 112px);
+    height: calc(100% - 160px);
     transition: width 1s;
     transition-timing-function: ease-out;
 }   
