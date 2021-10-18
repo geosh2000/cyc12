@@ -32,7 +32,7 @@ export class LoginService {
                           username: res['username'],
                           hcInfo: res['hcInfo'],
                           creds: btoa( JSON.stringify(res['credentials'])),
-                          credentialsTest: res['credentials']
+                          credentials: res['credentials']
                         })
         );
         localStorage.setItem('token', res['token'])
@@ -40,12 +40,14 @@ export class LoginService {
         this.ws.cargarStorage()
         this._init.getPreferences()
         this._init.agentName = res['hcInfo']['Nombre_Corto']
+        this._init.loadingRouteConfig = false
         return { status: true, msg: 'Logueo Correcto', err: 'NA', isAffiliate: res['credentials']['viewOnlyAffiliates'] == '1' ? true : false}
       }, err => {
 
         if(err){
           let error = err.error
           console.error(err.statusText, error.msg)
+          this._init.loadingRouteConfig = false
 
           return { status: false, msg: error.msg, err: err.statusText }
         }

@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 
 import { CotizaConciertosComponent } from './conciertos/conciertos.component';
-import { CotizadorComponent, RsvCreateDialog } from './cotizador.component';
+import { CotizadorComponent } from './cotizador.component';
+// import { CotizadorComponent, RsvCreateDialog } from './cotizador.component';
 import { CotizaHotelComponent, RemoveInsuranceDialog } from './hotel/hotel.component';
 import { CotizaToursComponent } from './tours/tours.component';
 import { CotizaTrasladosComponent } from './traslados/traslados.component';
 import { CotizaVcmComponent } from './vcm/vcm.component';
+import { RsvCreateDialog } from './modals/create-rsv';
 
 import { OrderModule } from 'ngx-order-pipe';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -32,6 +34,8 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatStepperModule } from '@angular/material/stepper';
+import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.component';
 
 
 
@@ -44,6 +48,7 @@ import { MatMenuModule } from '@angular/material/menu';
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
     RsvCreateDialog,
+    HotelCheckoutComponent
   ],
   exports: [
     CotizadorComponent,
@@ -53,6 +58,7 @@ import { MatMenuModule } from '@angular/material/menu';
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
     RsvCreateDialog,
+    HotelCheckoutComponent
   ],
   imports: [    
     OrderModule,
@@ -81,6 +87,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatRadioModule,
     MatDialogModule,
     MatMenuModule,
+    MatStepperModule,
     
   ]
 })

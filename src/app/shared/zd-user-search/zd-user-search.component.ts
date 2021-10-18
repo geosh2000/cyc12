@@ -1,10 +1,12 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatStep, MatStepper, StepperOrientation } from '@angular/material/stepper';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { ApiService, InitService } from 'src/app/services/service.index';
+import { ZdUserEditComponent } from '../zd-user-edit/zd-user-edit.component';
+
 
 @Component({
   selector: 'app-zd-user-search',
@@ -16,9 +18,13 @@ export class ZdUserSearchComponent implements OnInit {
   @ViewChild('selectedUserForm') selUserForm: ElementRef;
   @ViewChild('zdUserSearchStepper') userSearchStepper: MatStepper;
   @ViewChild('doneStep') doneStep: MatStep;
+  @ViewChild(ZdUserEditComponent, {static: false}) _edit: ZdUserEditComponent;
+
+  @Output() selected = new EventEmitter<any>()
 
   loading = {}
   usersFound = []
+  userSelected = {}
 
   optionalEdit = true
 
@@ -36,9 +42,11 @@ export class ZdUserSearchComponent implements OnInit {
     name:           ['', Validators.required ],
     email:          ['', Validators.compose([ Validators.required, Validators.email ])],
     phone:          ['', Validators.pattern("^[\+][0-9]{1,3}[0-9]{10}$") ],
-    whatsapp:       ['', Validators.pattern("^[\+][0-9]{1,3}[[1]?[0-9]{10}$") ],
+    whatsapp:       ['', Validators.pattern("^[\+][0-9\\s]{11,20}$") ],
     idioma_cliente: ['', Validators.required ],
-    nacionalidad:   ['', Validators.required ],
+    nacionalidad:   [{value: ''}, Validators.required ],
+    id_pais:        [{value: '', disabled: true}, Validators.required ],
+    pais:           ['', Validators.required ],
   });
 
   constructor(
@@ -52,6 +60,7 @@ export class ZdUserSearchComponent implements OnInit {
             map(
               ({matches}) => matches ? 'horizontal' : 'vertical')
               );
+
   }
 
   ngOnInit(): void {
@@ -65,6 +74,8 @@ export class ZdUserSearchComponent implements OnInit {
         this.firstFormGroup.get('byTicket').setValue(true)
       }
     })
+    
+    
   }
 
   stepChange( e ){
@@ -80,7 +91,13 @@ export class ZdUserSearchComponent implements OnInit {
         break
       case 2:
         if( e.previouslySelectedIndex == 1 ){
-          this.validateUser()
+          // this.validateUser()
+          this._edit.validateUser( this.secondFormGroup.get('userSelected').value )
+          this.optionalEdit = this._edit.optionalEdit
+        }
+
+        if( e.previouslySelectedIndex == 3 ){
+          this._edit.userForm.get('zdId').setValue( this.userSelected['zdId'] )
         }
 
         if( this.usersFound.length == 0 ){
@@ -91,22 +108,6 @@ export class ZdUserSearchComponent implements OnInit {
     }
   }
 
-  validateUser(){
-    this.thirdFormGroup.get('name').setValue( this.secondFormGroup.get('userSelected').value['name'])
-    this.thirdFormGroup.get('email').setValue( this.secondFormGroup.get('userSelected').value['email'])
-    this.thirdFormGroup.get('phone').setValue( this.secondFormGroup.get('userSelected').value['phone'])
-    this.thirdFormGroup.get('whatsapp').setValue( this.secondFormGroup.get('userSelected').value['user_fields']['whatsapp'])
-    this.thirdFormGroup.get('idioma_cliente').setValue( this.secondFormGroup.get('userSelected').value['user_fields']['idioma_cliente'])
-    this.thirdFormGroup.get('nacionalidad').setValue( this.secondFormGroup.get('userSelected').value['user_fields']['nacionalidad'])
-
-    this.optionalEdit = this.thirdFormGroup.valid
-
-    if( this.optionalEdit ){
-      // console.log('jump to done')
-      //  this.doneStep.select()
-       this.step = 3
-    }
-  }
 
   searchZd(){
     this.secondFormGroup.get('userSelected').reset() 
@@ -183,7 +184,7 @@ export class ZdUserSearchComponent implements OnInit {
     }
     
     if (form.get(ctrl).hasError('pattern')) {
-      return 'Formato HH:MM 24hrs';
+      return 'Formato con +###########';
     }
     
     if (form.get(ctrl).hasError('finMenorIgual')) {
@@ -219,46 +220,29 @@ export class ZdUserSearchComponent implements OnInit {
 
   }
 
-  createSaveZdUser(){
+  select(){
+    this.selected.emit(this.userSelected)
+  }
 
-    if( this.thirdFormGroup.invalid ){
-      return false
-    }
+  goToStep( e ){
+    let flag = false
 
-    this.loading['update'] = true
-    
-    let params = {
-      email:  this.thirdFormGroup.get('email').value,
-      name:   this.thirdFormGroup.get('name').value,
-      phone:  this.thirdFormGroup.get('phone').value,
-      user_fields: {
-        idioma_cliente: this.thirdFormGroup.get('idioma_cliente').value,
-        nacionalidad:   this.thirdFormGroup.get('nacionalidad').value,
-        whatsapp:       this.thirdFormGroup.get('whatsapp').value,
+    if( e[0] == true ){
+      if( e[1] == 3 ){
+        this.userSelected = e[2]['userForm'].value
+        flag = this.optionalEdit
+        this.optionalEdit = true
+        
+        if( !flag ){
+          setTimeout( () => {
+            this.step = 3
+          }, 500)
+        }else{
+          this.step = 3
+        }
+      }else{
+        this.step = e[1]
       }
     }
-
-    this._api.restfulPut( params, 'Calls/createUpdateUser' )
-                .subscribe( res => {
-
-                  this.loading['update'] = false
-
-                  if( res['data']['response'] >= 200 && res['data']['response'] < 300 ){
-                    this.secondFormGroup.get('userSelected').setValue( res['data']['data']['user'] )
-                    this.validateUser()
-                  }else{
-                    this._init.snackbar('error', 'Ocurrio un error al guardar los datos', 'Cerrar')
-                    this.step = 2
-                  }
-
-                }, err => {
-                  this.loading['update'] = false;
-                  this.step = 2
-
-                  const error = err.error;
-                  this._init.snackbar('error', error.msg, 'Cerrar')
-                  console.error(err.statusText, error.msg);
-
-                });
   }
 }

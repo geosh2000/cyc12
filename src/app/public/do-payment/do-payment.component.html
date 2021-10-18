@@ -29,20 +29,25 @@
                           </mat-menu>
                     </div>
                     <div>
-                        <mat-slide-toggle [(ngModel)]="acceptTerms" [disabled]="disableTerms">{{ text[setLang]['accept'] }}</mat-slide-toggle>
+                        <mat-slide-toggle (change)="accept()" [(ngModel)]="acceptTerms" [disabled]="disableTerms">{{ text[setLang]['accept'] }}</mat-slide-toggle>
                     </div>
                 </div>
             </mat-card-actions>
             <mat-card-footer>
                 <mat-progress-bar mode="indeterminate" *ngIf="loading['link']"></mat-progress-bar>
+                <!-- <mat-progress-bar mode="indeterminate" *ngIf="loading['paymodule']"></mat-progress-bar> -->
             </mat-card-footer>
         </mat-card>
     
     
         <mat-card class="mt-1" *ngIf="acceptTerms">
+            <mat-card-header>
+                <!-- <mat-progress-bar mode="indeterminate" *ngIf="loading['link']"></mat-progress-bar> -->
+                <mat-progress-bar mode="indeterminate" *ngIf="loading['paymodule']"></mat-progress-bar>
+            </mat-card-header>
             <mat-card-content>
                 <div class="d-flex justify-content-center">
-                    <iframe (load)="loaded()" id="pagoLiga" title="Pago de Reserva Oasis Hotels &amp; Resorts" width="800" height="600" [src]="link | domseguro: '' " frameborder="0" #iframe></iframe>
+                    <iframe (load)="loaded($event)" id="pagoLiga" title="Pago de Reserva Oasis Hotels &amp; Resorts" width="800" height="600" [src]="link | domseguro: '' " frameborder="0" #iframe></iframe>
                 </div>
             </mat-card-content>
         </mat-card>

@@ -1,0 +1,591 @@
+{
+    "habSelected": {
+        "hotel": {
+        "hotel": "GOC",
+        "habCode": "GSDR",
+        "jsonData": "{\"2021-10-20\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (jb)\",\"descuento\":0.68,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (JC)\",\"descuento\":0.7,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (Jc)\",\"descuento\":0.7024,\"active\":1,\"allEnabled\":0},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jC)\",\"descuento\":0.712,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0},\"2021-10-21\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (jb)\",\"descuento\":0.68,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (JC)\",\"descuento\":0.7,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (Jc)\",\"descuento\":0.7024,\"active\":1,\"allEnabled\":0},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jC)\",\"descuento\":0.712,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0}}",
+        "habName": "Standard",
+        "maxOcc": "5",
+        "maxAdults": "4",
+        "maxChild": "3",
+        "isNR": "0",
+        "isCC": "1",
+        "tipoCamas": "3",
+        "tipoCambio": "19.5",
+        "hotelUrl": {
+            "changingThisBreaksApplicationSecurity": "url(https://cyc-oasishoteles.com/assets/img/logos/logo_goc.jpg)"
+        },
+        "minNights": "1",
+        "tarifas": {
+            "2021-10-20": {
+            "n1": {
+                "name": "Publica",
+                "code": "1 (jb)",
+                "descuento": 0.68,
+                "active": 1,
+                "allEnabled": 1
+            },
+            "n2": {
+                "name": "Silver",
+                "code": "2 (JC)",
+                "descuento": 0.7,
+                "active": 1,
+                "allEnabled": 1
+            },
+            "n3": {
+                "name": "Gold",
+                "code": "3 (Jc)",
+                "descuento": 0.7024,
+                "active": 1,
+                "allEnabled": 0
+            },
+            "n4": {
+                "name": "Platinum",
+                "code": "4 (jC)",
+                "descuento": 0.712,
+                "active": 1,
+                "allEnabled": 0
+            },
+            "precio": {
+                "pax1": 442,
+                "pax2": 624,
+                "pax3": 894,
+                "pax4": 1088,
+                "paxMenor": 84
+            },
+            "isClosed": 0
+            },
+            "2021-10-21": {
+            "n1": {
+                "name": "Publica",
+                "code": "1 (jb)",
+                "descuento": 0.68,
+                "active": 1,
+                "allEnabled": 1
+            },
+            "n2": {
+                "name": "Silver",
+                "code": "2 (JC)",
+                "descuento": 0.7,
+                "active": 1,
+                "allEnabled": 1
+            },
+            "n3": {
+                "name": "Gold",
+                "code": "3 (Jc)",
+                "descuento": 0.7024,
+                "active": 1,
+                "allEnabled": 0
+            },
+            "n4": {
+                "name": "Platinum",
+                "code": "4 (jC)",
+                "descuento": 0.712,
+                "active": 1,
+                "allEnabled": 0
+            },
+            "precio": {
+                "pax1": 442,
+                "pax2": 624,
+                "pax3": 894,
+                "pax4": 1088,
+                "paxMenor": 84
+            },
+            "isClosed": 0
+            }
+        },
+        "habs": {
+            "porHabitacion": {
+            "hab1": {
+                "occ": {
+                "adultos": 2,
+                "menores": 0
+                },
+                "fechas": {
+                "2021-10-20": {
+                    "neta": 624,
+                    "n1": {
+                    "monto": 199.67999999999998,
+                    "descuento": 0.68,
+                    "relativeDisc": 0.68
+                    },
+                    "n2": {
+                    "monto": 187.20000000000002,
+                    "descuento": 0.7,
+                    "relativeDisc": 0.06249999999999978
+                    },
+                    "n3": {
+                    "monto": 185.70239999999998,
+                    "descuento": 0.7024,
+                    "relativeDisc": 0.06999999999999995
+                    },
+                    "n4": {
+                    "monto": 179.71200000000002,
+                    "descuento": 0.712,
+                    "relativeDisc": 0.09999999999999987
+                    },
+                    "isClosed": false
+                },
+                "2021-10-21": {
+                    "neta": 624,
+                    "n1": {
+                    "monto": 199.67999999999998,
+                    "descuento": 0.68,
+                    "relativeDisc": 0.68
+                    },
+                    "n2": {
+                    "monto": 187.20000000000002,
+                    "descuento": 0.7,
+                    "relativeDisc": 0.06249999999999978
+                    },
+                    "n3": {
+                    "monto": 185.70239999999998,
+                    "descuento": 0.7024,
+                    "relativeDisc": 0.06999999999999995
+                    },
+                    "n4": {
+                    "monto": 179.71200000000002,
+                    "descuento": 0.712,
+                    "relativeDisc": 0.09999999999999987
+                    },
+                    "isClosed": false
+                }
+                },
+                "total": {
+                "neta": {
+                    "monto": 1248,
+                    "relativeDisc": 0
+                },
+                "n1": {
+                    "monto": 399.35999999999996,
+                    "relativeDisc": 0.68
+                },
+                "n2": {
+                    "monto": 374.40000000000003,
+                    "relativeDisc": 0.06249999999999978
+                },
+                "n3": {
+                    "monto": 371.40479999999997,
+                    "relativeDisc": 0.06999999999999995
+                },
+                "n4": {
+                    "monto": 359.42400000000004,
+                    "relativeDisc": 0.09999999999999987
+                }
+                },
+                "errors": {
+                "flag": false,
+                "skippable": true,
+                "errors": {}
+                }
+            },
+            "hab2": {
+                "occ": {
+                "adultos": 2,
+                "menores": 0
+                },
+                "fechas": {
+                "2021-10-20": {
+                    "neta": 624,
+                    "n1": {
+                    "monto": 199.67999999999998,
+                    "descuento": 0.68,
+                    "relativeDisc": 0.68
+                    },
+                    "n2": {
+                    "monto": 187.20000000000002,
+                    "descuento": 0.7,
+                    "relativeDisc": 0.06249999999999978
+                    },
+                    "n3": {
+                    "monto": 185.70239999999998,
+                    "descuento": 0.7024,
+                    "relativeDisc": 0.06999999999999995
+                    },
+                    "n4": {
+                    "monto": 179.71200000000002,
+                    "descuento": 0.712,
+                    "relativeDisc": 0.09999999999999987
+                    },
+                    "isClosed": false
+                },
+                "2021-10-21": {
+                    "neta": 624,
+                    "n1": {
+                    "monto": 199.67999999999998,
+                    "descuento": 0.68,
+                    "relativeDisc": 0.68
+                    },
+                    "n2": {
+                    "monto": 187.20000000000002,
+                    "descuento": 0.7,
+                    "relativeDisc": 0.06249999999999978
+                    },
+                    "n3": {
+                    "monto": 185.70239999999998,
+                    "descuento": 0.7024,
+                    "relativeDisc": 0.06999999999999995
+                    },
+                    "n4": {
+                    "monto": 179.71200000000002,
+                    "descuento": 0.712,
+                    "relativeDisc": 0.09999999999999987
+                    },
+                    "isClosed": false
+                }
+                },
+                "total": {
+                "neta": {
+                    "monto": 1248,
+                    "relativeDisc": 0
+                },
+                "n1": {
+                    "monto": 399.35999999999996,
+                    "relativeDisc": 0.6799999999999999
+                },
+                "n2": {
+                    "monto": 374.40000000000003,
+                    "relativeDisc": 0.06249999999999989
+                },
+                "n3": {
+                    "monto": 371.40479999999997,
+                    "relativeDisc": 0.07000000000000006
+                },
+                "n4": {
+                    "monto": 359.42400000000004,
+                    "relativeDisc": 0.09999999999999976
+                }
+                },
+                "errors": {
+                "flag": false,
+                "skippable": true,
+                "errors": {}
+                }
+            }
+            },
+            "total": {
+            "monto": {
+                "neta": {
+                "monto": 2496,
+                "relativeDisc": 0
+                },
+                "n1": {
+                "monto": 798.7199999999999,
+                "relativeDisc": 0.68
+                },
+                "n2": {
+                "monto": 748.8000000000001,
+                "relativeDisc": 0.06249999999999978
+                },
+                "n3": {
+                "monto": 742.8095999999999,
+                "relativeDisc": 0.06999999999999995
+                },
+                "n4": {
+                "monto": 718.8480000000001,
+                "relativeDisc": 0.09999999999999987
+                }
+            },
+            "levels": {
+                "n1": {
+                "active": true,
+                "enabled": true
+                },
+                "n2": {
+                "active": true,
+                "enabled": true
+                },
+                "n3": {
+                "active": true,
+                "enabled": true
+                },
+                "n4": {
+                "active": true,
+                "enabled": true
+                },
+                "noR": true
+            },
+            "adultos": 4,
+            "menores": 0,
+            "pax": 4
+            },
+            "hasErrors": false,
+            "skippableErrors": true
+        }
+        },
+        "level": "2",
+        "extraInfo": {
+        "grupo": {
+            "grupo": "fall_3DSpecial_2021",
+            "grupoCielo": "fall_3DSpecial_2021",
+            "discountCode": "fall_3DSpecial_2021",
+            "xldPolicy": "24h-ta",
+            "cieloUSD": "FAL3D1",
+            "cieloMXN": "FAL3D1",
+            "mayorista": "DIR",
+            "mxAgencia": "CALLMXPH",
+            "mxAgenciaNR": "CALLMXNR",
+            "usAgencia": "CALLUSPH",
+            "usAgenciaNR": "CALLUSNR",
+            "mxAgenciaEp": "CALMPHDI",
+            "mxAgenciaEpNR": "CALMNRDI",
+            "usAgenciaEp": "CALPHDI",
+            "usAgenciaEpNR": "CALNRDI",
+            "bwInicio": "2021-10-09",
+            "bwFin": "2021-10-31",
+            "p1": "C,3,6,9,12",
+            "p2": "C,3,6,9,12",
+            "p3": "C",
+            "p4": "C",
+            "activo": "1",
+            "code1": "1 (jb)",
+            "code2": "2 (JC)",
+            "code3": "3 (Jc)",
+            "code4": "4 (jC)",
+            "code5": null,
+            "code6": null,
+            "code7": null,
+            "code8": null,
+            "code9": null,
+            "Last_Update": "2021-10-05 10:33:01",
+            "fixedTC": null,
+            "notComision": "0",
+            "ccOnly": "0",
+            "comAg": "0.025",
+            "comGe": "0.005",
+            "tipoComision": "1",
+            "l1_name": "Publica",
+            "l2_name": "Silver",
+            "l3_name": "Gold",
+            "l4_name": "Platinum",
+            "l1_active": "1",
+            "l2_active": "1",
+            "l3_active": "1",
+            "l4_active": "1",
+            "l1_allEnabled": "1",
+            "l2_allEnabled": "1",
+            "l3_allEnabled": "0",
+            "l4_allEnabled": "0",
+            "isOR": "1",
+            "hasPaq": "0",
+            "hasInsurance": "1",
+            "insuranceAtFirst": "1",
+            "freeTransfer": "1",
+            "freeTransferMinUsdPP": "240",
+            "insuranceIncluded": true
+        },
+        "seguros": {
+            "hab1": {
+            "nacional": {
+                "normal": {
+                "prod": "R7",
+                "nombre": "Oasis H 2 PAX - NAC",
+                "cod": "98801",
+                "sufijo": "10A02",
+                "neto_si": 21,
+                "neto_ci": 24.36,
+                "publico_ci": 41,
+                "normal_ci": 120,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                }
+            },
+            "internacional": {
+                "normal": {
+                "prod": "6D",
+                "nombre": "Oasis H 2 PAX - Int/Recep AC 100",
+                "cod": "98831",
+                "sufijo": "20A02",
+                "neto_si": 28.2,
+                "neto_ci": 32.7,
+                "publico_ci": 55,
+                "normal_ci": 216,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                },
+                "extendida": {
+                "prod": "6B",
+                "nombre": "Oasis H 2 PAX - Int/Recep AC 250",
+                "cod": "98861",
+                "sufijo": "30A02",
+                "neto_si": 33,
+                "neto_ci": 38.28,
+                "publico_ci": 64,
+                "normal_ci": 300,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                }
+            }
+            },
+            "hab2": {
+            "nacional": {
+                "normal": {
+                "prod": "R7",
+                "nombre": "Oasis H 2 PAX - NAC",
+                "cod": "98801",
+                "sufijo": "10A02",
+                "neto_si": 21,
+                "neto_ci": 24.36,
+                "publico_ci": 41,
+                "normal_ci": 120,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                }
+            },
+            "internacional": {
+                "normal": {
+                "prod": "6D",
+                "nombre": "Oasis H 2 PAX - Int/Recep AC 100",
+                "cod": "98831",
+                "sufijo": "20A02",
+                "neto_si": 28.2,
+                "neto_ci": 32.7,
+                "publico_ci": 55,
+                "normal_ci": 216,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                },
+                "extendida": {
+                "prod": "6B",
+                "nombre": "Oasis H 2 PAX - Int/Recep AC 250",
+                "cod": "98861",
+                "sufijo": "30A02",
+                "neto_si": 33,
+                "neto_ci": 38.28,
+                "publico_ci": 64,
+                "normal_ci": 300,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 2
+                }
+            }
+            },
+            "total": {
+            "nacional": {
+                "normal": {
+                "prod": "R7",
+                "nombre": "Oasis H 4 PAX - NAC",
+                "cod": "98803",
+                "sufijo": "10A04",
+                "neto_si": 42,
+                "neto_ci": 48.72,
+                "publico_ci": 81,
+                "normal_ci": 240,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 4
+                }
+            },
+            "internacional": {
+                "normal": {
+                "prod": "6D",
+                "nombre": "Oasis H 4 PAX - Int/Recep AC 100",
+                "cod": "98833",
+                "sufijo": "20A04",
+                "neto_si": 56.4,
+                "neto_ci": 65.4,
+                "publico_ci": 109,
+                "normal_ci": 432,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 4
+                },
+                "extendida": {
+                "prod": "6B",
+                "nombre": "Oasis H 4 PAX - Int/Recep AC 250",
+                "cod": "98863",
+                "sufijo": "30A04",
+                "neto_si": 66,
+                "neto_ci": 76.56,
+                "publico_ci": 128,
+                "normal_ci": 600,
+                "dias": 3,
+                "tipoCambio": 20,
+                "pax": 4
+                }
+            }
+            }
+        }
+        },
+        "summarySearch": {
+        "inicio": "2021-10-20T05:00:00.000Z",
+        "fin": "2021-10-22T05:00:00.000Z",
+        "habs": 2,
+        "grupo": {
+            "grupo": "fall_3DSpecial_2021",
+            "gpoTitle": "fall_3DSpecial_2021",
+            "hasPaq": "0",
+            "hasInsurance": "1"
+        },
+        "nacionalidad": "nacional",
+        "noRestrict": false,
+        "isUSD": false,
+        "habitaciones": {
+            "hab1": {
+            "adultos": 2,
+            "menores": 0
+            },
+            "hab2": {
+            "adultos": 2,
+            "menores": 0
+            }
+        },
+        "cobertura": "normal"
+        },
+        "type": "hotel"
+    },
+    "userInfo": {
+        "user": {
+        "zdId": 382159209451,
+        "name": "Jorge Sanchez",
+        "email": "geosh2000@gmail.com",
+        "phone": "+529982140469",
+        "whatsapp": "+529982140469",
+        "idioma_cliente": "idioma_es",
+        "nacionalidad": "nacional",
+        "pais": {
+            "id": 1,
+            "name": "MEXICO"
+        },
+        "user_fields": {
+            "whatsapp": "+529982140469",
+            "idioma_cliente": "idioma_es",
+            "nacionalidad": "nacional",
+            "id_pais": 1
+        }
+        },
+        "masterloc": null
+    },
+    "formRsv": {
+        "isNacional": true,
+        "rsvNacional": true,
+        "rsvInsurance": true,
+        "okNacionalidad": true,
+        "zdUser": {
+        "zdId": 382159209451,
+        "name": "Jorge Sanchez",
+        "email": "geosh2000@gmail.com",
+        "phone": "+529982140469",
+        "whatsapp": "+529982140469",
+        "idioma_cliente": "idioma_es",
+        "nacionalidad": "nacional",
+        "pais": {
+            "id": 1,
+            "name": "MEXICO"
+        },
+        "user_fields": {
+            "whatsapp": "+529982140469",
+            "idioma_cliente": "idioma_es",
+            "nacionalidad": "nacional",
+            "id_pais": 1
+        }
+        },
+        "orLevel": "Platinum",
+        "orId": 586393
+    }
+}

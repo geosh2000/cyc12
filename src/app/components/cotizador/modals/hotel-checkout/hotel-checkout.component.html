@@ -1,0 +1,188 @@
+<form [formGroup]="rsvForm" (ngSubmit)="submitRsv()" #htmlForm ="ngForm">
+    <div class="continer mx-auto row align-items-center" style="max-width: 100vw; height: 80vh; overflow: auto;" *ngIf="rsvData['habSelected']">
+        <div class="col-xs-12 col-md-6 text-center">
+            <h2 class="mb-0"><b>{{ rsvData['habSelected']['hotel']['hotelName'] }}</b></h2>
+            <h4 class="mb-1">Habitación: {{ rsvData['habSelected']['hotel']['habName'] }}</h4>
+            <mat-divider class="mb-2"></mat-divider>
+            <div>
+                <div class="align-items-center">
+                    <p><b>Titular: </b>{{ rsvData['formRsv']['zdUser']['name'] }} (<mat-icon>emoji_events</mat-icon>{{ rsvData['formRsv']['orLevel'] }})</p>
+                </div>
+                Tarifa elegida: 
+                <button mat-stroked-button type="button" color="primary" [matMenuTriggerFor]="level">{{ levelSelected['data']['name'] }}</button>
+                <mat-menu #level="matMenu">
+                    <button mat-menu-item type="button" (click)="chgLevel(1, levelsData['n1'])" *ngIf="levelsData['n1']['active'] == 1">
+                        {{ levelsData['n1']['name'] }}
+                    </button>
+                    <button mat-menu-item type="button" (click)="chgLevel(2, levelsData['n2'])" *ngIf="levelsData['n2']['active'] == 1">
+                        {{ levelsData['n2']['name'] }}
+                    </button>
+                    <button mat-menu-item type="button" (click)="chgLevel(3, levelsData['n3'])" *ngIf="levelsData['n3']['active'] == 1">
+                        {{ levelsData['n3']['name'] }}
+                    </button>
+                    <button mat-menu-item type="button" (click)="chgLevel(4, levelsData['n4'])" *ngIf="levelsData['n4']['active'] == 1">
+                        {{ levelsData['n4']['name'] }}
+                    </button>
+                </mat-menu>
+                <div 
+                    class="py-1 mt-1 d-block alert alert-warning text-center" 
+                    *ngIf="rsvData['habSelected']['extraInfo']['grupo']['isOR'] == '1' && levelCompare(levelSelected['data']['name'])"
+                    role="alert">
+                    El nivel del usuario permite elegir una mejor tarifa. Da click 
+                    <button type="button" mat-stroked-button color="primary" (click)="selectBestLevel()">Aquí</button>
+                    para elegir la mejor tarifa disponible
+                </div>
+            </div>
+            <mat-divider class="my-3"></mat-divider>
+            <p><b>{{ displayDate( rsvData['habSelected']['summarySearch']['inicio'], 'ddd DD MMM YY' ) }}</b> a <b>{{ displayDate( rsvData['habSelected']['summarySearch']['fin'], 'ddd DD MMM YY' ) }}</b></p>
+            <p>{{ rsvData['habSelected']['summarySearch']['habs'] }} habitaciones para {{ rsvData['habSelected']['hotel']['habs']['total']['adultos'] }}.{{ rsvData['habSelected']['hotel']['habs']['total']['menores'] }} pax</p>
+            <mat-divider class="mb-3"></mat-divider>
+            <h4><b>Paquete Incluye</b></h4>
+
+            <section>
+                <mat-checkbox 
+                            class='check-wrap'
+                            [checked]="rsvData['formRsv']['rsvInsurance']"
+                            [disabled]="true"
+                            color="primary">
+                <span  [ngClass]="{'text-decoration-line-through': !rsvData['formRsv']['rsvInsurance']}" >
+                    Seguro {{ rsvData['formRsv']['rsvNacional'] ? 'Nacional' : 'Internacional' }} {{ rsvData['habSelected']['summarySearch']['cobertura'] }}.
+                    <span *ngIf="!rsvData['formRsv']['rsvNacional'] && rsvData['formRsv']['rsvInsurance']">
+                        <button mat-stroked-button color="primary" type="button" (click)="changeCobertura()">Cambiar</button>
+                        a {{ rsvData['habSelected']['summarySearch']['cobertura'] == 'normal' ? 'Extendida' : 'Normal' }} por 
+                        <span [ngClass]="{'text-danger': !getDifCobertura(true), 'text-success': getDifCobertura(true)}"><b>{{ getDifCobertura() | currency:'USD':'symbol-narrow':'.2-2' }}</b></span>
+                    </span>
+                </span>
+                <span *ngIf="!rsvData['formRsv']['rsvInsurance']">
+                    <button mat-stroked-button type="button" color="primary" (click)="addInsurance()">
+                        Agregar
+                        por <span class="text-success"><b>{{ (rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['formRsv']['isNacional'] ? 'nacional' : 'internacional']['normal']['publico_ci'] * ( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio'] )) | currency:'USD':'symbol-narrow':'.2-2' }}</b></span>
+                    </button>
+                </span>
+                </mat-checkbox><br>
+                <mat-checkbox
+                            [ngClass]="{'text-decoration-line-through': !rsvData['habSelected']['hotel']['habs']['hasTransfer']}" 
+                            [checked]="rsvData['habSelected']['hotel']['habs']['hasTransfer']"
+                            [disabled]="true"
+                            color="primary">
+                Traslado compartido Redondo
+                </mat-checkbox>
+            </section>
+
+        </div>
+        <div class="p-1 col-xs-12 col-md-6 text-center" style="max-height: 60vh; overflow: auto;">
+            
+                <mat-accordion class="rooms-headers-align" [formGroupName]="'habitaciones'">
+
+                    <mat-expansion-panel [expanded]="i == 0" [formGroupName]="'hab' + (i+1)" *ngFor="let h of rsvForm.get('habitaciones').value | keys; index as i">
+                        <mat-expansion-panel-header>
+                        <mat-panel-title class="align-items-center">
+                            Habitación {{ i + 1 }} - {{ rsvForm.get('habitaciones.hab' + (i + 1) + '.hotel.hotel.titular').value }}
+                            <mat-icon color="warn" class="ms-2" *ngIf="htmlForm.submitted && rsvForm.get('habitaciones.hab' + (i + 1)).invalid">error</mat-icon>
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <span class="ms-auto">
+                                <span>
+                                    {{ rsvForm.get('habitaciones.hab' + (i + 1) + '.hotel.hotel.adultos').value }}.
+                                </span>
+                                <span>
+                                    {{ rsvForm.get('habitaciones.hab' + (i + 1) + '.hotel.hotel.juniors').value }}.
+                                </span>
+                                <span>
+                                    {{ rsvForm.get('habitaciones.hab' + (i + 1) + '.hotel.hotel.menores').value }} pax,
+                                </span>
+                                <span>
+                                    <b>
+                                        {{ (rsvForm.get('habitaciones.hab' + (i + 1) + '.hotel.monto.monto').value + rsvForm.get('habitaciones.hab' + (i + 1) + '.insurance.monto.monto').value) | currency:'USD':'symbol-narrow':'.2-2' }}
+                                    </b>
+                                </span>
+                            </span>
+                            <!-- <span>
+                                <mat-icon>money</mat-icon>
+                                {{ rsvData['habSelected']['hotel']['habs']['porHabitacion'][h]['total']['n' + levelSelected['selected'] ]['monto'] }}
+                            </span> -->
+                        </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <mat-card class="d-block" formGroupName="hotel">
+
+                            <mat-card-content >
+                                <ng-container formGroupName="hotel">
+                                    <div class="row align-items-center" *ngFor="let px of [].constructor(rsvForm.get('habitaciones.hab' + (i+1) + '.pax').value); index as pi">
+                                        <div class="col-xs-12 col-md-2">{{ pi == 0 ? 'Titular' : 'Pax ' + ( pi + 1 )}}</div>
+                                        <div class="col-xs-12 col-md-5 px-1">
+                                            <mat-form-field appearance="outline" class="d-block">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [formControlName]="'htl_nombre_' + (pi+1)" autocomplete="off">
+                                                <mat-error *ngIf="rsvForm.get('habitaciones.hab' + (i+1) + '.hotel.hotel.htl_nombre_' + (pi+1)).invalid">{{ getErrorMessage('habitaciones.hab' + (i+1) + '.hotel.hotel.htl_nombre_' + (pi+1)) }}</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-xs-12 col-md-5 px-1">
+                                            <mat-form-field appearance="outline" class="d-block">
+                                                <mat-label>Apellido</mat-label>
+                                                <input matInput [formControlName]="'htl_apellido_' + (pi+1)" autocomplete="off">
+                                                <mat-error *ngIf="rsvForm.get('habitaciones.hab' + (i+1) + '.hotel.hotel.htl_apellido_' + (pi+1)).invalid">{{ getErrorMessage('habitaciones.hab' + (i+1) + '.hotel.hotel.htl_nombre_' + (pi+1)) }}</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-xs-12 col-md-2">Tipo de Cama<br><small class="text-primary">Sujeta a Dispo</small></div>
+                                        <div class="col-xs-12 col-md-10 px-1">
+                                            <mat-form-field appearance="outline" class="d-block">
+                                                <mat-radio-group formControlName="bedPreference">
+                                                    <mat-radio-button value="Double Beds" *ngIf="rsvData['habSelected']['hotel']['tipoCamas'] != '2'">Dobles</mat-radio-button>
+                                                    <mat-radio-button value="King" *ngIf="rsvData['habSelected']['hotel']['tipoCamas'] != '1'">King</mat-radio-button>
+                                                </mat-radio-group>
+                                                <input matInput  class="m-0" formControlName="bedPreference" autocomplete="off" [style.height.px]="0">
+                                                <mat-error *ngIf="rsvForm.get('habitaciones.hab' + (i+1) + '.hotel.hotel.bedPreference').invalid">{{ getErrorMessage('habitaciones.hab' + (i+1) + '.hotel.hotel.bedPreference') }}</mat-error>
+                                            </mat-form-field>
+
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-xs-12 col-md-2">Notas</div>
+                                        <div class="col-xs-12 col-md-10 px-1">
+                                            <mat-form-field appearance="outline" class="d-block">
+                                                <mat-label>Notas Habitacion</mat-label>
+                                                <input matInput formControlName="notasHotel" autocomplete="off">
+                                                <!-- <mat-hint>0 a 11 años</mat-hint>
+                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error> -->
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </mat-card-content>
+
+                        </mat-card>
+
+                        
+
+                        <!-- <pre *ngIf="rsvForm.get('habitaciones.hab' + (i + 1))">
+                            {{ rsvForm.get('habitaciones.hab' + (i + 1)).value | json }}
+                        </pre> -->
+                    </mat-expansion-panel>
+
+                </mat-accordion>
+            </div>
+            <div class="mt-2 col-12 text-center">
+                <!-- {{ htmlForm | json }} -->
+            </div>
+            <div class="mt-2 col-12 text-center" *ngIf="htmlForm.submitted && rsvForm.invalid">
+                <div class="d-block alert alert-danger" role="alert">
+                    Existen errores en la información. Revisa cada habitación para encontrarlos. 
+                    <button class="mx-auto" (click)="viewErrors()"  mat-button color="primary">Mas Detalles</button>    
+                </div>
+            </div>
+            <div class="mt-2 col-12 text-center">
+                <!-- <b>Total: 
+                    {{ (( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio']) * rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + rsvData['habSelected']['selectedLevel']]['monto'] + (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * ((rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio']) * rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span>
+                </b> -->
+                <button class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary">Reservar por  {{ (( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio']) * rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + levelSelected['selected'] ]['monto'] + (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * ((rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['formRsv']['isNacional'] ? 'nacional' : 'internacional'][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio']) * rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['formRsv']['isNacional'] ? 'nacional' : 'internacional'][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span></button>
+            </div>
+        </div>
+</form>
+
+
+<!-- <pre>
+    {{ rsvData | json }}
+</pre> -->

@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { Title } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService, InitService } from 'src/app/services/service.index';
+import { RsvCreateDialog } from './modals/create-rsv';
 
 @Component({
   selector: 'app-cotizador',
@@ -79,18 +80,3 @@ export class CotizadorComponent implements OnInit {
 
 }
 
-@Component({
-  selector: 'create-rsv',
-  templateUrl: '/modals/create-rsv.html',
-})
-export class RsvCreateDialog {
-
-  constructor(
-    public rsvDialog: MatDialogRef<RsvCreateDialog>,
-    @Inject(MAT_DIALOG_DATA) public data) {}
-
-  onNoClick(): void {
-    this.rsvDialog.close();
-  }
-
-}

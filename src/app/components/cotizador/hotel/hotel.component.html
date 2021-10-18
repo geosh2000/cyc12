@@ -210,29 +210,33 @@
                                             </mat-panel-title>
                                         </mat-expansion-panel-header>
                                         <div class="container">
-                                            <!-- <section>
-                                                <mat-button-toggle-group [(ngModel)]="selectedLevel" aria-label="Nivel Elegido">
-                                                    <mat-button-toggle value="1" >Lv 1</mat-button-toggle>
-                                                    <mat-button-toggle value="2" >Lv 2</mat-button-toggle>
-                                                    <mat-button-toggle value="3" >Lv 3</mat-button-toggle>
-                                                    <mat-button-toggle value="4" >Lv 4</mat-button-toggle>
-                                                </mat-button-toggle-group>
-                                            </section> -->
-                                            <mat-list>
-                                                <mat-list-item *ngFor="let hab of c['habs']['porHabitacion'] | keys; index as i">
-                                                  <mat-icon mat-list-icon>folder</mat-icon>
-                                                  <div mat-line>Habitación {{ i + 1 }}</div>
-                                                  <div mat-line> {{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }}.{{ c['habs']['porHabitacion'][hab]['occ']['menores'] }} </div>
-                                                </mat-list-item>
-                                              </mat-list>
-                                            <!-- <pre>{{ c['habs']['porHabitacion'] | json }}</pre> -->
+                                            <ng-container *ngFor="let hab of c['habs']['porHabitacion'] | keys; index as i">
+                                                <div class="my-2 row align-items-center">
+                                                    <div mat-line class="col-6">
+                                                        Habitación {{ i + 1 }}<br>
+                                                        {{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }}.{{ c['habs']['porHabitacion'][hab]['occ']['menores'] }} 
+                                                    </div>
+                                                    <div mat-line class="col-6">
+                                                        {{ c['tarifas'][ summarySearch['inicio'].format('YYYY-MM-DD') ]['n' + selectedLevel ]['name'] }}: 
+                                                        <b>{{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel]['monto'] + ((extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                            <span class="d-none d-sm-inline">
+                                                                {{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}
+                                                            </span>
+                                                        </b>
+                                                    </div>
+                                                    
+                                                </div>
+                                                <mat-divider></mat-divider>
+                                            </ng-container>
+
+
                                         </div>
                                     </mat-expansion-panel>
                                 </mat-accordion>
                             </div>
                             <ng-container *ngIf="!c['habs']['hasErrors'] || (c['habs']['hasErrors'] && c['habs']['skippableErrors'] && hotelSearch.get('noRestrict').value == true)">
                                 <div class="col-xs-12 col-lg-4 text-end">
-                                    <mat-radio-group aria-label="Select an option" [(ngModel)]="selectdLevel">
+                                    <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedLevel">
                                         <div class="row my-1 align-items-center">
                                             <ng-container *ngIf="c['habs']['total']['levels']['n1']['active']">
                                                 <div class="col-2 col-lg-1">
@@ -298,7 +302,7 @@
                                 <div class="col-xs-12 col-lg-2 text-end">
                                     <div class="row my-1">
                                         <div class="col-12">
-                                            <button mat-raised-button color="primary">Reservar</button>
+                                            <button mat-raised-button color="primary" (click)="doRsv( c )">Reservar</button>
                                         </div>
                                     </div>
                                     <div class="row">

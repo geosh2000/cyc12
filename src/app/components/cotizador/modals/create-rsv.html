@@ -1,5 +1,76 @@
 <div style="max-height: 90vh">
-    <app-zd-user-search></app-zd-user-search>
+
+
+    <mat-stepper #createRsvStepper
+        [selectedIndex]="step"
+        [linear]="true"
+        [orientation]="(stepperOrientation | async)!"
+        (selectionChange)="stepChange( $event )">
+        <mat-step [stepControl]="firstFormGroup" label="Nueva o Existente">
+            <form [formGroup]="firstFormGroup">
+                <div class="mt-3 d-flex justify-content-center flex-wrap">
+                    <mat-slide-toggle class="mx-1 mb-2" formControlName="newMaster">Nuevo Localizador</mat-slide-toggle>
+                </div>
+                <div class="mt-1 d-flex justify-content-center flex-wrap">
+                    <button mat-button color="primary" matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup" label="Selecciona Usuario">
+            <div class="d-block" role="alert" *ngIf="loading['zdUser'] || loading['selValidation'] || loading['orw']">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <form [formGroup]="secondFormGroup">
+                <app-zd-user-search *ngIf="firstFormGroup.get('newMaster').value" (selected)="selected( $event )"></app-zd-user-search>
+                <app-loc-search *ngIf="!firstFormGroup.get('newMaster').value" (selected)="selected( $event )"></app-loc-search>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="editForm" label="Editar Usuario" [optional]="editOptional">
+            <div class="d-block mb-3" role="alert" *ngIf="loading['selValidation'] || loading['orw']">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <app-zd-user-edit
+                [nextStep]="3"
+                [prevStep]="1"
+                [thisStep]="2"
+                [backButton]="true"
+                confirmButtonText="Next"
+                (back)="goToStep($event)"
+                (next)="goToStep($event)"
+            >
+            </app-zd-user-edit>
+        </mat-step>
+        <mat-step [stepControl]="createRsv" label="Crea Reserva">
+            <div class="d-block mb-3" role="alert" *ngIf="loading['orw']">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <div class="alert alert-danger text-center" role="alert" *ngIf="!createRsv.get('okNacionalidad').value">
+                Has cotizado un seguro 
+                <button mat-stroked-button color="primary" [matMenuTriggerFor]="nation">{{ this.createRsv.get('rsvNacional').value ? 'Nacional' : 'Internacional' }}</button>
+                <mat-menu #nation="matMenu">
+                    <button mat-menu-item (click)="this.createRsv.get('rsvNacional').setValue(true)">Nacional</button>
+                    <button mat-menu-item (click)="this.createRsv.get('rsvNacional').setValue(false)">Internacional</button>
+                </mat-menu>
+                pero la nacionalidad del usuario seleccionado está definida como <b>{{ this.createRsv.get('isNacional').value ? 'Nacional' : 'Internacional' }}</b><br>
+                Modifica el seguro cotizado con el boton de arriba, o edita la nacionalidad del usuario 
+                <button mat-stroked-button color="primary" matStepperPrevious>
+                    Aqui
+                </button>
+                
+            </div>
+            <form [formGroup]="createRsv" *ngIf="!loading['orw']">
+                <app-hotel-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'hotel'"></app-hotel-checkout>
+                <!-- <pre>{{ secondFormGroup.value | json }}</pre>
+                <hr>
+                FORM ({{ createRsv.valid ? 'VALIDO' : 'NO VALIDO' }})<br>
+                <pre>{{ createRsv.value | json }}</pre> -->
+
+
+            </form>
+        </mat-step>
+    </mat-stepper>
+
+    
     
     <!-- ACTIONS -->
     <div class="row">

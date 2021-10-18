@@ -1,0 +1,77 @@
+<form [formGroup]="userForm" (ngSubmit)="createSaveZdUser()" #selectedUserForm>
+    <div class="row" style="max-height: 50vh; overflow:auto" *ngIf="loading['update']">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div class="row" style="max-height: 235px; overflow:auto" *ngIf="!loading['update']">
+        <div class="col-xs-12 col-md-4">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput type="text" formControlName="name" name="fakeusernameremembered" autocomplete="off">
+                <mat-error *ngIf="userForm.get('name').invalid">{{ getErrorMessage('name', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Correo</mat-label>
+                <input matInput type="text" formControlName="email" name="fakeusernameremembered" autocomplete="off">
+                <mat-error *ngIf="userForm.get('email').invalid">{{ getErrorMessage('email', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Telefono</mat-label>
+                <input matInput type="text" formControlName="phone" name="fakeusernameremembered" autocomplete="off">
+                <mat-hint>Formato +############</mat-hint>
+                <mat-error *ngIf="userForm.get('phone').invalid">{{ getErrorMessage('phone', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Whatsapp</mat-label>
+                <input matInput type="text" formControlName="whatsapp" name="fakeusernameremembered" autocomplete="off">
+                <mat-hint>Formato +############</mat-hint>
+                <mat-error *ngIf="userForm.get('whatsapp').invalid">{{ getErrorMessage('whatsapp', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-2">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Idioma</mat-label>
+                <mat-select formControlName="idioma_cliente" fname="idioma_cliente">
+                    <mat-option>Selecciona</mat-option>
+                    <mat-option value="idioma_es">Español</mat-option>
+                    <mat-option value="idioma_en">Inglés</mat-option>
+                    <mat-option value="idioma_pt">Portugués</mat-option>
+                </mat-select>
+                <mat-error *ngIf="userForm.get('idioma_cliente').invalid">{{ getErrorMessage('idioma_cliente', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-3">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Pais</mat-label>
+                <input type="text" matInput formControlName="pais" [matAutocomplete]="pais" name="fakeusernameremembered"  autocomplete="off" (blur)="checkCountry()">
+                <mat-autocomplete #pais="matAutocomplete" [displayWith]="displayFn" (optionSelected)="countryClick($event)">
+                    <mat-option *ngFor="let p of filteredPaises | async" [value]="p">
+                        {{ p['name'] | capitalizado }}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-hint *ngIf="loading['proveedor']">Cargando paises...</mat-hint>
+                <mat-error *ngIf="userForm.get('pais').invalid">{{ getErrorMessage('pais', userForm) }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-12 col-md-3">
+            <mat-form-field class="d-block mx-1 mb-2" appearance="outline">
+                <mat-label>Nacionalidad</mat-label>
+                <mat-select formControlName="nacionalidad" fname="nacionalidad" [disabled]="true">
+                    <mat-option>Selecciona</mat-option>
+                    <mat-option value="nacional">Nacional</mat-option>
+                    <mat-option value="internacional">Internacional</mat-option>
+                </mat-select>
+                <mat-error *ngIf="userForm.get('nacionalidad').invalid">Debes elegir un pais del listado de PAISES</mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button mat-button color="warn" (click)="goBack()" *ngIf="backButton">Back</button>
+        <button mat-button color="primary" [disabled]="loading['update']" type="submit">{{ confirmButtonText }}</button>
+    </div>
+</form>

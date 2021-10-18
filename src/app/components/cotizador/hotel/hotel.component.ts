@@ -11,6 +11,7 @@ import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
 import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
+import Swal from 'sweetalert2';
 
 export const MY_FORMATS = {
   parse: {
@@ -405,7 +406,20 @@ export class CotizaHotelComponent implements OnInit {
           'n4': {'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
           isClosed: r[f]['isClosed'] == 1
         }
+        
+        // HAB TOTAL
+        b['porHabitacion'][h]['total']['neta']['monto'] += neta
+        b['porHabitacion'][h]['total']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
+        b['porHabitacion'][h]['total']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
+        b['porHabitacion'][h]['total']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
+        b['porHabitacion'][h]['total']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
+        
+        b['porHabitacion'][h]['total']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
+        b['porHabitacion'][h]['total']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
+        b['porHabitacion'][h]['total']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
+        b['porHabitacion'][h]['total']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
 
+        // TOTALES GENERALES
         b['total']['monto']['neta']['monto'] += neta
         b['total']['monto']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
         b['total']['monto']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
@@ -584,7 +598,14 @@ export class CotizaHotelComponent implements OnInit {
       console.log(f['habitaciones'][h])
       result['porHabitacion'][h] = {
                                     occ: f['habitaciones'][h],
-                                    'fechas': {}
+                                    'fechas': {},
+                                    'total': {
+                                      neta: {'monto': 0, 'relativeDisc': 0},
+                                      n1: {'monto': 0, 'relativeDisc': 0},
+                                      n2: {'monto': 0, 'relativeDisc': 0},
+                                      n3: {'monto': 0, 'relativeDisc': 0},
+                                      n4: {'monto': 0, 'relativeDisc': 0}
+                                    }
                                   }
 
       result['total']['adultos']  += f['habitaciones'][h]['adultos']
@@ -629,8 +650,34 @@ export class CotizaHotelComponent implements OnInit {
     this.extraInfo['grupo']['insuranceIncluded'] = false
   }
 
-  doRsv(){
-    this.rsv.emit({ action: 'doRsv', data: {}})
+  doRsv( r = {} ){
+    let data = {
+      hotel: r,
+      level: this.selectedLevel,
+      extraInfo: this.extraInfo,
+      summarySearch: this.summarySearch,
+      selectedLevel: this.selectedLevel,
+      type: 'hotel'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doRsv', data })
+  }
+
+  test(){
+    Swal.fire({
+        title: `<strong>Fusionando Usuarios</strong>`,
+        focusConfirm: false,
+        showCancelButton: false,
+        confirmButtonText: 'Confirmar Fusión',
+        cancelButtonText: 'Cancelar'
+      })
+      // .then((result) => {
+      //   if (result.isConfirmed) {
+      //     this.mergeUsers( nu, usr )
+      //   }
+      // })
+    Swal.showLoading()
   }
 
 

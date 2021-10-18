@@ -1,0 +1,17 @@
+.user-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+
+.user-radio-button {
+    margin: 5px;
+}
+
+:host ::ng-deep .mat-radio-label-content {
+    width:100%;
+}
+
+:host ::ng-deep .mat-icon {
+    vertical-align: middle;
+}

@@ -19,6 +19,8 @@ export class InitService {
   snack = new BehaviorSubject( { status: false, msg: '', title: '', t: '' } )
   hideMenu = new BehaviorSubject( false )
 
+  loadingRouteConfig = false
+
   constructor( private _route:Router, private _api:ApiService, private _zh:ZonaHorariaService ) {
     this.getPreferences()
 

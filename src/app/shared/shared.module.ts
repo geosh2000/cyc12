@@ -24,6 +24,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { LocSearchComponent } from './loc-search/loc-search.component';
+import { ZdUserEditComponent } from './zd-user-edit/zd-user-edit.component';
 
 
 @NgModule({
@@ -34,6 +37,8 @@ import { MatSelectModule } from '@angular/material/select';
     LowercasePipe,
     KeysPipe,
     ZdUserSearchComponent,
+    LocSearchComponent,
+    ZdUserEditComponent,
   ],
   exports: [
     CommonModule,
@@ -48,6 +53,8 @@ import { MatSelectModule } from '@angular/material/select';
     SnackBarComponent,
     SnackBarTemplateComponent,
     ZdUserSearchComponent,
+    LocSearchComponent,
+    ZdUserEditComponent,
   ],
   imports: [
     CommonModule,
@@ -68,6 +75,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatTooltipModule,
     MatSelectModule,
+    MatAutocompleteModule
   ]
 })
 export class SharedModule { }

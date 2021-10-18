@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 })
 export class DoPaymentComponent  {
 
-
+  loadX = 0
   reference = ''
   referenceId = ''
   loading = {
@@ -126,12 +126,15 @@ export class DoPaymentComponent  {
       this.loading['paymodule'] = true
     }
 
-    this.acceptTerms = !this.acceptTerms
+    // this.acceptTerms = !this.acceptTerms
   }
 
-  loaded( ){
-    this.loading['paymodule'] = false
+  loaded( e ){
+    if( this.loadX > 0 ){
+      this.loading['paymodule'] = false
+    }
     this.disableTerms = true;
+    this.loadX ++
   }
 
   showTerms(){
