@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
 import { ApiService, InitService } from 'src/app/services/service.index';
 import { RsvCreateDialog } from './modals/create-rsv';
+import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
 
 @Component({
   selector: 'app-cotizador',
@@ -19,7 +19,6 @@ export class CotizadorComponent implements OnInit {
   constructor( 
       private ttl: Title, 
       private _api: ApiService, 
-      private toastr: ToastrService, 
       public dialog: MatDialog,
       public _init: InitService 
     ) { }
@@ -42,6 +41,9 @@ export class CotizadorComponent implements OnInit {
       case 'doRsv':
         this.rsvDialog( e['data'] )
         break;
+      case 'doQuote':
+        this.quoteDialog( e['data'] )
+        break;
     }
   }
 
@@ -59,7 +61,7 @@ export class CotizadorComponent implements OnInit {
                   this.loading['services'] = false;
 
                   const error = err.error;
-                  this.toastr.error( error.msg, err.status );
+                  this._init.snackbar('error', error.msg, 'Cerrar')
                   console.error(err.statusText, error.msg);
 
                 });
@@ -77,6 +79,19 @@ export class CotizadorComponent implements OnInit {
     });
   }
 
+  quoteDialog( d:any ): void {
+    const dialogRef = this.dialog.open(SendQuoteComponent, {
+      // width: '250px',
+      data: d,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
+  }
+
+  
 
 }
 

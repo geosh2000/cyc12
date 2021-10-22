@@ -23,3 +23,11 @@
     height: calc(100% - 64px);
     /* border: 1px solid rgba(0, 0, 0, 0.5); */
 }
+
+.swal2-radio label{
+    display: block
+  }
+  
+  .swal2-modal .swal2-radio label {
+      margin-left: 0px !important;
+  }

@@ -17,3 +17,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background: #ffd740;
     color: white;
 }
+
+.swal-radio{
+    display: grid!important
+}
+
+.swal2-radio label {
+    margin: 5px .6em!important;
+    font-size: 1.125em;
+}

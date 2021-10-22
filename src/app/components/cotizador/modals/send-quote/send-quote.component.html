@@ -1,0 +1,85 @@
+<div style="max-height: 90vh">
+
+    <mat-stepper #createQuoteStepper="matStepper"
+        [selectedIndex]="step"
+        [linear]="true"
+        [orientation]="(stepperOrientation | async)!"
+        (selectionChange)="stepChange( $event )">
+
+        <mat-step [stepControl]="firstFormGroup" label="Nueva o Existente">
+            <form [formGroup]="firstFormGroup">
+                <div class="mt-3 d-flex justify-content-center flex-wrap">
+                    <mat-slide-toggle class="mx-1 mb-2" formControlName="newTicket">Nuevo Ticket</mat-slide-toggle>
+                </div>
+                <div class="mt-1 d-flex justify-content-center flex-wrap">
+                    <button mat-button color="primary" (click)="changeFirstStep()">Next</button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="secondFormGroup" label="Selecciona Usuario" [optional]="!firstFormGroup.get('newTicket').value">
+            <div class="d-block" role="alert" *ngIf="loading['zdUser'] || loading['selValidation'] || loading['orw']">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <form [formGroup]="secondFormGroup">
+                <ng-container *ngIf="!firstFormGroup.get('newTicket').value">
+                    <div class="d-block alert alert-danger" role="alert">
+                        La búsqueda de usuario esta disponible sólo para envíos en tickets nuevos. Has seleccionado enviar a un ticket existente. Por favor da click en "siguiente" para continuar.
+                    </div>
+                    <div class="mt-1 d-flex justify-content-end flex-wrap">
+                        <button mat-button color="primary" matStepperNext>Next</button>
+                    </div>
+                </ng-container>
+                <app-zd-user-search *ngIf="firstFormGroup.get('newTicket').value" (selected)="selected( $event )"></app-zd-user-search>
+                
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="quoteForm" label="Idioma del Envío">
+            <form [formGroup]="quoteForm" (ngSubmit)="sendQuote()">
+                <div class="row">
+                    <div class="col-xs-12 col-md-2"></div>
+                    <div class="col-xs-12 col-md-3 justify-content-center" *ngIf="quoteForm.get('isNewTicket').value">
+                        <div>
+                            <p><mat-icon>account_circle</mat-icon> {{ quoteForm.get('zdUser').value['name'] }}</p>
+                            <p><mat-icon>mail</mat-icon> {{ quoteForm.get('zdUser').value['email'] }}</p>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="!quoteForm.get('isNewTicket').value">
+                        <div class="col-xs-12 col-md-3">
+                            <mat-form-field appearance="outline" class="d-block">
+                                <mat-label>Ticket Existente</mat-label>
+                                <input matInput formControlName="ticket" autocomplete="off">
+                                <mat-error *ngIf="quoteForm.get('ticket').invalid">{{ getErrorMessage('ticket') }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </ng-container>
+                    <div class="col-xs-12 col-md-2 text-center">
+                        Se enviará en idioma 
+                        <button mat-stroked-button color="primary" [matMenuTriggerFor]="cobert">{{ languages[quoteForm.get('selectedLang').value] }}</button>
+                        <mat-menu #cobert="matMenu">
+                            <button mat-menu-item (click)="quoteForm.get('selectedLang').setValue(l)" *ngFor="let l of languages | keys">{{ languages[l] }}</button>
+                        </mat-menu>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <button mat-flat-button [style.width.%]="100" color="primary" type="submit">Enviar Cotizacion</button>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                    </div>
+                </div>
+            </form>
+        </mat-step>
+    
+    </mat-stepper>
+
+
+    <!-- ACTIONS -->
+    <div class="row">
+        <div class="col-12">
+            <div mat-dialog-actions class="d-flex justify-content-end flex-wrap">
+                <button mat-button color="warn" (click)="onNoClick()" aria-label="Close" >Cancelar</button>
+                <!-- <button mat-button color="primary" (click)="logIn()"  [disabled]="loading['login'] || log.invalid">Buscar</button> -->
+            </div>
+        </div>
+    </div>
+</div>

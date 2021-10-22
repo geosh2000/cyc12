@@ -49,15 +49,15 @@ export class DoPaymentComponent  {
   conditions = {
     en: [
         "I know and accept the modification / cancellation / no-show policies of my reservation",
-        "All refunds are subject to a 10% withholding of the amount to be refunded"
+        "All refunds are subject to penalties acoording to contract policies"
     ],
     es: [
       "Conozco y acepto las políticas de modificación / cancelación / no-show de mi reserva",
-      "Todo reembolso está sujeto a una retención del 10% del monto a reembolsar"
+      "Todo reembolso está sujeto a penalidades de acuerdo a las polìticas del contrato"
     ],
     pt: [
       "Eu conheço e aceito as políticas de modificação / cancelamento / não comparecimento da minha reserva",
-      "Todos os reembolsos estão sujeitos a uma retenção de 10% do valor a ser reembolsado"
+      "Todo reembolso está sujeito a penalidades de acordo com as políticas do contrato"
     ],
   }
 

@@ -1,0 +1,66 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Reservas de CIELO</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+        <ng-container *ngIf="cieloList.length>0">
+            <table style='font-size: smaller;' class="table table-sm table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>HOTEL</th>
+                        <ng-container *ngFor="let s of summary['GOC'] | keys">
+                            <th>{{ s }}</th>
+                        </ng-container>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    <ng-container *ngFor="let h of summary | keys">
+                        <tr *ngIf="h != 'total'">
+                            <td>{{ h }}</td>
+                            <ng-container *ngFor="let c of summary[h] | keys">
+                                <td class="text-center">{{ summary[h][c] }}</td>
+                            </ng-container>
+                        </tr>
+                    </ng-container>
+                    <tr class="text-bold">
+                        <td>TOTAL ({{ allRegs }} registros)</td>
+                        <ng-container *ngFor="let c of summary['total'] | keys">
+                            <td class="text-center">{{ summary['total'][c] }}</td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        
+  
+            <div class="container d-flex justify-content-end">
+                <button mat-raised-button color='primary' (click)="upload()"><span *ngIf="loading['uploading']"><i class="fas fa-spinner fa-pulse"></i></span><span *ngIf="!loading['uploading']">Subir</span></button>
+            </div>
+
+            <div class='mt-2 container d-flex justify-content-between' *ngIf="progress.length > 0">
+                <div 
+                    class="text-center"
+                    [ngClass]="{'text-warning': p['s'] == 0, 'text-danger': p['s'] == 3, 'text-primary': p['s'] == 1, 'text-success': p['s'] == 2}"
+                    *ngFor="let p of progress; index as i">
+                    <p>{{ i + 1 }} de {{ progress.length }}</p>
+                    <p>
+                        {{ p['s'] == 0 ? 'Queued' : p['s'] == 1 ? 'Uploading...' : p['s'] == 2 ? 'Done!' : 'Error!!' }}  {{  p['s'] == 0 || p['s'] == 1 ? '' : '(' + p['r'] + ')' }}
+                    </p>
+                    <button mat-raised-button color='primary' (click)="submit(uploadArr,i)" *ngIf=" p['s'] == 3 && !loading['uploading']">
+                        <span>
+                            <i class="fas fa-spinner fa-pulse"></i>
+                        </span>
+                        <span *ngIf="!loading['uploading'] && p['s'] == 3">
+                            Subir
+                        </span>
+                    </button>
+
+                    <mat-progress-bar mode="indeterminate" *ngIf="p['s'] == 1"></mat-progress-bar>
+                </div>
+            </div>
+        
+        </ng-container>
+
+    </mat-card-content>
+</mat-card>

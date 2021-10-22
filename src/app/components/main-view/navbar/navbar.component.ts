@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2'
 
 import { InitService, LoginService } from 'src/app/services/service.index';
+import { AccountConfigComponent } from '../account-config/account-config.component';
 declare var jQuery:any
 
 @Component({
@@ -20,8 +21,10 @@ export class NavbarComponent implements OnInit {
   @Output() menuChange = new EventEmitter<any>()
   @Output() _login = new EventEmitter<any>()
 
-  constructor( private _init: InitService,
-    public dialog: MatDialog, private _li: LoginService) { 
+  constructor( 
+    public _init: InitService,
+    public dialog: MatDialog, 
+    private _li: LoginService) { 
     
   }
 
@@ -66,6 +69,18 @@ export class NavbarComponent implements OnInit {
       });
     }
 
+  }
+
+  configDialog( d:any = null ): void {
+    const dialogRef = this.dialog.open(AccountConfigComponent, {
+      // width: '250px',
+      data: d,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
   }
 
   
@@ -207,5 +222,7 @@ export class LoginDialog {
     
     return 'El campo tiene errores';
   }
+
+  
 
 }

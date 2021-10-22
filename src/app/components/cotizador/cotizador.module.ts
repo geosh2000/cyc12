@@ -36,6 +36,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatStepperModule } from '@angular/material/stepper';
 import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.component';
+import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
+import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.component';
 
 
 
@@ -48,7 +50,9 @@ import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.c
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
     RsvCreateDialog,
-    HotelCheckoutComponent
+    HotelCheckoutComponent,
+    XferCheckoutComponent,
+    SendQuoteComponent
   ],
   exports: [
     CotizadorComponent,
@@ -58,7 +62,9 @@ import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.c
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
     RsvCreateDialog,
-    HotelCheckoutComponent
+    HotelCheckoutComponent,
+    XferCheckoutComponent,
+    SendQuoteComponent
   ],
   imports: [    
     OrderModule,

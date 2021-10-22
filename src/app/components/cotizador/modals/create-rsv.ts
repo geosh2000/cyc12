@@ -72,11 +72,15 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
         })
 
         this.createRsv.get('isNacional').valueChanges.subscribe( x => { 
-            this.validateNacionalidad()
+            if( this.data['type'] == 'hotel' ){
+                this.validateNacionalidad()
+            }
         })
 
         this.createRsv.get('rsvNacional').valueChanges.subscribe( x => { 
-            this.validateNacionalidad()
+            if( this.data['type'] == 'hotel' ){
+                this.validateNacionalidad()
+            }
         })
       }
   
@@ -155,15 +159,19 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
                 return false   
             })
 
-        this.createRsv.get('rsvInsurance').setValue( this.data['extraInfo']['grupo'] ? this.data['extraInfo']['grupo']['insuranceIncluded'] : false )
-        if( this.data['extraInfo']['grupo']['insuranceIncluded'] ){
-            this.createRsv.get('rsvNacional').enable()
-            this.createRsv.get('rsvNacional').setValue( this.data['summarySearch']['nacionalidad'] == 'nacional' )
+        if( this.data['type'] == 'hotel' ){
+            this.createRsv.get('rsvInsurance').setValue( this.data['extraInfo']['grupo'] ? this.data['extraInfo']['grupo']['insuranceIncluded'] : false )
+            if( this.data['extraInfo']['grupo']['insuranceIncluded'] ){
+                this.createRsv.get('rsvNacional').enable()
+                this.createRsv.get('rsvNacional').setValue( this.data['summarySearch']['nacionalidad'] == 'nacional' )
+            }else{
+                this.createRsv.get('rsvNacional').disable()
+            }
+            
+            this.validateNacionalidad()
         }else{
-            this.createRsv.get('rsvNacional').disable()
+            this.createRsv.get('rsvInsurance').disable()
         }
-        
-        this.validateNacionalidad()
 
         if( flagValidate ) { 
             this._edit.validateUser(  this.createRsv.get('zdUser').value, e['masterlocatorid'] ? e.masterlocatorid : 0, e )

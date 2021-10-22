@@ -307,7 +307,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button mat-raised-button class="me-1" color="accent">Enviar Cotizacion</button>
+                                            <button mat-raised-button class="me-1" (click)="doQuote( c )" color="accent">Enviar Cotizacion</button>
                                         </div>
                                     </div>
                                 </div>
@@ -386,7 +386,7 @@
         </mat-card-content>
     </mat-card>
 
-    <button mat-raised-button color="primary" (click)="doRsv()">Search User</button>
+    <button mat-raised-button color="primary" (click)="doQuote( {test: 'esta es una  prueba'})">Search User</button>
 
 </div>
 

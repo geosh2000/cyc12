@@ -44,7 +44,7 @@
             <div class="d-block mb-3" role="alert" *ngIf="loading['orw']">
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
             </div>
-            <div class="alert alert-danger text-center" role="alert" *ngIf="!createRsv.get('okNacionalidad').value">
+            <div class="alert alert-danger text-center" role="alert" *ngIf="!createRsv.get('okNacionalidad').value && data['type']=='hotel'">
                 Has cotizado un seguro 
                 <button mat-stroked-button color="primary" [matMenuTriggerFor]="nation">{{ this.createRsv.get('rsvNacional').value ? 'Nacional' : 'Internacional' }}</button>
                 <mat-menu #nation="matMenu">
@@ -60,6 +60,7 @@
             </div>
             <form [formGroup]="createRsv" *ngIf="!loading['orw']">
                 <app-hotel-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'hotel'"></app-hotel-checkout>
+                <app-xfer-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'traslado'"></app-xfer-checkout>
                 <!-- <pre>{{ secondFormGroup.value | json }}</pre>
                 <hr>
                 FORM ({{ createRsv.valid ? 'VALIDO' : 'NO VALIDO' }})<br>

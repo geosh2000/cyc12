@@ -1,0 +1,5 @@
+.example-container {
+    min-height: 400px;
+    max-height: 65vh;
+    max-width: 80vw;
+  }

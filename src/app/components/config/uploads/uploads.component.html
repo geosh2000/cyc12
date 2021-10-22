@@ -1,0 +1,26 @@
+<div class="container">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Sube archivos de Excel a la base de Datos</mat-card-title>
+        </mat-card-header>
+       <mat-card-content>
+           <div class="container m-2 d-flex justify-content-center align-items-center">
+                <mat-form-field appearance="outline" class="mx-2">
+                    <mat-label>Tipo de Archivo</mat-label>
+                    <mat-select [(value)]="selectedType">
+                        <mat-option value="">Selecciona...</mat-option>
+                        <mat-option [value]="option.value" *ngFor="let option of upList">{{ option.displayName }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div class="mx-2">
+                    <button mat-flat-button color="primary" (click)="swalUpload()">Seleccionar Archivo</button>
+                </div>
+           </div>
+       </mat-card-content>
+
+    </mat-card>
+    <div class="container my-3">
+        <app-upload-cielo *ngIf="selectedType=='cieloLlegadas'"></app-upload-cielo>
+        <app-upload-loyalty *ngIf="selectedType=='loyaltyRB'"></app-upload-loyalty>
+    </div>
+</div>

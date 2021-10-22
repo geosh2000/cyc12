@@ -7,6 +7,7 @@ import { MainViewComponent } from './main-view.component';
 import { BlankComponent } from './blank/blank.component';
 import { CotizadorRoutingModule } from '../cotizador/cotizador.routing';
 import { PagosRoutingModule } from '../pagos/pagos.routing';
+import { ConfigRoutingModule } from '../config/config.routing';
 
 
 
@@ -27,6 +28,7 @@ const routes: Routes = [
       RouterModule.forChild( routes ),
       CotizadorRoutingModule,
       PagosRoutingModule,
+      ConfigRoutingModule,
     ],
   exports: [RouterModule]
 })

@@ -663,6 +663,20 @@ export class CotizaHotelComponent implements OnInit {
     data = JSON.parse(JSON.stringify(data))
     this.rsv.emit({ action: 'doRsv', data })
   }
+  
+  doQuote( r = {} ){
+    let data = {
+      hotel: r,
+      level: this.selectedLevel,
+      extraInfo: this.extraInfo,
+      summarySearch: this.summarySearch,
+      selectedLevel: this.selectedLevel,
+      type: 'hotel'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doQuote', data })
+  }
 
   test(){
     Swal.fire({

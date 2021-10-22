@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ActivationEnd, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
+import { InitService } from '../services/init.service';
 import { LoginService } from '../services/login.service';
 
 @Injectable({
@@ -11,7 +12,7 @@ export class AuthGuard implements CanActivate, CanLoad {
 
   cred = ''
 
-  constructor( private _login: LoginService, private router: Router ){
+  constructor( private _login: LoginService, private _init: InitService, private router: Router ){
 
         
   }
@@ -49,7 +50,11 @@ export class AuthGuard implements CanActivate, CanLoad {
           tap( isAllowed => {
 
             if( !isAllowed ){
-              this.router.navigateByUrl('/notAllowed')
+              if( this._init.isLogin ){
+                this.router.navigateByUrl('/notAllowed')
+              }else{
+                this.router.navigateByUrl('/blank')
+              }
             }
           })
         )

@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, pairwise, startWith } from 'rxjs/operators';
 
 import { ToastrService } from 'ngx-toastr';
 import { ApiService, InitService } from 'src/app/services/service.index';
@@ -12,6 +12,8 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
 import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
 import { OrderPipe } from 'ngx-order-pipe';
+import Swal from 'sweetalert2';
+import { FlightSearchComponent } from 'src/app/shared/flight-search/flight-search.component';
 
 
 export const MY_FORMATS = {
@@ -42,12 +44,14 @@ export const MY_FORMATS = {
 })
 export class CotizaTrasladosComponent implements OnInit {
 
+  @ViewChild(FlightSearchComponent) _flight:FlightSearchComponent
   @Output() rsv = new EventEmitter<any>()
   @Input() data: any;
 
   loading = {}
 
   xferSearch: FormGroup
+  summarySearch = {}
 
   minDate = moment().add(2, 'days')
   maxDate = moment(`${moment().add(1, 'years').format('YYYY')}-12-19`)
@@ -83,13 +87,13 @@ export class CotizaTrasladosComponent implements OnInit {
       {name: 'Hacia al Aeropuerto',                       arrival: false, departure: true, open: false, flight: true, origin: null, destination: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}},
       {name: 'Desde el Aeropuerto',                       arrival: true, departure: false, open: false, flight: true, origin: {"id": 1421,"name": "**AEROPUERTO CANCUN**"}, destination: null},
     ],
-    'Abierto': [
-      {name: 4, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
-      {name: 6, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
-      {name: 8, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
-      {name: 10, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
-      {name: 12, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
-    ]
+    // 'Abierto': [
+    //   {name: 4, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
+    //   {name: 6, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
+    //   {name: 8, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
+    //   {name: 10, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
+    //   {name: 12, origin: '', destination: '', arrival: false, departure: true, open: true, flight: false, },
+    // ]
   }
 
   constructor( private _api: ApiService, private toastr: ToastrService, public _init: InitService, private order: OrderPipe ) { 
@@ -147,24 +151,24 @@ export class CotizaTrasladosComponent implements OnInit {
     
     this.xferSearch.controls['adultos'].valueChanges.subscribe( x => { 
 
-      if( this.xferSearch.controls['grupo'].value == 'Cortesia' ){
-        let pax = this.totalPax()
+      // if( this.xferSearch.controls['grupo'].value == 'Cortesia' ){
+      //   let pax = this.totalPax()
 
-        if( pax > 2 ){
-          if( this.xferSearch.controls['tipo'].value != 'Privado' ){
-            this.xferSearch.controls['tipo'].setValue('Privado')
-          }
-        }else{
-          if( this.xferSearch.controls['tipo'].value == 'Privado' ){
-            this.xferSearch.controls['tipo'].setValue('Compartido')
-          }
-        }
+      //   if( pax > 2 ){
+      //     if( this.xferSearch.controls['tipo'].value != 'Privado' ){
+      //       this.xferSearch.controls['tipo'].setValue('Privado')
+      //     }
+      //   }else{
+      //     if( this.xferSearch.controls['tipo'].value == 'Privado' ){
+      //       this.xferSearch.controls['tipo'].setValue('Compartido')
+      //     }
+      //   }
 
-        if( this.xferSearch.controls['tipo'].enabled ){
-          this.xferSearch.controls['tipo'].disable()
-        }
+      //   if( this.xferSearch.controls['tipo'].enabled ){
+      //     this.xferSearch.controls['tipo'].disable()
+      //   }
         
-      }
+      // }
       
     })
     
@@ -183,30 +187,45 @@ export class CotizaTrasladosComponent implements OnInit {
       
     })
 
-    this.xferSearch.controls['ruta'].valueChanges.subscribe( x => { 
+    this.xferSearch.controls['ruta'].valueChanges
+      .pipe( pairwise() ) 
+      .subscribe( ([prev, x]: [any, any]) => { 
+
+        if( prev == x ){ return true }
+
+      if( (prev['name'] == 'Intermedio One Way' || prev['name'] == 'Intermedio Round Trip') && x['name'] != 'Intermedio One Way' && x['name'] != 'Intermedio Round Trip' ){
+        this.xferSearch.get('llegada.hora').reset()
+        this.xferSearch.get('salida.hora').reset()
+      }
 
       if( x ){
         if( x['origin'] != null ){
-          this.xferSearch.controls['origen'].disable()
-          this.xferSearch.controls['origen'].setValue( x['origin'] )
+          this.xferSearch.get('origen').disable()
+          this.xferSearch.get('origen').setValue( x['origin'] )
         }else{
-          this.xferSearch.controls['origen'].enable()     
-          // this.xferSearch.controls['origen'].setValue( '' )
+          if(  x['destination'] == null ){
+            this.xferSearch.get('destino').setValue('')
+          }else if( x['destination']['id'] == 1421 ){
+            this.xferSearch.get('origen').setValue('')
+          }  
+          this.xferSearch.get('origen').enable()   
         }
         
         if( x['destination'] != null ){
-          this.xferSearch.controls['destino'].disable()
-          this.xferSearch.controls['destino'].setValue( x['destination'] )
+          this.xferSearch.get('destino').disable()
+          this.xferSearch.get('destino').setValue( x['destination'] )
         }else{
-          this.xferSearch.controls['destino'].enable()
-          // this.xferSearch.controls['destino'].setValue( '' )
+          if(  x['origin'] == null ){
+            this.xferSearch.get('origen').setValue('')
+          }else if ( x['origin']['id'] == 1421 ){
+            this.xferSearch.get('destino').setValue('')
+          } 
+          this.xferSearch.get('destino').enable()
         }
 
         if( this.xferSearch.controls['tipo'].value == 'Abierto' ){
           this.xferSearch.controls['origen'].enable()     
-          // this.xferSearch.controls['origen'].setValue( '' )
           this.xferSearch.controls['destino'].enable()
-          // this.xferSearch.controls['destino'].setValue( '' )
         }
 
         if( x['arrival'] ){
@@ -214,9 +233,6 @@ export class CotizaTrasladosComponent implements OnInit {
           this.xferSearch.get('llegada.fecha').enable()
           this.xferSearch.get('llegada.vuelo').enable()
           this.xferSearch.get('llegada.hora').enable()
-          // this.xferSearch.get('llegada.fecha').setValue('')
-          // this.xferSearch.get('llegada.vuelo').setValue('')
-          // this.xferSearch.get('llegada.hora').setValue('')
         }else{
           this.showArrival = false
           this.xferSearch.get('llegada.fecha').disable()
@@ -231,10 +247,6 @@ export class CotizaTrasladosComponent implements OnInit {
           this.xferSearch.get('salida.fecha').enable()
           this.xferSearch.get('salida.hora').enable()
           this.xferSearch.get('salida.pickup').enable()
-          // this.xferSearch.get('salida.vuelo').setValue('')
-          // this.xferSearch.get('salida.fecha').setValue('')
-          // this.xferSearch.get('salida.hora').setValue('')
-          // this.xferSearch.get('salida.pickup').setValue('')
         }else{
           this.showDeparture = false
           this.xferSearch.get('salida.fecha').disable()
@@ -248,7 +260,6 @@ export class CotizaTrasladosComponent implements OnInit {
           this.xferSearch.get('salida.hora').disable()
           this.xferSearch.get('salida.pickup').disable()
           this.xferSearch.get('salida.horaAbierto').enable()
-          // this.xferSearch.get('salida.horaAbierto').setValue('')
         }else{
           this.xferSearch.get('salida.horaAbierto').disable()
         }
@@ -261,9 +272,7 @@ export class CotizaTrasladosComponent implements OnInit {
 
       }else{
         this.xferSearch.controls['origen'].disable()     
-        // this.xferSearch.controls['origen'].setValue( '' )
         this.xferSearch.controls['destino'].disable()     
-        // this.xferSearch.controls['destino'].setValue( '' )
       }
 
       
@@ -367,6 +376,7 @@ export class CotizaTrasladosComponent implements OnInit {
   cotizar(){
 
     this.loading['cotizar'] = true
+    this.filterExpanded = false
 
     let defaults = {
       destino: this.xferSearch.get('destino').disabled,
@@ -387,7 +397,9 @@ export class CotizaTrasladosComponent implements OnInit {
 
     this.cotizacion = []
 
-    this._api.restfulPut( this.xferSearch.value, 'Cmaya/cotizarTraslado' )
+    this.summarySearch = JSON.parse(JSON.stringify( this.xferSearch.value ))
+
+    this._api.restfulPut( this.summarySearch, 'Cmaya/cotizarTraslado' )
                 .subscribe( res => {
 
                   this.loading['cotizar'] = false;
@@ -417,6 +429,8 @@ export class CotizaTrasladosComponent implements OnInit {
                 }, err => {
                   this.loading['cotizar'] = false;
 
+                  this.summarySearch = {}
+
                   const error = err.error;
                   this.toastr.error( error.msg, err.status );
                   console.error(err.statusText, error.msg);
@@ -445,6 +459,54 @@ export class CotizaTrasladosComponent implements OnInit {
   totalPax( f = this.xferSearch.controls ){
     return f['adultos'].value + f['children'].value
   }
+
+
+  async selectFlight( arrv = true ){
+    let dest = arrv ? 'llegada' : 'salida'
+    let start = this.xferSearch.get(dest + '.fecha').value.format('YYYY-MM-DD')
+    let flight = this.xferSearch.get(dest + '.vuelo').value.toString().trim().replace(/[a-zA-Z\\s]*/gi,'')
+
+    let selected = await this._flight.selectFlight(start, flight, arrv)
+
+    console.log( selected )
+
+    let formControl = arrv ? 'llegada' : 'salida'
+    let timeControl = arrv ? 'arrivaltime' : 'departuretime'
+
+    this.xferSearch.get( formControl + '.fecha' ).setValue( moment(selected[ timeControl ]) )
+    this.xferSearch.get( formControl + '.hora' ).setValue( moment(selected[ timeControl ]).format('HH:mm') )
+    this.xferSearch.get( formControl + '.vuelo' ).setValue( selected['ident'] )
+
+    if( !arrv ){
+      this.xferSearch.get( formControl + '.pickup' ).setValue( moment(selected[ timeControl ]).subtract(3, 'hours').format('HH:mm') )
+    }
+
+  }
+
+  doRsv( r = {} ){
+    let data = {
+      traslado: r,
+      isUsd: this.showUsd,
+      summarySearch: this.summarySearch,
+      type: 'traslado'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doRsv', data })
+  }
+  
+  doQuote( r = {} ){
+    let data = {
+      traslado: r,
+      isUsd: this.showUsd,
+      summarySearch: this.summarySearch,
+      type: 'traslado'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doQuote', data })
+  }
+    
 
 
 

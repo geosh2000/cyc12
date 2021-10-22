@@ -10,7 +10,7 @@
               <mat-icon>search</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-                <form [formGroup]="xferSearch">
+                <form [formGroup]="xferSearch" (ngSubmit)="cotizar()">
                     <mat-card-content *ngIf="xferSearch.controls['destino'] && !loading['cotizar']">
                         <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
 
@@ -51,7 +51,7 @@
                                             <mat-error *ngIf="xferSearch.controls['tipo'].invalid">{{ getErrorMessage('tipo') }}</mat-error>
                                         </mat-form-field>
     
-                                        <!-- TIPO -->
+                                        <!-- RUTA -->
                                         <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="250">
                                             <mat-label>{{ xferSearch.controls['tipo'].value != 'Abierto' ? 'Ruta' : 'Horas'  }}</mat-label>
                                             <mat-select formControlName="ruta" fname="ruta">
@@ -117,7 +117,10 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="237" *ngIf="!xferSearch.get('llegada.hora').disabled">
                                                     <mat-label>Hora Llegada</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off">
+                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight()" *ngIf="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                        <mat-icon>search</mat-icon>
+                                                    </button>
                                                     <mat-hint>Formato 24 hrs (HH:MM)</mat-hint>
                                                     <mat-error *ngIf="xferSearch.get('llegada.hora').invalid">{{ getErrorMessage('llegada.hora') }}</mat-error>
                                                 </mat-form-field>
@@ -139,7 +142,10 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="115" *ngIf="!xferSearch.get('salida.hora').disabled">
                                                     <mat-label>Hora Salida</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off">
+                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight( false )" *ngIf="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                        <mat-icon>search</mat-icon>
+                                                    </button>
                                                     <mat-hint>Formato 24 hrs (HH:MM)</mat-hint>
                                                     <mat-error *ngIf="xferSearch.get('salida.hora').invalid">{{ getErrorMessage('salida.hora') }}</mat-error>
                                                 </mat-form-field>
@@ -188,10 +194,10 @@
                     </mat-card-content>
                     <mat-card-actions>
                         <div class="container-fluid d-flex justify-content-end mt-0 pt-0 flex-wrap">
-                            <div>
-                                <button mat-raised-button color="warn" class="me-start" (click)="resetValues()">Reset</button>
-                                <button mat-raised-button color="primary" (click)="cotizar()" [disabled]="xferSearch.invalid || loading['cotizar']">Cotizar</button>
-                            </div>
+
+                                <button type="button" mat-raised-button color="warn" class="me-auto" (click)="resetValues()">Reset</button>
+                                <button mat-raised-button color="primary" type="submit" [disabled]="xferSearch.invalid || loading['cotizar']">Cotizar</button>
+
                         </div>
                     </mat-card-actions>
                 </form>
@@ -279,7 +285,7 @@
                                 <span>{{ ( showUsd ? c['usd_rate'] : c['mxn_rate'] ) | currency:'USD':'symbol-narrow':'.2-2' }} {{ showUsd ? 'USD' : 'MXN' }}</span>
                             </div>
                             <div class="col-xs-12 col-lg-3 text-end">
-                                <button mat-raised-button color="primary">Reservar</button>
+                                <button type="button" (click)="doRsv(c)" mat-raised-button color="primary">Reservar</button>
                             </div>
                         </div>
                         <!-- <pre>{{ c | json }}</pre> -->
@@ -290,4 +296,5 @@
     </mat-card>
 
 </div>
-
+<app-flight-search></app-flight-search>
+<pre>{{ xferSearch.value |json }}</pre>

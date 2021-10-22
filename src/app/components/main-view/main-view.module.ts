@@ -9,6 +9,10 @@ import { MainViewComponent } from './main-view.component';
 import { MenuComponent } from './menu/menu.component';
 import { NavbarComponent, LoginDialog } from './navbar/navbar.component';
 
+import { PagosModule } from '../pagos/pagos.module';
+import { CotizadorModule } from '../cotizador/cotizador.module';
+import { ConfigModule } from '../config/config.module';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,15 +25,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { PagosModule } from '../pagos/pagos.module';
-import { CotizadorModule } from '../cotizador/cotizador.module';
 import { BlankComponent } from './blank/blank.component';
 import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
+import { AccountConfigComponent } from './account-config/account-config.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
   declarations: [
     MainViewComponent,
     NavbarComponent, LoginDialog,
+    AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
     GoToLocComponent,
@@ -38,6 +46,7 @@ import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
   exports: [
     MainViewComponent,
     NavbarComponent, LoginDialog,
+    AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
     GoToLocComponent,
@@ -48,6 +57,7 @@ import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
 
     CotizadorModule,
     PagosModule,
+    ConfigModule,
 
     MatToolbarModule,
     MatSidenavModule,
@@ -60,6 +70,10 @@ import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
     MatButtonModule,
     MatCheckboxModule,
     MatProgressBarModule,
+    MatDividerModule,
+    MatListModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
   ]
 })
 export class MainViewModule { }

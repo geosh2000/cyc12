@@ -469,4 +469,6 @@ export class CotizaToursComponent implements OnInit {
 
   }
 
+  
+
 }

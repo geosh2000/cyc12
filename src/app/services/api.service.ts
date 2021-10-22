@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as Globals from '../globals';
 import { map, catchError } from 'rxjs/operators'
@@ -300,5 +300,6 @@ export class ApiService {
       window.mozRTCPeerConnection ||
       window.webkitRTCPeerConnection;
   }
+
 
 }

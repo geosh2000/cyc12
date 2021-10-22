@@ -15,3 +15,8 @@
 :host ::ng-deep .mat-card-header-text {
     width: 100%
 }
+
+.swal-radio {
+	display: grid !important;
+  text-align: left !important;
+}
