@@ -1,21 +1,24 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ApiService, InitService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
 import Swal from 'sweetalert2';
+import { ValidateTicketComponent } from '../validate-ticket/validate-ticket.component';
 
 @Component({
   selector: 'app-hotel-checkout',
   templateUrl: './hotel-checkout.component.html',
   styleUrls: ['./hotel-checkout.component.css']
 })
-export class HotelCheckoutComponent implements OnInit, OnChanges {
+export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
+
+  @ViewChild( ValidateTicketComponent ) _validate: ValidateTicketComponent
 
   @Input() rsvData = {}
 
-  rsvForm: FormGroup 
+  rsvForm = this.fb.group({})
 
   levelSelected = {
     selected: 1,
@@ -41,7 +44,8 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
             
   }
   
-  ngOnInit(): void {
+  ngAfterViewInit(){
+    // this.rsvForm = this._validate.rsvForm
 
     if( this.rsvData['habSelected'] ){
       this.buildForm( this.rsvData )
@@ -68,22 +72,6 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
 
   }
 
-  createForm(){
-    let sum = this.rsvData['habSelected']['summarySearch']
-    let zd = this.rsvData['formRsv']['zdUser']
-
-    this.rsvForm =  this.fb.group({
-      inicio:       [{ value: moment(sum['inicio']).format('YYYY-MM-DD'),   disabled: false }, [ Validators.required ] ],
-      fin:          [{ value: moment(sum['fin']).format('YYYY-MM-DD'),      disabled: false }, [ Validators.required ] ],
-      habs:         [{ value: sum['habs'],                                  disabled: false }, [ Validators.required ] ],
-      grupo:        [{ value: sum['grupo']['grupo'],                        disabled: false }, [ Validators.required ] ],
-      nacionalidad: [{ value: this.rsvData['formRsv']['isNacional'] ? 1 : 2,  disabled: false }, [ Validators.required ] ],
-      isUSD:        [{ value: sum['isUSD'] ? 'MXN' : 'USD',                 disabled: false }, [ Validators.required ] ],
-      hasInsurance: [{ value: this.rsvData['formRsv']['rsvInsurance'],      disabled: false }, [Validators.required ] ],
-      habitaciones: this.fb.group({})
-    })
-  }
-
   buildForm( curr ){
 
     let hData = curr['habSelected']
@@ -93,30 +81,8 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
     let user = curr['formRsv']['zdUser']
     let split = curr['formRsv']['splitNames']
 
-    this.createForm()
+    this._validate.createForm( this.rsvData, user )
 
-    if( !this.rsvData['formRsv']['isNew'] ){
-      if( this.rsvForm.get('masterdata') ){
-        this.rsvForm.removeControl('masterdata')
-      }
-
-      this.rsvForm.addControl('masterdata', this.fb.group({
-          nombreCliente:  [ user.name, [ Validators.required ]],
-          telCliente:     [ user.phone, [ Validators.required ]],
-          celCliente:     [ '' ],
-          waCliente:      [ user.whatsapp, [ Validators.required ]],
-          correoCliente:  [ user.email, [ Validators.required ]],
-          zdUserId:       [ user.zdId, [ Validators.required ]],
-          esNacional:     [ user.nacionalidad == 'nacional' ? 1 : 2, [ Validators.required ]],
-          languaje:       [ user.idioma_cliente, [ Validators.required ]],
-          hasTransfer:    [ this.rsvData['habSelected']['hotel']['habs']['hasTransfer'] ? 1 : 0, [ Validators.required ]],
-          xldPol:         [ this.rsvData['habSelected']['extraInfo']['grupo']['xldPolicy'], [ Validators.required ]],
-          orId:           [ this.rsvData['formRsv']['orId'], [ Validators.required ]],
-          orLevel:        [ this.rsvData['formRsv']['orLevel'], [ Validators.required ]],
-        }))
-
-    }
-    
     for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
       let pax = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['adultos'] + curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores']
 
@@ -128,14 +94,17 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
       // BUILD MONTOS HABITACION
       let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
-      if( !this.rsvForm.get('habitaciones.hab' + i) ){
+      console.log('local', this.rsvForm)
+      console.log('child', this._validate.rsvForm)
+
+      if( !this.rsvForm.get('data.hab' + i) ){
         
-        (this.rsvForm.get('habitaciones') as FormGroup).addControl('hab' + i, this.fb.group({
+        (this.rsvForm.get('data') as FormGroup).addControl('hab' + i, this.fb.group({
           hotel:        this.fb.group({
             item:       this.fb.group({
               itemType:     [{ value: 1,  disabled: false }, [ Validators.required ] ],
               isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
-              zdTicket:     [{ value: curr['formRsv']['ticketRef'],  disabled: false }, [ this._init.checkSingleCredential('rsv_omitTicket') ? Validators.required : null ] ],
+              zdTicket:     [{ value: '' } ],
             }),
             hotel             : this.fb.group({
               hotel           : [ hData.hotel.hotel, [ Validators.required ] ],
@@ -164,19 +133,27 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
 
         
         for( let x = 2; x <= pax; x++ ){
-          (this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_nombre_' + x, new FormControl('', Validators.pattern(this.namePattern)));
-          (this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_apellido_' + x, new FormControl('', Validators.pattern(this.namePattern)));
+          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_nombre_' + x, new FormControl('', Validators.pattern(this.namePattern)));
+          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_apellido_' + x, new FormControl('', Validators.pattern(this.namePattern)));
         }
       }
 
-      this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_nombre_1').valueChanges.subscribe( x => { 
-        let name = this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_apellido_1').value
-        this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.titular').setValue( name )
+      this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').valueChanges.subscribe( x => { 
+        let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
+        this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
       })
 
-      this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_apellido_1').valueChanges.subscribe( x => { 
-        let name = this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.htl_apellido_1').value
-        this.rsvForm.get('habitaciones.hab' + i + '.hotel.hotel.titular').setValue( name )
+      this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').valueChanges.subscribe( x => { 
+        let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
+        this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
+      })
+      
+      this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
+        this.fillTicket(x)
+      })
+
+      this.rsvForm.get('hasInsurance').valueChanges.subscribe( x => { 
+        this.fillTicket( this.rsvForm.get('zdTicket') )
       })
     }
 
@@ -185,6 +162,15 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
     this.buildMonto( hData )
 
     console.log( this.rsvForm.value )
+  }
+
+  fillTicket( x ){
+    for( let h in this.rsvForm.get('data').value ){
+      this.rsvForm.get('data.' + h + '.hotel.item.zdTicket').setValue( x )
+      if( this.rsvForm.get('hasInsurance').value ){
+        this.rsvForm.get('data.' + h + '.insurance.item.zdTicket').setValue( x )
+      }
+    }
   }
 
   buildMonto( hData = this.rsvData['habSelected'] ){
@@ -198,11 +184,11 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
       // BUILD MONTOS HABITACION
       let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
-      if( this.rsvForm.get('habitaciones.hab' + i + '.hotel.monto') ){
-        (this.rsvForm.get('habitaciones.hab' + i + '.hotel') as  FormGroup).removeControl('monto')
+      if( this.rsvForm.get('data.hab' + i + '.hotel.monto') ){
+        (this.rsvForm.get('data.hab' + i + '.hotel') as  FormGroup).removeControl('monto')
       }
   
-      (this.rsvForm.get('habitaciones.hab' + i + '.hotel') as FormGroup).addControl('monto', this.fb.group({
+      (this.rsvForm.get('data.hab' + i + '.hotel') as FormGroup).addControl('monto', this.fb.group({
         monto:          [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
         montoOriginal:  [{ value: +(habMonto.total.neta.monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
         montoParcial:   [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
@@ -220,7 +206,7 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
     let hSum = hData['summarySearch']
     let curr = this.rsvData
     let usd = hSum['isUSD']
-    let nacionalidad = user.nacionalidad
+    let nacionalidad = hSum.nacionalidad
     let cobertura = hSum.cobertura
 
     if( this.rsvForm.get('hasInsurance').value ){
@@ -238,15 +224,15 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
         let seguro = hData['extraInfo']['seguros']['hab' + i][nacionalidad][cobertura];
         let sg_monto = seguro.publico_ci * (usd ? 1 : seguro.tipoCambio );
 
-        if( this.rsvForm.get('habitaciones.hab' + i + '.insurance') ){
-          (this.rsvForm.get('habitaciones.hab' + i) as  FormGroup).removeControl('insurance')
+        if( this.rsvForm.get('data.hab' + i + '.insurance') ){
+          (this.rsvForm.get('data.hab' + i) as  FormGroup).removeControl('insurance')
         }
 
-        (this.rsvForm.get('habitaciones.hab' + i) as FormGroup).addControl('insurance', this.fb.group({
+        (this.rsvForm.get('data.hab' + i) as FormGroup).addControl('insurance', this.fb.group({
           item:       this.fb.group({
             itemType:     [{ value: 10,  disabled: false }, [ Validators.required ] ],
             isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
-            zdTicket:     [{ value: curr['formRsv']['ticketRef'],  disabled: false }, [ this._init.checkSingleCredential('rsv_omitTicket') ? Validators.required : null ] ],
+            zdTicket:     [''],
           }),
           monto:      this.fb.group({
             montoOriginal:  [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
@@ -349,10 +335,6 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
     this.buildForm( this.rsvData )
   }
 
-  submitRsv(){
-    console.log(this.rsvForm.valid, this.rsvForm)
-    console.log(this.rsvForm.value)
-  }
 
   getErrorMessage( ctrl, form = this.rsvForm ) {
 
@@ -388,47 +370,4 @@ export class HotelCheckoutComponent implements OnInit, OnChanges {
     return 'El campo tiene errores';
   }
 
-  digControls( c, err, n = '' ){
-    // console.log('run dig')
-    let arr = []
-    if( c['controls'] ){
-      for( let ct in c['controls'] ){
-        if( c['controls'][ct].status == 'INVALID' ){
-          arr.push({ctrl: ct, 'data': this.digControls( c['controls'][ct], err, n + '/' + ct )}) 
-        }
-      }
-    }else{
-      if( c.status == 'INVALID' ){
-        // console.log(n, c )
-        let error = {ctrl: n, 'errores': c.errors }
-        arr.push( error ) 
-        err.push( error )
-      }
-    }
-
-    return arr
-  }
-
-  viewErrors(){
-
-    let errors = []
-    let ctrl = this.rsvForm
-    let html = ""
-
-    this.digControls( ctrl, errors )
-
-    for( let err of errors ){
-      html += `<b>${ err.ctrl }:</b><pre>${ JSON.stringify( err.errores ) }</pre><br>`
-    }
-
-    // console.log( errors )
-
-    Swal.fire({
-      title: `<strong>Errores en la información establecida</strong>`,
-      icon: 'error',
-      html: `<div style='max-height: 60vh; overflow: auto'><code>${ html }</code></div>`,
-      focusConfirm: true,
-      confirmButtonText: 'Aceptar'
-    })
-  }
 }

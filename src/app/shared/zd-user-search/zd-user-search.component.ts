@@ -39,14 +39,7 @@ export class ZdUserSearchComponent implements OnInit {
     userSelected: ['', Validators.required]
   });
   thirdFormGroup = this._formBuilder.group({
-    name:           ['', Validators.required ],
-    email:          ['', Validators.compose([ Validators.required, Validators.email ])],
-    phone:          ['', Validators.pattern("^[\+][0-9]{1,3}[0-9]{10}$") ],
-    whatsapp:       ['', Validators.pattern("^[\+][0-9\\s]{11,20}$") ],
-    idioma_cliente: ['', Validators.required ],
-    nacionalidad:   [{value: ''}, Validators.required ],
-    id_pais:        [{value: '', disabled: true}, Validators.required ],
-    pais:           ['', Validators.required ],
+    user:           ['', Validators.required ]
   });
 
   constructor(
@@ -79,7 +72,7 @@ export class ZdUserSearchComponent implements OnInit {
   }
 
   stepChange( e ){
-    // console.log( e )
+
 
     this.step = e.selectedIndex
 
@@ -103,7 +96,7 @@ export class ZdUserSearchComponent implements OnInit {
         if( this.usersFound.length == 0 ){
           this.secondFormGroup.reset()
         }
-        // console.log( this.secondFormGroup.get('userSelected').value )
+
         break
     }
   }
@@ -127,6 +120,12 @@ export class ZdUserSearchComponent implements OnInit {
                 .subscribe( res => {
 
                   this.loading['search'] = false
+
+                  for( let u of res['data'] ){
+                    if( u['role'] == 'agent' || u['tags'].includes('noedit') ){
+                      u['noeditable'] = true
+                    }
+                  }
                   this.usersFound = res['data']
 
                 }, err => {
@@ -148,7 +147,14 @@ export class ZdUserSearchComponent implements OnInit {
                 .subscribe( res => {
 
                   this.loading['search'] = false
+
+                  for( let u of res['data']['data']['users'] ){
+                    if( u['role'] == 'agent' || u['tags'].includes('noedit') ){
+                      u['noeditable'] = true
+                    }
+                  }
                   this.usersFound = res['data']['data']['users']
+
 
                 }, err => {
                   this.loading['search'] = false;
@@ -224,25 +230,34 @@ export class ZdUserSearchComponent implements OnInit {
     this.selected.emit(this.userSelected)
   }
 
-  goToStep( e ){
+  async goToStep(e  ){
     let flag = false
 
     if( e[0] == true ){
       if( e[1] == 3 ){
         this.userSelected = e[2]['userForm'].value
-        flag = this.optionalEdit
-        this.optionalEdit = true
-        
-        if( !flag ){
-          setTimeout( () => {
-            this.step = 3
-          }, 500)
-        }else{
-          this.step = 3
-        }
+
+        flag = await this.optionalChange( true, e[2]['userForm'].value )
+
+
+        setTimeout( () => {
+          this.doneStep.select()
+        },500)
+
+
       }else{
         this.step = e[1]
       }
     }
+  }
+
+  optionalChange( f, u ){
+
+    return new Promise<boolean> ( resolve => {
+      this.optionalEdit = f
+      this.secondFormGroup.get('userSelected').setValue( this.userSelected )
+
+      resolve( f )
+    })
   }
 }

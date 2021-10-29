@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
+import { ValidateTicketComponent } from 'src/app/components/cotizador/modals/validate-ticket/validate-ticket.component';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
@@ -11,11 +12,14 @@ import Swal from 'sweetalert2';
   templateUrl: './xfer-checkout.component.html',
   styleUrls: ['./xfer-checkout.component.css']
 })
-export class XferCheckoutComponent implements OnInit, OnChanges {
+export class XferCheckoutComponent implements AfterViewInit, OnChanges {
+
+  @ViewChild( ValidateTicketComponent ) _validate: ValidateTicketComponent
 
   @Input() rsvData = {}
 
   rsvForm: FormGroup = this.fb.group({ isUsd: [''] })
+  namesForm: FormGroup = this.fb.group({ pax1: ['', Validators.required ] })
 
   namePattern = "^[A-Za-záéíóúÁÉÍÓÚ]+([\\s]{1}[A-Za-záéíóúÁÉÍÓÚ]+)*$"
 
@@ -27,7 +31,7 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
     
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     if( this.rsvData['habSelected'] ){
       this.buildForm( this.rsvData )
     }
@@ -54,9 +58,9 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
     let user = curr['formRsv']['zdUser']
     let split = curr['formRsv']['splitNames']
 
-    this.rsvForm =  this.fb.group({
-      isUSD:        [{ value: sum['isUSD'] ? 'MXN' : 'USD',                 disabled: false }, [ Validators.required ] ],
-      xfer:         this.fb.group({
+    this._validate.createForm( this.rsvData, user );
+
+    (this.rsvForm.get('data') as FormGroup).addControl('xfer', this.fb.group({
         xfer:       this.fb.group({
           xfr_id:               [ { value: '', disabled: true }, Validators.required ],
           itemId:               [ { value: '', disabled: true }, Validators.required ],
@@ -86,25 +90,27 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
           destination_text:     [ { value: sum.destino.name, disabled: false }, Validators.required ],
           producto:             [ { value: tr.info.producto, disabled: false }, Validators.required ],
           service_type:         [ { value: tr.info.service_type, disabled: false }, Validators.required ],
-          llegada_date:         [ { value: tr.info.llegada ? moment(tr.info.llegada.date).format('YYYY-MM-DD') : '', disabled: false } ],
-          llegada_flight:       [ { value: tr.info.llegada ? tr.info.llegada.flight || '' : '', disabled: false } ],
-          llegada_hour:         [ { value: tr.info.llegada ? tr.info.llegada.hour : '', disabled: false } ],
-          salida_date:          [ { value: tr.info.salida ? moment(tr.info.salida.date).format('YYYY-MM-DD') : '', disabled: false } ],
-          salida_flight:        [ { value: tr.info.salida ? tr.info.salida.flight || '' : '', disabled: false } ],
-          salida_hour:          [ { value: tr.info.salida ? tr.info.salida.hour : '', disabled: false } ],
-          salida_pickup:        [ { value: tr.info.salida ? tr.info.salida.pickup || '' : '', disabled: false } ],
+          llegada_date:         [ { value: tr.info['llegada'] ? moment(tr.info['llegada'].date).format('YYYY-MM-DD') : '', disabled: false } ],
+          llegada_flight:       [ { value: tr.info['llegada'] ? tr.info['llegada'].flight || '' : '', disabled: false } ],
+          llegada_hour:         [ { value: tr.info['llegada'] ? tr.info['llegada'].hour : '', disabled: false } ],
+          salida_date:          [ { value: tr.info['salida'] ? moment(tr.info['salida'].date).format('YYYY-MM-DD') : '', disabled: false } ],
+          salida_flight:        [ { value: tr.info['salida'] ? tr.info['salida'].flight || '' : '', disabled: false } ],
+          salida_hour:          [ { value: tr.info['salida'] ? tr.info['salida'].hour : '', disabled: false } ],
+          salida_pickup:        [ { value: tr.info['salida'] ? tr.info['salida'].pickup || '' : '', disabled: false } ],
           transfer_type:        [ { value: tr.info.transfer_type, disabled: false }, Validators.required ],
           user_id:              [ { value: tr.info.user_id, disabled: false }, Validators.required ],
+          whatsapp_contact:     [ { value: user['whatsapp'] != '' && user['whatsapp'] != null ? user['whatsapp'] : user['phone'], disabled: false }, [Validators.required, Validators.pattern("[+]*\\d{8,}")] ],
+          json_names:           [ { value: '', disabled: false }, Validators.required ],
         }),
         item:       this.fb.group({
           itemType:     [{ value: 11,  disabled: false }, [ Validators.required ] ],
           isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
-          zdTicket:     [{ value: curr['formRsv']['ticketRef'],  disabled: false }, [ this._init.checkSingleCredential('rsv_omitTicket') ? Validators.required : null ] ],
+          zdTicket:     [{ value: '',  disabled: false } ],
         }),
         monto:    this.fb.group({
-          monto:          [{ value: +(usd ? this.rsvData['habSelected'].traslado.usd_rate : this.rsvData['habSelected'].traslado.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
-          montoOriginal:  [{ value: +(usd ? this.rsvData['habSelected'].traslado.usd_rate : this.rsvData['habSelected'].traslado.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
-          montoParcial:   [{ value: +(usd ? this.rsvData['habSelected'].traslado.usd_rate : this.rsvData['habSelected'].traslado.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
+          monto:          [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
+          montoOriginal:  [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
+          montoParcial:   [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
           moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
           lv:             [{ value: 1,  disabled: false }, [ Validators.required ] ],
           lv_name:        [{ value: 'cc',  disabled: false }, [ Validators.required ] ],
@@ -112,33 +118,57 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
           promo:          [{ value: 'C',  disabled: false }, [ Validators.required ] ],
         })
       })
+    )
+
+    this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
+      this.rsvForm.get('data.xfer.item.zdTicket').setValue(x)
     })
 
-    if( !this.rsvData['formRsv']['isNew'] ){
-      if( this.rsvForm.get('masterdata') ){
-        this.rsvForm.removeControl('masterdata')
-      }
+    this.rsvForm.get('data.xfer.xfer.whatsapp_contact').valueChanges.subscribe( r => {
+      this.buildComments()
+    })
 
-      this.rsvForm.addControl('masterdata', this.fb.group({
-          nombreCliente:  [ user.name, [ Validators.required ]],
-          telCliente:     [ user.phone, [ Validators.required ]],
-          celCliente:     [ '' ],
-          waCliente:      [ user.whatsapp, [ Validators.required ]],
-          correoCliente:  [ user.email, [ Validators.required ]],
-          zdUserId:       [ user.zdId, [ Validators.required ]],
-          esNacional:     [ user.nacionalidad == 'nacional' ? 1 : 2, [ Validators.required ]],
-          languaje:       [ user.idioma_cliente, [ Validators.required ]],
-          hasTransfer:    [ 0, [ Validators.required ]],
-          orId:           [ this.rsvData['formRsv']['orId'], [ Validators.required ]],
-          orLevel:        [ this.rsvData['formRsv']['orLevel'], [ Validators.required ]],
-        }))
+    this.buildNameForm( +(tr.adults) + +(tr.babies) + +(tr.children))
 
-    }
   }
 
-  submitRsv(){
-    console.log(this.rsvForm.valid, this.rsvForm)
-    console.log(this.rsvForm.value)
+  buildNameForm( p ){
+    this.namesForm = this.fb.group({})
+
+    for( let i = 1; i <= p; i++){
+      let dflt = i == 1 ? this.rsvData['formRsv']['zdUser']['name'] : ''
+      this.namesForm.addControl(`pasajero_${i}`, new FormControl(dflt, [Validators.required, Validators.minLength(5)]))
+    }
+
+    this.buildComments()
+
+    this.namesForm.valueChanges.subscribe( r => {
+     this.buildComments()
+    })
+
+  }
+
+
+  buildComments(){
+    let json = JSON.stringify(this.namesForm.value)
+
+    let find = '["\{\}]';
+    let re = new RegExp(find, 'g');
+
+    if( this.namesForm.valid ){
+      this.rsvForm.get('data.xfer.xfer.json_names').setValue( json )
+
+      if( this.rsvForm.get('data.xfer.xfer.whatsapp_contact').valid ){
+        this.rsvForm.get('data.xfer.xfer.comments').setValue( json.replace(re, '') + '// Contacto: ' + this.rsvForm.get('data.xfer.xfer.whatsapp_contact').value )
+      }else{
+        this.rsvForm.get('data.xfer.xfer.comments').reset()
+      }
+    }else{
+      this.rsvForm.get('data.xfer.xfer.json_names').reset()
+      this.rsvForm.get('data.xfer.xfer.comments').reset()
+    }
+
+    console.log( this.rsvForm.get('data.xfer.xfer.comments').value )
   }
 
   getErrorMessage( ctrl, form = this.rsvForm ) {
@@ -152,6 +182,10 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
       return 'El valor debe tener formato de email';
     }
     
+    if (form.get(ctrl).hasError('minlength')) {
+      return 'El nombre escrito es demasiado corto';
+    }
+    
     if (form.get(ctrl).hasError('min')) {
       return 'El valor debe ser mayor o igual a ' + form.get(ctrl).errors.min.min;
     }
@@ -161,7 +195,7 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
     }
     
     if (form.get(ctrl).hasError('pattern')) {
-      return 'Solo letras. No "ñ" ni apóstrofes. Revisa los espacios al inicio y al final';
+      return 'Ingresa un numero telefónico válido. puedes iniciar con "+". Recuerda no incluir "espacios" ni "-"';
     }
     
     if (form.get(ctrl).hasError('finMenorIgual')) {
@@ -175,48 +209,9 @@ export class XferCheckoutComponent implements OnInit, OnChanges {
     return 'El campo tiene errores';
   }
 
-  digControls( c, err, n = '' ){
-    // console.log('run dig')
-    let arr = []
-    if( c['controls'] ){
-      for( let ct in c['controls'] ){
-        if( c['controls'][ct].status == 'INVALID' ){
-          arr.push({ctrl: ct, 'data': this.digControls( c['controls'][ct], err, n + '/' + ct )}) 
-        }
-      }
-    }else{
-      if( c.status == 'INVALID' ){
-        // console.log(n, c )
-        let error = {ctrl: n, 'errores': c.errors }
-        arr.push( error ) 
-        err.push( error )
-      }
-    }
+  
 
-    return arr
-  }
-
-  viewErrors(){
-
-    let errors = []
-    let ctrl = this.rsvForm
-    let html = ""
-
-    this.digControls( ctrl, errors )
-
-    for( let err of errors ){
-      html += `<b>${ err.ctrl }:</b><pre>${ JSON.stringify( err.errores ) }</pre><br>`
-    }
-
-    // console.log( errors )
-
-    Swal.fire({
-      title: `<strong>Errores en la información establecida</strong>`,
-      icon: 'error',
-      html: `<div style='max-height: 60vh; overflow: auto'><code>${ html }</code></div>`,
-      focusConfirm: true,
-      confirmButtonText: 'Aceptar'
-    })
-  }
 
 }
+
+

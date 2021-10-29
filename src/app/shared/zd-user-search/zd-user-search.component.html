@@ -22,7 +22,7 @@
                 </div>
             </form>
         </mat-step>
-        <mat-step [stepControl]="secondFormGroup" label="Selecciona el usuario correcto">
+        <mat-step [stepControl]="secondFormGroup" label="Selecciona el usuario correcto" [optional]="optionalEdit">
             <form [formGroup]="secondFormGroup">
                 <div style="max-height: 235px; overflow:auto">
                     <mat-progress-bar mode="indeterminate" *ngIf="loading['search']"></mat-progress-bar>
@@ -36,26 +36,28 @@
                             aria-labelledby="user-radio-group-label"
                             class="user-radio-group"
                             formControlName="userSelected">
-                            <mat-radio-button class="user-radio-button" *ngFor="let usr of usersFound" [value]="usr">
-                                <mat-card>
-                                    <mat-card-content>
-                                        <div class="row">
-                                            <div class="align-items-center col-xs-12 col-md-5 text-truncate">
-                                                <span [matTooltip]="usr['name']" matTooltipPosition="above"><mat-icon color="primary">account_circle</mat-icon> {{ usr['name'] }}</span><br>
-                                                <span [matTooltip]="usr['email']" matTooltipPosition="above"><mat-icon color="primary">mail</mat-icon> {{ usr['email'] }}</span>
+                            <ng-container *ngFor="let usr of usersFound">
+                                <mat-radio-button class="user-radio-button" [value]="usr" [disabled]="usr['noeditable']" [color]="usr['noeditable'] ? 'warn' : 'primary'">
+                                    <mat-card  [ngClass]="{'bg-noeditable': usr['noeditable']}">
+                                        <mat-card-content>
+                                            <div class="row">
+                                                <div class="align-items-center col-xs-12 col-md-5 text-truncate" >
+                                                    <span [matTooltip]="usr['name']" matTooltipPosition="above"><mat-icon color="primary">account_circle</mat-icon> <span class="text-danger">{{ usr['noeditable'] ? '(N/A)' :'' }}</span> {{ usr['name'] }}</span><br>
+                                                    <span [matTooltip]="usr['email']" matTooltipPosition="above"><mat-icon color="primary">mail</mat-icon> {{ usr['email'] }}</span>
+                                                </div>
+                                                <div class="align-items-center col-xs-12 col-md-4 text-truncate">
+                                                    <span [matTooltip]="usr['phone']" matTooltipPosition="above"><mat-icon color="primary">call</mat-icon> {{ usr['phone'] }}</span><br>
+                                                    <span [matTooltip]="usr['user_fields']['whatsapp']" matTooltipPosition="above"><mat-icon color="primary">whatsapp</mat-icon> {{ usr['user_fields']['whatsapp'] }}</span>
+                                                </div>
+                                                <div class="align-items-center col-xs-12 col-md-3 text-truncate">
+                                                    <span [matTooltip]="usr['user_fields']['idioma_cliente']" matTooltipPosition="above"><mat-icon color="primary">translate</mat-icon> {{ usr['user_fields']['idioma_cliente'] }}</span><br>
+                                                    <span [matTooltip]="usr['user_fields']['nacionalidad']" matTooltipPosition="above"><mat-icon color="primary">language</mat-icon> {{ usr['user_fields']['nacionalidad'] }}</span>
+                                                </div>
                                             </div>
-                                            <div class="align-items-center col-xs-12 col-md-4 text-truncate">
-                                                <span [matTooltip]="usr['phone']" matTooltipPosition="above"><mat-icon color="primary">call</mat-icon> {{ usr['phone'] }}</span><br>
-                                                <span [matTooltip]="usr['user_fields']['whatsapp']" matTooltipPosition="above"><mat-icon color="primary">whatsapp</mat-icon> {{ usr['user_fields']['whatsapp'] }}</span>
-                                            </div>
-                                            <div class="align-items-center col-xs-12 col-md-3 text-truncate">
-                                                <span [matTooltip]="usr['user_fields']['idioma_cliente']" matTooltipPosition="above"><mat-icon color="primary">translate</mat-icon> {{ usr['user_fields']['idioma_cliente'] }}</span><br>
-                                                <span [matTooltip]="usr['user_fields']['nacionalidad']" matTooltipPosition="above"><mat-icon color="primary">language</mat-icon> {{ usr['user_fields']['nacionalidad'] }}</span>
-                                            </div>
-                                        </div>
-                                    </mat-card-content>
-                                </mat-card>
-                            </mat-radio-button>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </mat-radio-button>
+                            </ng-container>
                         </mat-radio-group>
                     </ng-container>
                 </div>
@@ -77,6 +79,9 @@
                 (next)="goToStep($event)"
             >
             </app-zd-user-edit>
+            <div class="d-flex justify-content-between flex-wrap">
+                <button mat-button color="primary" matStepperNext>Next</button>
+            </div>
         </mat-step>
         <mat-step label="Comprobar y Seleccionar" #doneStep>
             <mat-card>

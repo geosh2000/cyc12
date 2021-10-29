@@ -186,6 +186,7 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
         }
 
         this.rsvData = JSON.parse(JSON.stringify({habSelected: this.data, userInfo: this.secondFormGroup.value, formRsv: this.createRsv.value}))
+        console.log(this.rsvData)
 
     }
 

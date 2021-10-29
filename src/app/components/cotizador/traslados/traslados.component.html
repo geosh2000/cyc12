@@ -111,7 +111,7 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="200" *ngIf="!xferSearch.get('llegada.vuelo').disabled">
                                                     <mat-label>Vuelo Llegada</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="vuelo" min=0 autocomplete="off">
+                                                    <input matInput class="text-center" type="text" formControlName="vuelo" min=0 autocomplete="off" (keyup.enter)="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') ? selectFlight() : doNothing()">
                                                     <!-- <mat-hint>No. de vuelo</mat-hint> -->
                                                     <mat-error *ngIf="xferSearch.get('llegada.vuelo').invalid">{{ getErrorMessage('llegada.vuelo') }}</mat-error>
                                                 </mat-form-field>
@@ -136,7 +136,7 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="200" *ngIf="!xferSearch.get('salida.vuelo').disabled">
                                                     <mat-label>Vuelo Salida</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="vuelo" min=0 autocomplete="off">
+                                                    <input matInput class="text-center" type="text" formControlName="vuelo" min=0 autocomplete="off" (keyup.enter)="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') ? selectFlight( false ) : doNothing()">
                                                     <!-- <mat-hint>No. de vuelo</mat-hint> -->
                                                     <mat-error *ngIf="xferSearch.get('salida.vuelo').invalid">{{ getErrorMessage('salida.vuelo') }}</mat-error>
                                                 </mat-form-field>
@@ -297,4 +297,3 @@
 
 </div>
 <app-flight-search></app-flight-search>
-<pre>{{ xferSearch.value |json }}</pre>

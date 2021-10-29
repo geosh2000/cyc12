@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { CotizadorComponent } from '../cotizador/cotizador.component';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
-import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.component';
+import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.component';
 
 const childRoutes: Routes = [
   { 
@@ -14,7 +14,7 @@ const childRoutes: Routes = [
   },
   { 
     path: 'test', 
-    component: HotelCheckoutComponent ,
+    component: TourCheckoutComponent ,
     canActivate: [ AuthGuard ],
     data: { title: 'Checkout - Test', role: 'app_cotizador' } 
   },

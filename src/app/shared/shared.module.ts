@@ -28,6 +28,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { LocSearchComponent } from './loc-search/loc-search.component';
 import { ZdUserEditComponent } from './zd-user-edit/zd-user-edit.component';
 import { FlightSearchComponent } from './flight-search/flight-search.component';
+import { MergeUsersComponent } from './merge-users/merge-users.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
     LocSearchComponent,
     ZdUserEditComponent,
     FlightSearchComponent,
+    MergeUsersComponent,
   ],
   exports: [
     CommonModule,
@@ -58,6 +60,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
     LocSearchComponent,
     ZdUserEditComponent,
     FlightSearchComponent,
+    MergeUsersComponent,
   ],
   imports: [
     CommonModule,

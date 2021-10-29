@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ApiService, InitService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
+import { MergeUsersComponent } from '../merge-users/merge-users.component';
 
 export interface Pais {
   id: number;
@@ -19,6 +20,8 @@ export interface Pais {
   styleUrls: ['./zd-user-edit.component.css']
 })
 export class ZdUserEditComponent implements OnInit {
+  
+  @ViewChild( MergeUsersComponent ) _merge: MergeUsersComponent
 
   @Input() user = {}
   @Input() nextStep = null
@@ -170,12 +173,15 @@ export class ZdUserEditComponent implements OnInit {
 
     if( this.optionalEdit ){
       if( this.nextStep != null ){
+        console.log('emit next', this.nextStep)
         this.next.emit([true, this.nextStep,{ userForm: this.userForm,  mlData }])
       }else{
+        console.log('emit saved', this.userForm.value)
         this.saved.emit([true,this.userForm.value])
       }
     }else{
       if( this.nextStep != null ){
+        console.log('emit next, reEdit', this.thisStep)
         this.next.emit([true, this.thisStep])
       }
     }
@@ -213,10 +219,12 @@ export class ZdUserEditComponent implements OnInit {
                   if( res['data']['response'] >= 200 && res['data']['response'] < 300 ){
 
                     if( ml != 0 ){
+                      console.log('mlupdatuser')
                       mlData = <any>await this.updateMlUser( ml, res['data']['data']['user'] )
                       console.log( mlData )
                     }
-
+                    
+                    console.log('validateuser')
                     this.validateUser( res['data']['data']['user'], ml, mlData )
                   }else if( res['data']['response'] == 422 ){
                     console.log( res['data'] )
@@ -268,76 +276,33 @@ export class ZdUserEditComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Fusionar',
       cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      this.confirmFusion( usr, nu, mld )
-    })
-  }
+    }).then( async (result) => {
+      let user = await this._merge.confirmFusion( usr, nu )
 
-  confirmFusion( usr, nu, mld ){
-    Swal.fire({
-      title: `<strong>Estas seguro que deseas fusionar los usuarios?</strong>`,
-      icon: 'question',
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Confirmar Fusión',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.swalMerge( nu, usr, mld )
+      if( user ){
+        let mlData = null
+
+        if( this.ml != 0 ){
+
+          Swal.fire({
+            title: `<strong>Actualizando informaciòn del MasterLocator</strong>`,
+            focusConfirm: false,
+            showCancelButton: false,
+          })
+      
+          Swal.showLoading()
+
+          mlData = <any>await this.updateMlUser( this.ml, user )
+
+          Swal.close()
+          console.log( 'ml updated', mlData )
+        }
+
+        Swal.close()
+
+        this. validateUser( user, this.ml, mlData )
       }
     })
-  }
-
-  swalMerge( nu, dpl, mld ){
-    Swal.fire({
-      title: `<strong>Fusionando Usuarios</strong>`,
-      focusConfirm: false,
-      showCancelButton: false,
-      confirmButtonText: 'Confirmar Fusión',
-      cancelButtonText: 'Cancelar'
-    })
-
-    Swal.showLoading()
-
-    this.mergeUsers( nu, dpl, mld )
-  }
-
-  mergeUsers( nu, dpl, mld ){
-
-    this.loading['merge'] = true
-    this._api.restfulPut( {actual: nu, dest: dpl }, 'Calls/mergeUsers' )
-                .subscribe( async res => {
-
-                  this.loading['merge'] = false;
-
-                  let mlData = null
-
-                  if( res['data']['response'] == 200 ){
-
-                    if( this.ml != 0 ){
-                      mlData = <any>await this.updateMlUser( this.ml, res['user'] )
-                      console.log( 'ml updated', mlData )
-                    }
-
-                    Swal.close()
-
-                    this. validateUser( res['user'], this.ml, mlData )
-
-                  }else{
-                    Swal.close()
-                    Swal.fire('Error', res['data']['data']['error'], 'error')
-                  }
-
-
-                }, err => {
-                  this.loading['merge'] = false;
-
-                  const error = err.error;
-                  Swal.close()
-                  Swal.fire('Error', error.msg, 'error')
-                  console.error(err.statusText, error.msg);
-
-                });
   }
 
   goBack(){

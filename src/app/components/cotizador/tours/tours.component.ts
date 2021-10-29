@@ -81,6 +81,8 @@ export class CotizaToursComponent implements OnInit {
   cotizacion = {}
   tourDescription = ""
 
+  summarySearch
+
   constructor( private _api: ApiService, private toastr: ToastrService, public _init: InitService, private order: OrderPipe) { 
 
     moment.locale('es-mx');
@@ -448,6 +450,8 @@ export class CotizaToursComponent implements OnInit {
     this.cotizacion = {}
     this.loading['cotizar'] = true
 
+    this.summarySearch = this.tourSearch.value
+
     this._api.restfulPut( this.tourSearch.value, 'Cmaya/cotizarTour' )
                 .subscribe( res => {
 
@@ -460,6 +464,7 @@ export class CotizaToursComponent implements OnInit {
 
                 }, err => {
                   this.loading['cotizar'] = false;
+                  this.summarySearch = {}
 
                   const error = err.error;
                   this.toastr.error( error.msg, err.status );
@@ -467,6 +472,18 @@ export class CotizaToursComponent implements OnInit {
 
                 });
 
+  }
+
+  doRsv( r = {} ){
+    let data = {
+      tour: r,
+      isUsd: this.showUsd,
+      summarySearch: this.summarySearch,
+      type: 'tour'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doRsv', data })
   }
 
   

@@ -506,6 +506,10 @@ export class CotizaTrasladosComponent implements OnInit {
     data = JSON.parse(JSON.stringify(data))
     this.rsv.emit({ action: 'doQuote', data })
   }
+
+  doNothing(){
+    return false
+  }
     
 
 

@@ -1,0 +1,65 @@
+<form [formGroup]="rsvForm" (ngSubmit)="_validate.submitRsv()" #htmlForm ="ngForm">
+    <div class="container d-flex justify-content-center">
+        <div [style.width.px]="700" class="mx-auto row align-items-center" style="max-width: 100vw; height: 55vh; overflow: auto;" *ngIf="rsvData['habSelected']">
+            <div class="col-12 text-center">
+                <ng-container *ngIf="rsvForm.get('data')">
+                    <h2 class="mb-0"><b>{{ rsvForm.get('tour.tour.tourName').value }}</b></h2>
+                    <h4 class="mb-1">Proveedor: {{ rsvData.habSelected.summarySearch.proveedor.name }}</h4>
+                    <mat-divider class="mb-2"></mat-divider>
+                    <div>
+                        <div class="align-items-center">
+                            <p><b>Titular: </b>{{ rsvData['formRsv']['zdUser']['name'] }} (<mat-icon>emoji_events</mat-icon>{{ rsvData['formRsv']['orLevel'] }})</p>
+                        </div>
+        
+                    </div>
+                    <mat-divider class="my-3"></mat-divider>
+                    
+                    <div class="container d-flex justify-content-center" *ngIf="rsvForm.get('tour.tour').value">
+                        <!-- Detalles -->
+                        <div class="row">
+
+                                <div class="col-xs-none col-md-2 text-end"></div>
+                                <div class="col-xs-12 col-md-2 text-end">Detalles:</div>
+                                <div class="col-xs-12 col-md-6 text-start">
+                                    <p><mat-icon>place</mat-icon>: {{ rsvForm.get('tour.tour.pickup').value }}</p>
+                                    <p><mat-icon>event</mat-icon>: {{ rsvForm.get('tour.tour.date').value }}</p>
+                                    <p><mat-icon>schedule</mat-icon>: {{ rsvData.habSelected.summarySearch.show }}</p>
+                                </div>
+                                <div class="col-xs-none col-md-2 text-end"></div>
+                                <div class="col-12 text-center">
+                                    <mat-icon>family_restroom</mat-icon>:&nbsp;
+                                    {{  rsvForm.get('tour.tour.adults_reales').value }} adultos || 
+                                    {{  rsvForm.get('tour.tour.children_reales').value }} niños || 
+                                    {{  rsvForm.get('tour.tour.babies_reales').value }} bebés
+                                </div>
+                                <mat-divider class="mt-2"></mat-divider>
+        
+                                    <app-validate-ticket [(rsvForm)]="rsvForm" [item]="rsvForm.get('tour.item')" [user]="rsvData['userInfo']['user']" *ngIf="rsvForm.get('tour.item').value"></app-validate-ticket>
+        
+                            <!-- </ng-container> -->
+                        </div>
+                    </div>
+                </ng-container>
+                <mat-divider class="mt-2"></mat-divider>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <app-validate-ticket [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
+                    </div>
+                </div>
+    
+            </div>
+            <div class="mt-2 col-12 text-center" *ngIf="htmlForm.submitted && rsvForm.invalid">
+                <div class="d-block alert alert-danger" role="alert">
+                    Existen errores en la información. Revisa cada habitación para encontrarlos. 
+                    <button class="mx-auto" type="button" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
+                </div>
+            </div>
+            <div class="mt-2 col-12 text-center"  *ngIf="rsvForm.get('data')">
+                <!-- <b>Total: 
+                    {{ (( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio']) * rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + rsvData['habSelected']['selectedLevel']]['monto'] + (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * ((rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio']) * rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span>
+                </b> -->
+                <button class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary" >Reservar por  {{ rsvForm.get('tour.monto.monto').value | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvForm.get('tour.monto.moneda').value }}</span></button>
+            </div>
+        </div>
+    </div>
+</form>

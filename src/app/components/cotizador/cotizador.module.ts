@@ -38,6 +38,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { HotelCheckoutComponent } from './modals/hotel-checkout/hotel-checkout.component';
 import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
 import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.component';
+import { ValidateTicketComponent } from './modals/validate-ticket/validate-ticket.component';
+import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.component';
 
 
 
@@ -52,7 +54,9 @@ import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.comp
     RsvCreateDialog,
     HotelCheckoutComponent,
     XferCheckoutComponent,
-    SendQuoteComponent
+    TourCheckoutComponent,
+    SendQuoteComponent,
+    ValidateTicketComponent,
   ],
   exports: [
     CotizadorComponent,
@@ -64,7 +68,9 @@ import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.comp
     RsvCreateDialog,
     HotelCheckoutComponent,
     XferCheckoutComponent,
-    SendQuoteComponent
+    TourCheckoutComponent,
+    SendQuoteComponent,
+    ValidateTicketComponent,
   ],
   imports: [    
     OrderModule,
