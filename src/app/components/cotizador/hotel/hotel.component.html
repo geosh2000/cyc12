@@ -339,7 +339,7 @@
                     <mat-card-footer class="px-4 pb-1">
                         <div class="row align-items-center px-3 pt-3 pb-1">
                             <div class="col-xs-12 col-lg-3 d-flex justify-content-start align-items-center">
-                                <div class="m-0 p-0" *ngIf="!c['habs']['hasErrors'] && extraInfo['grupo']['hasInsurance'] == '1'">
+                                <div class="m-0 p-0" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true) && extraInfo['grupo']['hasInsurance'] == '1'">
                                     <mat-slide-toggle class="mx-1 mb-2" (toggleChange)="confirmRemoveInsurance()" [(ngModel)]="extraInfo['grupo']['insuranceIncluded']">
                                         <small [ngClass]="{'text-success': extraInfo['grupo']['insuranceIncluded'],'text-danger text-decoration-line-through': !extraInfo['grupo']['insuranceIncluded']}">
                                             Seguro {{ summarySearch['nacionalidad'] }} {{ summarySearch['cobertura'] }}
@@ -356,7 +356,7 @@
                             </div>
                             <div class="d-xs-block d-lg-none col-xs-12" [style.height.px]="20"></div>
                             <div class="col-xs-12 col-lg-3 d-flex justify-content-start align-items-center">
-                                <div class="m-0 p-0" *ngIf="!c['habs']['hasErrors']">
+                                <div class="m-0 p-0" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true)">
                                     <mat-slide-toggle [disabled]="!(extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1)" class="mx-1 mb-2" [(ngModel)]="c['habs']['hasTransfer']">
                                         <small [ngClass]="{'text-success': c['habs']['hasTransfer'],'text-danger text-decoration-line-through': !c['habs']['hasTransfer']}">
                                             Traslado redondo para {{ c['habs']['total']['pax'] }} pax

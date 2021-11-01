@@ -57,20 +57,28 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
   
   ngOnChanges( changes: SimpleChanges ){
     console.log(changes)
-    if( changes['rsvData'] && changes['rsvData']['currentValue']['habSelected'] ){
+    if( changes['rsvData'] ){
 
-      async () => {
-        let curr = changes['rsvData']['currentValue']
+      if( changes['rsvData']['currentValue']['habSelected'] ){
+        async () => {
+          let curr = changes['rsvData']['currentValue']
+  
+          // this.buildForm( curr )
+          
+          this.levelsData = await this.setLevelsData( this.rsvData['habSelected']['hotel']['tarifas'][this.displayDate( this.rsvData['habSelected']['summarySearch']['inicio'], 'YYYY-MM-DD' )] )
+          this.chgLevel( curr['habSelected']['selectedLevel'], this.levelsData['n' + curr['habSelected']['selectedLevel']] ) 
+        }
+      }
 
-        // this.buildForm( curr )
-        
-        this.levelsData = await this.setLevelsData( this.rsvData['habSelected']['hotel']['tarifas'][this.displayDate( this.rsvData['habSelected']['summarySearch']['inicio'], 'YYYY-MM-DD' )] )
-        this.chgLevel( curr['habSelected']['selectedLevel'], this.levelsData['n' + curr['habSelected']['selectedLevel']] ) 
+      if( changes['rsvData']['currentValue']['formRsv'] && this.rsvForm.get('hasInsurance')){
+        console.log('reBuild insurance')
+        this.buildInsurance( changes['rsvData']['currentValue']['habSelected'] )
       }
 
     }
 
   }
+
 
   buildForm( curr ){
 
@@ -196,6 +204,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
         lv:             [{ value: this.levelSelected.selected,  disabled: false }, [ Validators.required ] ],
         lv_name:        [{ value: this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
         grupo:          [{ value: hGpo[ usd ? 'cieloUSD' : 'cieloMXN'],  disabled: false }, [ Validators.required ] ],
+        grupoTfas:      [ hGpo.grupo, [ Validators.required ] ],
         promo:          [{ value: hGpo['p' + this.levelSelected.selected],  disabled: false }, [ Validators.required ] ],
       }))
     }

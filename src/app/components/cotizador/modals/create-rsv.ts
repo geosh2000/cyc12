@@ -80,6 +80,15 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
         this.createRsv.get('rsvNacional').valueChanges.subscribe( x => { 
             if( this.data['type'] == 'hotel' ){
                 this.validateNacionalidad()
+
+                this.data.summarySearch.nacionalidad = x ? 'nacional' : 'internacional'
+
+                if( x == true ){
+                    this.data.summarySearch.cobertura = 'normal'
+                }
+
+                console.log( 'insurance changed', x, this.data )
+                this.rsvData = JSON.parse(JSON.stringify({habSelected: this.data, userInfo: this.secondFormGroup.value, formRsv: this.createRsv.value}))
             }
         })
       }

@@ -208,6 +208,31 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
     })
   }
 
+  nacionalidadCongruente(){
+    return ( formGroup: FormGroup ) => {
+
+      const isIns = formGroup.get('hasInsurance')
+      const uNac = formGroup.get('nacionalidad')
+
+      if( isIns.value ){
+        if( formGroup.get( 'data.hab1.insurance') ){
+          const iNac = formGroup.get( 'data.hab1.insurance.insurance.sg_mdo').value == 'nacional' ? 1 : 0
+          
+          if( uNac.value == iNac ){
+            isIns.setErrors( null )
+          }else{
+            isIns.setErrors( {notCongruent: true} )
+          }
+
+        }else{
+          isIns.setErrors( null )
+        }
+      }else{
+        isIns.setErrors( null )
+      }
+    }
+  }
+
   createForm( r, user ){
 
     console.log('build started')
@@ -223,7 +248,10 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
       newMaster:    [{ value: r['formRsv']['isNew'] || false,             disabled: false }, [Validators.required ] ],
       masterloc:    [{ value: (r['formRsv']['isNew'] || false) ? 'noLoc' : r['userInfo']['masterloc']['masterlocatorid'],             disabled: false }, [Validators.required ] ],
       zdTicket:     [ '', [ Validators.required ] ],
+      rsvType:      [ r['habSelected']['type'], [ Validators.required ] ],
       data:         this.fb.group({})
+    },{
+      validators: this.nacionalidadCongruente()
     })
 
     if( r['formRsv']['isNew'] ){
@@ -272,12 +300,41 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
     if( this.rsvForm.valid ){
       console.log('VALID FORM')
+      Swal.fire({
+        title: `<strong>Creando Reserva</strong>`,
+        focusConfirm: false,
+        showCancelButton: false,
+      })
+  
+      Swal.showLoading()
+      this.saveRsv()
+
     }else{
       console.error('INVALID FORM')
     }
+
     console.log(this.rsvForm.valid, this.rsvForm)
     console.log(this.rsvForm.value)
 
+  }
+
+  saveRsv(){
+    
+    this._api.restfulPut( this.rsvForm.value, 'Rsv_v12/saveRsv' )
+                .subscribe( res => {
+
+                  Swal.close()
+                  Swal.fire('Reserva Creada', res['msg'], 'success')
+                  console.log(res['data'])
+
+                }, err => {
+
+                  Swal.close()
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
   digControls( c, err, n = '' ){

@@ -170,7 +170,7 @@
             <div class="mt-2 col-12 text-center" *ngIf="htmlForm.submitted && rsvForm.invalid">
                 <div class="d-block alert alert-danger" role="alert">
                     Existen errores en la información. Revisa cada habitación para encontrarlos. 
-                    <button class="mx-auto" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
+                    <button class="mx-auto" type="submit" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
                 </div>
             </div>
             <div class="mt-2 col-12 text-center"  *ngIf="rsvForm.get('data')">
