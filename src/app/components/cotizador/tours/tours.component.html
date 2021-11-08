@@ -210,7 +210,7 @@
                 </mat-card-header> -->
                 <mat-card-content>
                     <div class="d-flex justify-content-end px-3">
-                        <mat-slide-toggle [(ngModel)]="showUsd">USD</mat-slide-toggle>
+                        <mat-slide-toggle [(ngModel)]="summarySearch.isUSD">USD</mat-slide-toggle>
                     </div>
 
                     <div class="container mt-2">
@@ -223,7 +223,7 @@
                                             <br>{{ cotizacion['adults_reales'] }} Adulto(s), {{ cotizacion['children_reales'] }} Menores</span>
                                     </div>
                                     <div class="col-xs-12 col-lg-4 text-end">
-                                        <span>{{ ( showUsd ? cotizacion['usd_rate'] : cotizacion['mxn_rate'] ) | currency:'USD':'symbol-narrow':'.2-2' }} {{ showUsd ? 'USD' : 'MXN' }}</span>
+                                        <span>{{ ( summarySearch.isUSD ? cotizacion['usd_rate'] : cotizacion['mxn_rate'] ) | currency:'USD':'symbol-narrow':'.2-2' }} {{ showUsd ? 'USD' : 'MXN' }}</span>
                                     </div>
                                     <div class="col-xs-12 col-lg-3 text-end">
                                         <button mat-raised-button color="primary" (click)="doRsv( cotizacion )">Reservar</button>
