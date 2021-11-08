@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { getMatIconFailedToSanitizeUrlError } from '@angular/material/icon';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 import { ApiService } from './api.service';
 import { InitService } from './init.service';
@@ -16,7 +17,16 @@ export class LoginService {
 
   
 
-  constructor( private _api:ApiService, private _init:InitService, private ws: WsService ) { }
+  constructor( private _api:ApiService, private _init:InitService, private ws: WsService ) { 
+    this._api.tokenCheck.asObservable()
+      .subscribe(r => {
+        if( !r ){
+          console.error('Token Expired, please login again')
+          this.logout()
+          Swal.fire('Token Expired','Tu sesión ha expirado, por favor ingresa nuevamente', 'error')
+        }
+      })
+  }
 
   loginCyC( logInfo ){
 

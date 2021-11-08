@@ -459,8 +459,8 @@ export class CotizaToursComponent implements OnInit {
                   this.cotizacion = res['data'] == null ? {} : res['data']
                   this.noResults = res['data'] == null
 
-                  console.log(res['data'])
-                  console.log(res['params'])
+                  // console.log(res['data'])
+                  // console.log(res['params'])
 
                 }, err => {
                   this.loading['cotizar'] = false;

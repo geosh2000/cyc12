@@ -27,7 +27,7 @@ export class MainViewComponent implements OnInit, OnDestroy {
     this.routerS$ = this.router.events.subscribe((val) => {
       // console.log( val )
       if (val instanceof NavigationStart) {
-        console.log( 'start load' )
+        // console.log( 'start load' )
         this._init.loadingRouteConfig = true;
       }
       if( val instanceof NavigationEnd || val instanceof ResolveEnd  ){

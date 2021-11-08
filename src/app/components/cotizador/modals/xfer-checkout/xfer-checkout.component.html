@@ -47,7 +47,7 @@
             <mat-divider class="mt-2"></mat-divider>
             <div class="row">
                 <div class="col-12 text-center">
-                    <app-validate-ticket [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
+                    <app-validate-ticket (done)="doneEmit()" [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
                 </div>
             </div>
             

@@ -56,12 +56,14 @@
                     </ng-container>
                     <div class="col-xs-12 col-md-2 text-center">
                         Se enviará en idioma 
-                        <button mat-stroked-button color="primary" [matMenuTriggerFor]="cobert">{{ languages[quoteForm.get('selectedLang').value] }}</button>
+                        <button mat-stroked-button type="button" color="primary" [matMenuTriggerFor]="cobert">{{ languages[quoteForm.get('selectedLang').value] }}</button>
                         <mat-menu #cobert="matMenu">
-                            <button mat-menu-item (click)="quoteForm.get('selectedLang').setValue(l)" *ngFor="let l of languages | keys">{{ languages[l] }}</button>
+                            <button mat-menu-item type="button"  (click)="quoteForm.get('selectedLang').setValue(l)" *ngFor="let l of languages | keys">{{ languages[l] }}</button>
                         </mat-menu>
                     </div>
                     <div class="col-xs-12 col-md-2">
+                        <mat-slide-toggle class="mx-1 mb-2" formControlName="forceLevel">Forzar Nivel Cotizado</mat-slide-toggle>
+                        <br>
                         <button mat-flat-button [style.width.%]="100" color="primary" type="submit">Enviar Cotizacion</button>
                     </div>
                     <div class="col-xs-12 col-md-2">

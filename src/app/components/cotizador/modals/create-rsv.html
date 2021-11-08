@@ -59,9 +59,9 @@
                 
             </div>
             <form [formGroup]="createRsv" *ngIf="!loading['orw']">
-                <app-hotel-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'hotel'"></app-hotel-checkout>
-                <app-xfer-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'traslado'"></app-xfer-checkout>
-                <app-tour-checkout [rsvData]="rsvData"  *ngIf="data['type'] == 'tour'"></app-tour-checkout>
+                <app-hotel-checkout (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'hotel'"></app-hotel-checkout>
+                <app-xfer-checkout  (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'xfer'"></app-xfer-checkout>
+                <app-tour-checkout  (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'tour'"></app-tour-checkout>
                 <!-- <pre>{{ secondFormGroup.value | json }}</pre>
                 <hr>
                 FORM ({{ createRsv.valid ? 'VALIDO' : 'NO VALIDO' }})<br>

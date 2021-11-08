@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate, CanLoad {
           tap( isAllowed => {
 
             if( !isAllowed ){
-              if( this._init.isLogin ){
+              if( this._init.isLogin && this._init.currentUser == null  ){
                 this.router.navigateByUrl('/notAllowed')
               }else{
                 this.router.navigateByUrl('/blank')

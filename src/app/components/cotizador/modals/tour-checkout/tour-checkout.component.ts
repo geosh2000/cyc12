@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ValidateTicketComponent } from '../validate-ticket/validate-ticket.component';
@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 export class TourCheckoutComponent implements OnInit, OnChanges {
 
   @ViewChild( ValidateTicketComponent ) _validate: ValidateTicketComponent
+  @Output() done = new EventEmitter
 
   @Input() rsvData = {}
 
@@ -30,11 +31,11 @@ export class TourCheckoutComponent implements OnInit, OnChanges {
     if( this.rsvData['habSelected'] ){
       this.buildForm( this.rsvData )
     }
-    console.log( this.rsvData )
+    // console.log( this.rsvData )
   }
 
   ngOnChanges( changes: SimpleChanges ){
-    console.log(changes)
+    // console.log(changes)
     if( changes['rsvData'] && changes['rsvData']['currentValue']['habSelected'] ){
 
       async () => {
@@ -86,6 +87,7 @@ export class TourCheckoutComponent implements OnInit, OnChanges {
           zdTicket:     [{ value: '',  disabled: false }, [ Validators.required ] ],
         }),
         monto:    this.fb.group({
+          tipoCambio:     [{ value: +(usd ? 1 : ( tr.mxn_rate / tr.usd_rate ) ).toFixed(2),  disabled: false }, [ Validators.required ] ],
           monto:          [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
           montoOriginal:  [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
           montoParcial:   [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
@@ -119,6 +121,10 @@ export class TourCheckoutComponent implements OnInit, OnChanges {
 
     }
 
+  }
+
+  doneEmit(){
+    this.done.emit( true )
   }
 
 

@@ -57,7 +57,7 @@ export class MenuComponent implements OnInit {
           // console.log(menu['0'])
 
         }, err => {
-          console.log('ERROR', err)
+          // console.log('ERROR', err)
           this.loading['menu'] = false
           let error = err.error
           this.toastr.error( error.error ? error.error.message : error.msg, error.error ? error.msg : 'Error' )

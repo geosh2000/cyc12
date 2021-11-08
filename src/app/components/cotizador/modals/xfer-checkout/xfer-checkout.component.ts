@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ValidateTicketComponent } from 'src/app/components/cotizador/modals/validate-ticket/validate-ticket.component';
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
   @ViewChild( ValidateTicketComponent ) _validate: ValidateTicketComponent
-
+  @Output() done = new EventEmitter
   @Input() rsvData = {}
 
   rsvForm: FormGroup = this.fb.group({ isUsd: [''] })
@@ -35,11 +35,11 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     if( this.rsvData['habSelected'] ){
       this.buildForm( this.rsvData )
     }
-    console.log( this.rsvData )
+    // console.log( this.rsvData )
   }
 
   ngOnChanges( changes: SimpleChanges ){
-    console.log(changes)
+    // console.log(changes)
     if( changes['rsvData'] && changes['rsvData']['currentValue']['habSelected'] ){
 
       async () => {
@@ -101,6 +101,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
           user_id:              [ { value: tr.info.user_id, disabled: false }, Validators.required ],
           whatsapp_contact:     [ { value: user['whatsapp'] != '' && user['whatsapp'] != null ? user['whatsapp'] : user['phone'], disabled: false }, [Validators.required, Validators.pattern("[+]*\\d{8,}")] ],
           json_names:           [ { value: '', disabled: false }, Validators.required ],
+          json_object:          [ JSON.stringify( tr ), Validators.required ]
         }),
         item:       this.fb.group({
           itemType:     [{ value: 11,  disabled: false }, [ Validators.required ] ],
@@ -108,6 +109,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
           zdTicket:     [{ value: '',  disabled: false } ],
         }),
         monto:    this.fb.group({
+          tipoCambio:     [{ value: +(usd ? 1 : ( tr.mxn_rate / tr.usd_rate ) ).toFixed(2),  disabled: false }, [ Validators.required ] ],
           monto:          [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
           montoOriginal:  [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
           montoParcial:   [{ value: +(usd ? tr.usd_rate : tr.mxn_rate).toFixed(2),  disabled: false }, [ Validators.required ] ],
@@ -119,6 +121,10 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
         })
       })
     )
+
+    if( sum['grupo'] == 'Cortesia' ){
+      (this.rsvForm.get('data.xfer.item') as FormGroup).addControl('showMontoInConfirm', new FormControl(0, [Validators.required]))
+    }
 
     this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
       this.rsvForm.get('data.xfer.item.zdTicket').setValue(x)
@@ -159,16 +165,26 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
       this.rsvForm.get('data.xfer.xfer.json_names').setValue( json )
 
       if( this.rsvForm.get('data.xfer.xfer.whatsapp_contact').valid ){
-        this.rsvForm.get('data.xfer.xfer.comments').setValue( json.replace(re, '') + '// Contacto: ' + this.rsvForm.get('data.xfer.xfer.whatsapp_contact').value )
+        let comments = json.replace(re, ' ') + '// Contacto: ' + this.rsvForm.get('data.xfer.xfer.whatsapp_contact').value
+        this.rsvForm.get('data.xfer.xfer.comments').setValue( comments )
+        this.buildJsonObj( comments )
       }else{
         this.rsvForm.get('data.xfer.xfer.comments').reset()
+        this.buildJsonObj( '' )
       }
     }else{
       this.rsvForm.get('data.xfer.xfer.json_names').reset()
       this.rsvForm.get('data.xfer.xfer.comments').reset()
+      this.buildJsonObj( '' )
     }
 
-    console.log( this.rsvForm.get('data.xfer.xfer.comments').value )
+    // console.log( this.rsvForm.get('data.xfer.xfer.comments').value )
+  }
+
+  buildJsonObj( c ){
+    let trData = JSON.parse(JSON.stringify( this.rsvData['habSelected']['traslado'] ))
+    trData['comments'] = c
+    this.rsvForm.get('data.xfer.xfer.json_object').setValue( JSON.stringify(trData) )
   }
 
   getErrorMessage( ctrl, form = this.rsvForm ) {
@@ -207,6 +223,10 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     }
     
     return 'El campo tiene errores';
+  }
+
+  doneEmit(){
+    this.done.emit( true )
   }
 
   

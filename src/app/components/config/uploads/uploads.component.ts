@@ -7,6 +7,7 @@ import { UploadCieloComponent } from './upload-cielo/upload-cielo.component';
 import { UploadLoyaltyComponent } from './upload-loyalty/upload-loyalty.component';
 
 import Swal from 'sweetalert2';
+import { UploadComplementosComponent } from './upload-complementos/upload-complementos.component';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class UploadsComponent implements OnInit {
 
   @ViewChild( UploadCieloComponent ) private _cielo: UploadCieloComponent
   @ViewChild( UploadLoyaltyComponent ) private _loyalty: UploadLoyaltyComponent
+  @ViewChild( UploadComplementosComponent ) private _complementos: UploadComplementosComponent
 
   upList = []
   selectedType:any
@@ -73,8 +75,8 @@ export class UploadsComponent implements OnInit {
 
   buildForms( type, file ){
 
-      console.log('build start')
-      console.log(file)
+      // console.log('build start')
+      // console.log(file)
 
       let fileReader = new FileReader();
       
@@ -113,16 +115,18 @@ export class UploadsComponent implements OnInit {
               case 'cieloLlegadas':
                 flag = await this._cielo.buildVouchers(jsonFile)
                 Swal.close()
-                // this.loading['building'] = false
+
                 break;
-                case 'loyaltyRB':
+              case 'loyaltyRB':
                 flag = await this._loyalty.buildVouchers(jsonFile)
                 Swal.close()
-                // this._loyalty.buildVouchers(jsonFile)
-                // this.loading['building'] = false
+                break;
+              case 'complementos':
+                flag = await this._complementos.buildVouchers(jsonFile)
+                Swal.close()
                 break;
               default:
-                console.log('process not defined', jsonFile)
+                console.error('process not defined', jsonFile)
                 Swal.close()
             }
 

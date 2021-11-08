@@ -19,7 +19,7 @@ export class FlightSearchComponent implements OnInit {
 
   selectFlight( start, flight, arrv = true ){
 
-    console.log('start search')
+    // console.log('start search')
     return new Promise(async resolve => {
       Swal.fire({
         title: `<strong>Obteniendo Vuelos</strong>`,
@@ -38,7 +38,7 @@ export class FlightSearchComponent implements OnInit {
   getFlight( start, flight, arrv = true ){
 
     return new Promise(async resolve => {
-      console.log('start search')
+      // console.log('start search')
 
       this._api.restfulGet( `${ arrv ? 1 : 0 }/${ start }/${ flight }`, 'Cmaya/fa_flightSearch' )
                   .subscribe( async res => {

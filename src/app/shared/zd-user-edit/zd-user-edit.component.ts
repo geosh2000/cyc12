@@ -173,15 +173,15 @@ export class ZdUserEditComponent implements OnInit {
 
     if( this.optionalEdit ){
       if( this.nextStep != null ){
-        console.log('emit next', this.nextStep)
+        // console.log('emit next', this.nextStep)
         this.next.emit([true, this.nextStep,{ userForm: this.userForm,  mlData }])
       }else{
-        console.log('emit saved', this.userForm.value)
+        // console.log('emit saved', this.userForm.value)
         this.saved.emit([true,this.userForm.value])
       }
     }else{
       if( this.nextStep != null ){
-        console.log('emit next, reEdit', this.thisStep)
+        // console.log('emit next, reEdit', this.thisStep)
         this.next.emit([true, this.thisStep])
       }
     }
@@ -219,15 +219,15 @@ export class ZdUserEditComponent implements OnInit {
                   if( res['data']['response'] >= 200 && res['data']['response'] < 300 ){
 
                     if( ml != 0 ){
-                      console.log('mlupdatuser')
+                      // console.log('mlupdatuser')
                       mlData = <any>await this.updateMlUser( ml, res['data']['data']['user'] )
-                      console.log( mlData )
+                      // console.log( mlData )
                     }
                     
-                    console.log('validateuser')
+                    // console.log('validateuser')
                     this.validateUser( res['data']['data']['user'], ml, mlData )
                   }else if( res['data']['response'] == 422 ){
-                    console.log( res['data'] )
+                    // console.log( res['data'] )
                     
                     this.swalFusion( res['dpl'], params, mlData )
 
@@ -295,7 +295,7 @@ export class ZdUserEditComponent implements OnInit {
           mlData = <any>await this.updateMlUser( this.ml, user )
 
           Swal.close()
-          console.log( 'ml updated', mlData )
+          // console.log( 'ml updated', mlData )
         }
 
         Swal.close()

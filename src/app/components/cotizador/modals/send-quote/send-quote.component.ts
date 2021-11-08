@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/cdk/stepper';
@@ -9,6 +9,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
+
+import * as moment from 'moment-timezone';
+import Swal from 'sweetalert2';
+import { ApiService } from 'src/app/services/service.index';
 
 @Component({
   selector: 'app-send-quote',
@@ -37,7 +41,9 @@ export class SendQuoteComponent implements OnInit {
     ticket: [ '', Validators.required ],
     zdUser: [ '' ],
     isNewTicket: [ true ],
-    quoteData: [ this.data ]
+    quoteData: [ this.data ],
+    subject: [''],
+    forceLevel : [ false ]
   });
 
   loading = {}
@@ -54,6 +60,7 @@ export class SendQuoteComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data,
     breakpointObserver: BreakpointObserver,
     private _formBuilder: FormBuilder,
+    private _api: ApiService
   ) { 
 
     this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)')
@@ -81,7 +88,7 @@ export class SendQuoteComponent implements OnInit {
   }
 
   stepChange( e ){
-    console.log( e )
+    // console.log( e )
     switch ( e.selectedIndex ){
       case 2:
         if( this.firstFormGroup.get('newTicket').value ){
@@ -107,7 +114,7 @@ export class SendQuoteComponent implements OnInit {
   }
 
   selected( e ){
-    console.log( e )
+    // console.log( e )
     
     this.quoteForm.get('selectedLang').setValue( e.idioma_cliente )
     this.quoteForm.get('zdUser').setValue( e )
@@ -150,6 +157,61 @@ export class SendQuoteComponent implements OnInit {
   }
 
   sendQuote(){
-    console.log(this.quoteForm)
+
+    let subject = `Cotización ${ this.quoteForm.get('quoteData').value['hotel']['hotelName'] } del ${ moment(this.quoteForm.get('quoteData').value['summarySearch']['inicio']).format('DD MMM YYYY') } al ${ moment(this.quoteForm.get('quoteData').value['summarySearch']['fin']).format('DD MMM YYYY') }`
+    if( this.quoteForm.get('quoteData').value['summarySearch']['isUSD'] ){
+      subject = `${ this.quoteForm.get('quoteData').value['hotel']['hotelName'] } quote... from ${ moment(this.quoteForm.get('quoteData').value['summarySearch']['inicio']).format('YYYY-MM-DD') } to ${ moment(this.quoteForm.get('quoteData').value['summarySearch']['fin']).format('YYYY-MM-DD') }`
+    }
+
+    this.quoteForm.get('subject').setValue( subject )
+
+    let swalTitle = 'Enviando Cotización a '
+
+    if( this.quoteForm.get('isNewTicket').value ){
+      swalTitle += 'un nuevo ticket'
+    }else{
+      swalTitle += `ticket ${ this.quoteForm.get('ticket').value }`
+    }
+    
+    swalTitle += ` en idioma ${ this.quoteForm.get('selectedLang').value == 'idioma_es' ? 'Español' : 'Inglés' }`
+
+    Swal.fire({
+      title: swalTitle,
+      showCancelButton: false,
+      showConfirmButton: false
+    })
+
+    Swal.showLoading()
+
+    this._api.restfulPut( this.quoteForm.value, 'Quotes/cotizacion' )
+                .subscribe( res => {
+
+                  Swal.close()
+
+                  let text = `<p>Ticket ${ res['data'] }</p>
+                              <p>Nivel Cotizado: ${res['client']['orCotizado']}</p>                  
+                            `
+
+                  if( res['client']['orLevel'] != '' ){
+                    text += `<br>
+                            <p><b>NIVEL DEL CLIENTE: ${res['client']['orLevel']}</b>`
+                  }
+                  
+                  Swal.fire({
+                    title: 'Cotización enviada!', 
+                    html: text, 
+                    icon: 'success'
+                  })
+                  this.onNoClick()
+                  
+                }, err => {
+                  Swal.close()
+
+                  const error = err.error;
+                  Swal.fire('ERROR', error.msg, 'error')
+                  console.error(err.statusText, error.msg);
+
+                });
+
   }
 }

@@ -2,7 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as Globals from '../globals';
-import { map, catchError } from 'rxjs/operators'
+import { map, catchError, filter } from 'rxjs/operators'
+import { Subject } from 'rxjs';
 
 declare global {
   interface Window {
@@ -25,6 +26,8 @@ export class ApiService {
   apiRestful:string = `${ Globals.APISERV }/api/${Globals.APIFOLDER}/index.php/`;
   apiPostUrl:string = `${ Globals.APISERV }/ng2/post/`;
   qmAPI:string = `http://queuemetrics.pricetravel.com.mx:8080/queuemetricscc/`;
+
+  tokenCheck = new Subject()
  
   constructor(
                 private http:HttpClient,
@@ -115,7 +118,16 @@ export class ApiService {
     // return this.http.put( urlOK.changingThisBreaksApplicationSecurity, body, { headers } )
     return this.http.put( url, body, { headers } )
         .pipe(
-           map( res => res )
+           map( res => res ),
+           filter( res => {
+             if( res['msg'] && res['msg'] == 'Token Expired' ){
+               
+               this.tokenCheck.next( false )
+               return false
+             }else{
+               return true
+             }
+           })
         )
   }
 
@@ -146,7 +158,16 @@ export class ApiService {
 
     return this.http.post( urlOK.changingThisBreaksApplicationSecurity, body, { headers } )
         .pipe(
-           map( res => res )
+           map( res => res ),
+           filter( res => {
+            if( res['msg'] && res['msg'] == 'Token Expired' ){
+              
+              this.tokenCheck.next( false )
+              return false
+            }else{
+              return true
+            }
+          })
         )
   }
 
@@ -214,7 +235,16 @@ export class ApiService {
 
     return this.http.get( urlOK.changingThisBreaksApplicationSecurity, { headers } )
         .pipe(
-           map( res => res )
+           map( res => res ),
+           filter( res => {
+            if( res['msg'] && res['msg'] == 'Token Expired' ){
+              
+              this.tokenCheck.next( false )
+              return false
+            }else{
+              return true
+            }
+          })
         )
   }
 
@@ -269,7 +299,7 @@ export class ApiService {
 
 
   testApi( variable ){
-    console.log( variable )
+    // console.log( variable )
   }
 
   private determineLocalIp() {

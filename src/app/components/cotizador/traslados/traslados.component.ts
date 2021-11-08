@@ -138,7 +138,8 @@ export class CotizaTrasladosComponent implements OnInit {
 
       if( x == 'Cortesia' ){
         let pax = this.totalPax()
-        this.xferSearch.controls['tipo'].setValue( pax > 2 ? 'Privado' : 'Compartido')
+        this.xferSearch.controls['tipo'].setValue('Compartido')
+        // this.xferSearch.controls['tipo'].setValue( pax > 2 ? 'Privado' : 'Compartido')
         this.xferSearch.controls['tipo'].disable()
       }else{
         if( x != '' ){
@@ -383,17 +384,17 @@ export class CotizaTrasladosComponent implements OnInit {
       origen: this.xferSearch.get('origen').disabled,
       tipo: this.xferSearch.get('tipo').disabled
     }
-    console.log('origen', this.xferSearch.get('origen').disabled)
-    console.log('destino', this.xferSearch.get('destino').disabled)
-    console.log('tipo', this.xferSearch.get('tipo').disabled)
+    // console.log('origen', this.xferSearch.get('origen').disabled)
+    // console.log('destino', this.xferSearch.get('destino').disabled)
+    // console.log('tipo', this.xferSearch.get('tipo').disabled)
 
     this.xferSearch.get('origen').enable()
     this.xferSearch.get('destino').enable()
     // this.xferSearch.get('tipo').enable()
 
-    console.log('origen', this.xferSearch.get('origen').disabled)
-    console.log('destino', this.xferSearch.get('destino').disabled)
-    console.log('tipo', this.xferSearch.get('tipo').disabled)
+    // console.log('origen', this.xferSearch.get('origen').disabled)
+    // console.log('destino', this.xferSearch.get('destino').disabled)
+    // console.log('tipo', this.xferSearch.get('tipo').disabled)
 
     this.cotizacion = []
 
@@ -468,7 +469,7 @@ export class CotizaTrasladosComponent implements OnInit {
 
     let selected = await this._flight.selectFlight(start, flight, arrv)
 
-    console.log( selected )
+    // console.log( selected )
 
     let formControl = arrv ? 'llegada' : 'salida'
     let timeControl = arrv ? 'arrivaltime' : 'departuretime'
@@ -488,7 +489,7 @@ export class CotizaTrasladosComponent implements OnInit {
       traslado: r,
       isUsd: this.showUsd,
       summarySearch: this.summarySearch,
-      type: 'traslado'
+      type: 'xfer'
     }
 
     data = JSON.parse(JSON.stringify(data))
@@ -500,7 +501,7 @@ export class CotizaTrasladosComponent implements OnInit {
       traslado: r,
       isUsd: this.showUsd,
       summarySearch: this.summarySearch,
-      type: 'traslado'
+      type: 'xfer'
     }
 
     data = JSON.parse(JSON.stringify(data))

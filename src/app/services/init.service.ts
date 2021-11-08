@@ -124,6 +124,8 @@ export class InitService {
 
   snackbar( t, title, msg ){
 
+    console.trace()
+
     this.snack.next( {
       status: true,
       msg,

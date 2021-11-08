@@ -91,7 +91,7 @@ export class DoPaymentComponent  {
                 this.reference = params.ref;  
                 flag = true      
                 this.link = ''
-                console.log('ref change', params.ref)
+                // console.log('ref change', params.ref)
               }
             }
             
@@ -100,7 +100,7 @@ export class DoPaymentComponent  {
                 this.referenceId = params.id;   
                 flag = true     
                 this.link = ''
-                console.log('id change', params.id)
+                // console.log('id change', params.id)
               }
             }
 
@@ -122,7 +122,7 @@ export class DoPaymentComponent  {
 
   accept(){
     if( !this.acceptTerms ){
-      console.log('load module')
+      // console.log('load module')
       this.loading['paymodule'] = true
     }
 

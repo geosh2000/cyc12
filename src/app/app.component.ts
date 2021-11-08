@@ -28,7 +28,7 @@ export class AppComponent {
   }
 
   menuChange(){
-    console.log('Menu clicked', !this.sb_open)
+    // console.log('Menu clicked', !this.sb_open)
     this.sb_open = !this.sb_open
   }
 

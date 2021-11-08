@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { UploadCieloComponent } from './uploads/upload-cielo/upload-cielo.component';
 import { UploadLoyaltyComponent } from './uploads/upload-loyalty/upload-loyalty.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { UploadComplementosComponent } from './uploads/upload-complementos/upload-complementos.component';
 
 
 
@@ -16,11 +17,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     UploadsComponent,
     UploadCieloComponent,
     UploadLoyaltyComponent,
+    UploadComplementosComponent,
   ],
   exports: [
     UploadsComponent,
     UploadCieloComponent,
     UploadLoyaltyComponent,
+    UploadComplementosComponent,
   ],
   imports: [
     CommonModule,

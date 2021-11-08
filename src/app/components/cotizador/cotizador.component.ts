@@ -35,7 +35,7 @@ export class CotizadorComponent implements OnInit {
   }
 
   rsv( e ){
-    console.log( e )
+    // console.log( e )
 
     switch( e['action'] ){
       case 'doRsv':
@@ -75,7 +75,7 @@ export class CotizadorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+      // console.log('The dialog was closed', result);
     });
   }
 
@@ -87,7 +87,7 @@ export class CotizadorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+      // console.log('The dialog was closed', result);
     });
   }
 

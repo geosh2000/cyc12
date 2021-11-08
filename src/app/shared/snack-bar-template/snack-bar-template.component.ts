@@ -19,9 +19,9 @@ export class SnackBarTemplateComponent implements OnInit {
     this.msg = m
     this.dmMsg = d
 
-    console.log('wait 5 seconds')
+    // console.log('wait 5 seconds')
     setTimeout( () => {
-      console.log('return')
+      // console.log('return')
       return true
     }, 5000)
   }

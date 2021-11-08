@@ -20,6 +20,8 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
   @Input() rsvForm = this.fb.group({})
   @Output() rsvFormChange = new EventEmitter()
 
+  @Output() done = new EventEmitter()
+
   zdTicket: FormGroup = this.fb.group({ ticket: [''] })
   zdTicketName = ''
 
@@ -30,11 +32,11 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.item)
+    // console.log(this.item)
   }
 
   ngOnChanges( changes: SimpleChanges ){
-    console.log(changes)
+    // console.log(changes)
   }
 
   async validateTicket( submit = false ){
@@ -126,7 +128,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
       options = {'review': 'Corregir Ticket', 'skip': 'Continuar'}
     }
 
-    console.log( t['requester_id'],d )
+    // console.log( t['requester_id'],d )
 
     if( t['requester_id'] != d['zdId'] && !ticketU['tags'].includes('noedit') ){
       const { value: option } = await Swal.fire({
@@ -158,7 +160,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
             ticketU['zdId'] = ticketU['id']
             d['id'] = d['zdId']
             let newMerged = await this._merge.confirmFusion(d, ticketU, true);
-            console.log(newMerged)
+            // console.log(newMerged)
             return await this.validateTicket( f ) 
           case 'skip':
             return t
@@ -235,7 +237,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
   createForm( r, user ){
 
-    console.log('build started')
+    // console.log('build started')
 
     let sum = r['habSelected']['summarySearch']
     let zd = r['formRsv']['zdUser']
@@ -254,16 +256,17 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
       validators: this.nacionalidadCongruente()
     })
 
+    if( this.rsvForm.get('masterdata') ){
+      this.rsvForm.removeControl('masterdata')
+    }
+
     if( r['formRsv']['isNew'] ){
-      if( this.rsvForm.get('masterdata') ){
-        this.rsvForm.removeControl('masterdata')
-      }
 
       this.rsvForm.addControl('masterdata', this.fb.group({
           nombreCliente:  [ user.name, [ Validators.required ]],
-          telCliente:     [ user.phone, [ Validators.required ]],
+          telCliente:     [ user.phone ],
           celCliente:     [ '' ],
-          waCliente:      [ user.whatsapp, [ Validators.required ]],
+          waCliente:      [ user.whatsapp ],
           correoCliente:  [ user.email, [ Validators.required ]],
           zdUserId:       [ user.zdId, [ Validators.required ]],
           esNacional:     [ user.nacionalidad == 'nacional' ? 1 : 2, [ Validators.required ]],
@@ -272,11 +275,20 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
           xldPol:         [ r['habSelected']['hotel'] ? r['habSelected']['extraInfo']['grupo']['xldPolicy'] : 'default' ],
           orId:           [ r['formRsv']['orId'], [ Validators.required ]],
           orLevel:        [ r['formRsv']['orLevel'], [ Validators.required ]],
+          clientePaisId:  [ r['formRsv']['zdUser']['pais']['id'], [ Validators.required ]],
+          clientePais:    [ r['formRsv']['zdUser']['pais']['name'], [ Validators.required ]],
         }))
 
+    }else{
+      this.rsvForm.addControl('masterdata', this.fb.group({
+        orId:           [ r['formRsv']['orId'], [ Validators.required ]],
+        orLevel:        [ r['formRsv']['orLevel'], [ Validators.required ]],
+        clientePaisId:  [ r['formRsv']['zdUser']['pais']['id'], [ Validators.required ]],
+        clientePais:    [ r['formRsv']['zdUser']['pais']['name'], [ Validators.required ]],
+      }))
     }
 
-    console.log('emit built')
+    // console.log('emit built')
     this.rsvFormChange.emit( this.rsvForm )
 
     
@@ -299,7 +311,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
     }
 
     if( this.rsvForm.valid ){
-      console.log('VALID FORM')
+      // console.log('VALID FORM')
       Swal.fire({
         title: `<strong>Creando Reserva</strong>`,
         focusConfirm: false,
@@ -313,19 +325,36 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
       console.error('INVALID FORM')
     }
 
-    console.log(this.rsvForm.valid, this.rsvForm)
-    console.log(this.rsvForm.value)
+    // console.log(this.rsvForm.valid, this.rsvForm)
+    // console.log(this.rsvForm.value)
 
   }
 
   saveRsv(){
     
-    this._api.restfulPut( this.rsvForm.value, 'Rsv_v12/saveRsv' )
+    this._api.restfulPut( this.rsvForm.value, 'Rsv/saveRsv12' )
                 .subscribe( res => {
 
                   Swal.close()
-                  Swal.fire('Reserva Creada', res['msg'], 'success')
-                  console.log(res['data'])
+                  Swal.fire({
+                    title:  'Reserva Creada',  
+                    text:   `Masterlocator: ${res['data']['masterlocator']}`, 
+                    icon:   'success',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cerrar',
+                    confirmButtonText: 'Ir a Masterlocator'
+                  })
+                  .then( ( result ) => {
+                    
+                    if (result.isConfirmed) {
+                      this.goToLoc( res['data']['masterlocator'] )
+                    }
+                    
+                  })
+                  // console.log(res['data'])
+
+                  // Close Modal
+                  this.done.emit( true )
 
                 }, err => {
 
@@ -335,6 +364,37 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
                   console.error(err.statusText, error.msg);
 
                 });
+  }
+
+  goToLoc( l ){
+
+      Swal.fire({
+        title: 'Loading',
+        showConfirmButton: false
+      })
+
+      Swal.showLoading()
+
+      this._api.restfulGet( l, 'Rsv/mlExist' )
+                  .subscribe( res => {
+  
+                    Swal.close()
+  
+                    // FOR EXTERNAL ANGULAR INSTANCE
+                    window.open("https://cyc-oasishoteles.com/#/rsv2/" + l)
+  
+                    // FOR THIS ANGULAR INSTANCE
+                    // this.router.navigate(['/rsv2',v]);
+  
+                  }, err => {
+  
+                    Swal.close()
+                    const error = err.error;
+                    this._init.snackbar('error',error.msg, 'Cerrar')
+                    console.error(err.statusText, error.msg);
+  
+                  });
+  
   }
 
   digControls( c, err, n = '' ){

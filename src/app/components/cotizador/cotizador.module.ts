@@ -40,6 +40,7 @@ import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
 import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.component';
 import { ValidateTicketComponent } from './modals/validate-ticket/validate-ticket.component';
 import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -100,6 +101,7 @@ import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.comp
     MatDialogModule,
     MatMenuModule,
     MatStepperModule,
+    MatTooltipModule,
     
   ]
 })

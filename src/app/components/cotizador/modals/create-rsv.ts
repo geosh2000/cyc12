@@ -59,6 +59,13 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
       private _formBuilder: FormBuilder,
       @Inject(MAT_DIALOG_DATA) public data) {
 
+        if( data.type == 'xfer' ){
+            if( data.summarySearch.grupo == 'Cortesia' ){
+                this.firstFormGroup.get('newMaster').setValue( false )
+                this.firstFormGroup.get('newMaster').disable()
+            }
+        }
+
         this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)')
           .pipe(
             map(({matches}) => matches ? 'horizontal' : 'vertical')
@@ -78,16 +85,16 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
         })
 
         this.createRsv.get('rsvNacional').valueChanges.subscribe( x => { 
-            if( this.data['type'] == 'hotel' ){
+            if( this.data['type'] == 'hotel' && x != '' ){
                 this.validateNacionalidad()
 
-                this.data.summarySearch.nacionalidad = x ? 'nacional' : 'internacional'
+                this.data.summarySearch.nacionalidad = (x ? 'nacional' : 'internacional')
 
                 if( x == true ){
                     this.data.summarySearch.cobertura = 'normal'
                 }
 
-                console.log( 'insurance changed', x, this.data )
+                // console.log( 'insurance changed', x, this.data )
                 this.rsvData = JSON.parse(JSON.stringify({habSelected: this.data, userInfo: this.secondFormGroup.value, formRsv: this.createRsv.value}))
             }
         })
@@ -121,7 +128,7 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
     }
 
     async selected( e, flagValidate = true ){
-        console.log(e)
+        // console.log(e)
         
         this.objSelected = e
         this.editOptional = false
@@ -158,7 +165,7 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
             this.firstFormGroup.get('newMaster').value ? this.createRsv.get('zdUser').value['name'] : e['nombreCliente']
             )
             .then( res => {
-                console.log(res)
+                // console.log(res)
                 this.createRsv.get('orLevel').setValue(res['data']['level']['code'] == 'basic' ? 'Silver' : (res['data']['level']['code'] == 'gold' ? 'Gold' : 'Platinum') )
                 this.createRsv.get('orId').setValue(res['data']['id']);
                 this.createRsv.get('splitNames').setValue( res['split'] )
@@ -195,7 +202,7 @@ import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.co
         }
 
         this.rsvData = JSON.parse(JSON.stringify({habSelected: this.data, userInfo: this.secondFormGroup.value, formRsv: this.createRsv.value}))
-        console.log(this.rsvData)
+        // console.log(this.rsvData)
 
     }
 

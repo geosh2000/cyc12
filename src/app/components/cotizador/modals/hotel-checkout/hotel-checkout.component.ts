@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ApiService, InitService } from 'src/app/services/service.index';
@@ -15,6 +15,7 @@ import { ValidateTicketComponent } from '../validate-ticket/validate-ticket.comp
 export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
 
   @ViewChild( ValidateTicketComponent ) _validate: ValidateTicketComponent
+  @Output() done = new EventEmitter
 
   @Input() rsvData = {}
 
@@ -39,7 +40,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
   constructor(
             private fb: FormBuilder,
             private _api: ApiService,
-            private _init: InitService,
+            public _init: InitService,
           ) { 
             
   }
@@ -52,11 +53,11 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       this.setLevelsData( this.rsvData['habSelected']['hotel']['tarifas'][this.displayDate( this.rsvData['habSelected']['summarySearch']['inicio'], 'YYYY-MM-DD' )] )
       this.chgLevel( this.rsvData['habSelected']['selectedLevel'], this.rsvData['habSelected']['hotel']['tarifas'][ this.displayDate( this.rsvData['habSelected']['summarySearch']['inicio'], 'YYYY-MM-DD' )]['n' + this.rsvData['habSelected']['selectedLevel']] ) 
     }
-    console.log( this.rsvData )
+    // console.log( this.rsvData )
   }
   
   ngOnChanges( changes: SimpleChanges ){
-    console.log(changes)
+    // console.log(changes)
     if( changes['rsvData'] ){
 
       if( changes['rsvData']['currentValue']['habSelected'] ){
@@ -71,7 +72,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       }
 
       if( changes['rsvData']['currentValue']['formRsv'] && this.rsvForm.get('hasInsurance')){
-        console.log('reBuild insurance')
+        // console.log('reBuild insurance')
         this.buildInsurance( changes['rsvData']['currentValue']['habSelected'] )
       }
 
@@ -102,8 +103,8 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       // BUILD MONTOS HABITACION
       let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
-      console.log('local', this.rsvForm)
-      console.log('child', this._validate.rsvForm)
+      // console.log('local', this.rsvForm)
+      // console.log('child', this._validate.rsvForm)
 
       if( !this.rsvForm.get('data.hab' + i) ){
         
@@ -169,7 +170,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     this.buildInsurance( hData, user )
     this.buildMonto( hData )
 
-    console.log( this.rsvForm.value )
+    // console.log( this.rsvForm.value )
   }
 
   fillTicket( x ){
@@ -206,6 +207,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
         grupo:          [{ value: hGpo[ usd ? 'cieloUSD' : 'cieloMXN'],  disabled: false }, [ Validators.required ] ],
         grupoTfas:      [ hGpo.grupo, [ Validators.required ] ],
         promo:          [{ value: hGpo['p' + this.levelSelected.selected],  disabled: false }, [ Validators.required ] ],
+        tipoCambio:     [{ value: usd ? 1 : hData.hotel.tipoCambio,  disabled: false }, [ Validators.required ] ],
       }))
     }
   }
@@ -242,9 +244,11 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
             itemType:     [{ value: 10,  disabled: false }, [ Validators.required ] ],
             isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
             zdTicket:     [''],
+            parentPriced: [ curr['habSelected']['extraInfo']['grupo']['insurancePacked'] ]
           }),
           monto:      this.fb.group({
             montoOriginal:  [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
+            tipoCambio:     [{ value: usd ? 1 : seguro.tipoCambio,  disabled: false }, [ Validators.required ] ],
             monto:          [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
             moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
             lv:             [{ value: 1,  disabled: false }, [ Validators.required ] ],
@@ -377,6 +381,10 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     }
     
     return 'El campo tiene errores';
+  }
+
+  doneEmit(){
+    this.done.emit( true )
   }
 
 }

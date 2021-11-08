@@ -321,6 +321,7 @@ export class CotizaHotelComponent implements OnInit {
                   this.extraInfo['grupo'] = res['extra']['grupo']
                   this.extraInfo['grupo']['insuranceIncluded'] = res['extra']['grupo']['insuranceAtFirst'] == '1' && this.summarySearch['nacionalidad'] == 'internacional'
 
+                  this.selectedLevel = res['extra']['grupo']['defaultLevel']
                   let result = res['data']
                   let habDet = this.buildOcc(f.value)
 
@@ -330,8 +331,8 @@ export class CotizaHotelComponent implements OnInit {
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                   }
 
-                  console.log(result)
-                  console.log(this.extraInfo)
+                  // console.log(result)
+                  // console.log(this.extraInfo)
                   this.cotizacion = result
                   
                 }, err => {
@@ -568,7 +569,7 @@ export class CotizaHotelComponent implements OnInit {
   }
 
   buildOcc( f ){
-    console.log(f)
+    // console.log(f)
 
     let result = {
       'porHabitacion' : {},
@@ -595,7 +596,7 @@ export class CotizaHotelComponent implements OnInit {
     }
 
     for( let h in f['habitaciones']){
-      console.log(f['habitaciones'][h])
+      // console.log(f['habitaciones'][h])
       result['porHabitacion'][h] = {
                                     occ: f['habitaciones'][h],
                                     'fechas': {},
@@ -628,7 +629,7 @@ export class CotizaHotelComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+      // console.log('The dialog was closed', result);
 
       if( typeof result == 'undefined' ){
         this.extraInfo['grupo']['insuranceIncluded'] = true;
@@ -694,6 +695,40 @@ export class CotizaHotelComponent implements OnInit {
     Swal.showLoading()
   }
 
+  paqAmmount( c, v ){
+    let hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + this.extraInfo['grupo']['paqLevel']]['monto']
+    let hotel_ref = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
+    let seguro = (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
+    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+
+    switch(v){
+      case 'total':
+          return hotel + seguro
+      case 'min':
+          return seguro + (hotel / nights)
+      case 'dif':
+          return (hotel + seguro) - hotel_ref
+    }
+  }
+  
+  totalPN( c, l ){
+    let hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + l]['monto']
+    let seguro = (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
+    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+
+    return (hotel + seguro) / nights
+
+  }
+
+  pricePN( c, tc, h ){
+    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+    let hotel = ( this.hotelSearch.get('isUSD').value ? 1 : tc ) * c['total']['n' + this.selectedLevel]['monto']
+    let seguros = ( (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (( this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros'][h][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros'][h][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']))
+
+    // console.log(nights, hotel, seguros)
+    return (hotel + seguros) / nights
+  }
+
 
 }
 
@@ -710,6 +745,8 @@ export class RemoveInsuranceDialog {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  
 
 }
 

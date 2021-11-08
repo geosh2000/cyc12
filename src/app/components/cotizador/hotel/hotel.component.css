@@ -40,3 +40,8 @@
   flex-shrink: 0;
   background-position: center;
 }
+
+.mat-paquete {
+  background-color: #15ab13;
+  color: #fff;
+}

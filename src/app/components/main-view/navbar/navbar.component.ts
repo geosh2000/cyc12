@@ -79,7 +79,7 @@ export class NavbarComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+      // console.log('The dialog was closed', result);
     });
   }
 
@@ -129,12 +129,12 @@ export class LoginDialog {
   }
 
   validate( item ){
-    console.log(item);
+    // console.log(item);
   }
 
   open(){
     // jQuery('#loginModal').show()
-    console.log('Wrong open method for login')
+    console.error('Wrong open method for login')
   }
 
   logIn( ){

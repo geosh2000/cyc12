@@ -11,16 +11,16 @@
                 Tarifa elegida: 
                 <button mat-stroked-button type="button" color="primary" [matMenuTriggerFor]="level">{{ levelSelected['data']['name'] }}</button>
                 <mat-menu #level="matMenu">
-                    <button mat-menu-item type="button" (click)="chgLevel(1, levelsData['n1'])" *ngIf="levelsData['n1']['active'] == 1">
+                    <button mat-menu-item type="button" (click)="chgLevel(1, levelsData['n1'])" *ngIf="levelsData['n1']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l1_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
                         {{ levelsData['n1']['name'] }}
                     </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(2, levelsData['n2'])" *ngIf="levelsData['n2']['active'] == 1">
+                    <button mat-menu-item type="button" (click)="chgLevel(2, levelsData['n2'])" *ngIf="levelsData['n2']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l2_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
                         {{ levelsData['n2']['name'] }}
                     </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(3, levelsData['n3'])" *ngIf="levelsData['n3']['active'] == 1">
+                    <button mat-menu-item type="button" (click)="chgLevel(3, levelsData['n3'])" *ngIf="levelsData['n3']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l3_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
                         {{ levelsData['n3']['name'] }}
                     </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(4, levelsData['n4'])" *ngIf="levelsData['n4']['active'] == 1">
+                    <button mat-menu-item type="button" (click)="chgLevel(4, levelsData['n4'])" *ngIf="levelsData['n4']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l4_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
                         {{ levelsData['n4']['name'] }}
                     </button>
                 </mat-menu>
@@ -69,7 +69,7 @@
                 </mat-checkbox>
             </section>
             <mat-divider class="my-3"></mat-divider>
-            <app-validate-ticket [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
+            <app-validate-ticket (done)="doneEmit()" [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
 
         </div>
 
@@ -170,7 +170,7 @@
             <div class="mt-2 col-12 text-center" *ngIf="htmlForm.submitted && rsvForm.invalid">
                 <div class="d-block alert alert-danger" role="alert">
                     Existen errores en la información. Revisa cada habitación para encontrarlos. 
-                    <button class="mx-auto" type="submit" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
+                    <button class="mx-auto" type="button" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
                 </div>
             </div>
             <div class="mt-2 col-12 text-center"  *ngIf="rsvForm.get('data')">
