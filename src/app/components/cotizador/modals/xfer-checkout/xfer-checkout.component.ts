@@ -139,7 +139,9 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
   }
 
   buildNameForm( p ){
-    this.namesForm = this.fb.group({})
+    this.namesForm = this.fb.group({
+      comments: [ '' ]
+    })
 
     for( let i = 1; i <= p; i++){
       let dflt = i == 1 ? this.rsvData['formRsv']['zdUser']['name'] : ''

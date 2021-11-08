@@ -155,6 +155,10 @@ export class CotizaHotelComponent implements OnInit {
       }
       
     })
+    
+    this.hotelSearch.get('isUSD').valueChanges.subscribe( x => { 
+      this.summarySearch['isUSD'] = x
+    })
 
     this.hotelSearch.controls['habs'].setValue(1)
   }
