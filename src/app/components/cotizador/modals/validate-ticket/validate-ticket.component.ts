@@ -218,7 +218,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
       if( isIns.value ){
         if( formGroup.get( 'data.hab1.insurance') ){
-          const iNac = formGroup.get( 'data.hab1.insurance.insurance.sg_mdo').value == 'nacional' ? 1 : 0
+          const iNac = formGroup.get( 'data.hab1.insurance.insurance.sg_mdo').value == 'nacional' ? 1 : 2
           
           if( uNac.value == iNac ){
             isIns.setErrors( null )
