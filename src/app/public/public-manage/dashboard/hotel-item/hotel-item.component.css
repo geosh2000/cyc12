@@ -1,0 +1,21 @@
+.item-card {
+    width: 440px;
+    margin: 10px;
+  }
+
+  .mat-form-field + .mat-form-field {
+    margin-left: 8px;
+  }
+
+:host ::ng-deep .mat-card:not([class*=mat-elevation-z]){
+  box-shadow: 8px 10px 7px -1px rgb(0 0 0 / 30%), 0px 1px 15px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+.card-cancel{
+    background: burlywood;
+}
+
+.card-quote{
+    background: khaki;
+}
+  

@@ -1,0 +1,11 @@
+<ng-container *ngIf="loading['rsv']">
+<div class="d-flex container justify-content-center mt-5">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+</ng-container>
+
+
+<ng-container *ngIf="!loading['rsv']">
+    <app-main-view-pm [items]="items" [master]="master" [shown]="items.length > 0" *ngIf="items.length > 0"></app-main-view-pm>
+    <app-not-found-pm *ngIf="items.length == 0"></app-not-found-pm>
+</ng-container> 

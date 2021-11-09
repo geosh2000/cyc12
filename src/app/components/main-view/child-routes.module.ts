@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
 
 import { MainViewComponent } from './main-view.component';
-import { PagosComponent } from '../pagos/pagos.component';
 
 const childRoutes: Routes = [
     { 

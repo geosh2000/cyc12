@@ -1,5 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from "@angular/core";
+import { PublicManageRoutingModule } from './public-manage/public-manage.routing';
 
 
 const routes: Routes = [
@@ -11,7 +12,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild( routes )],
+  imports: [
+    RouterModule.forChild( routes ),
+    PublicManageRoutingModule
+  ],
   exports: [RouterModule]
 })
 export class PublicRoutingModule { }

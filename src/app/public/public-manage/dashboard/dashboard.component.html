@@ -1,0 +1,7 @@
+<ng-container *ngIf="!parentLoading">
+    <app-full-rsv [ml]="ml" [items]="items" *ngIf="fullFlag"></app-full-rsv>
+    <app-item-rsv [ml]="ml" [items]="items" *ngIf="!fullFlag"></app-item-rsv>
+</ng-container>
+
+
+

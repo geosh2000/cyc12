@@ -167,7 +167,21 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
       this.rsvForm.get('data.xfer.xfer.json_names').setValue( json )
 
       if( this.rsvForm.get('data.xfer.xfer.whatsapp_contact').valid ){
-        let comments = json.replace(re, ' ') + '// Contacto: ' + this.rsvForm.get('data.xfer.xfer.whatsapp_contact').value
+
+        let forcedIn = this.rsvData['habSelected']['summarySearch']['llegada']['forced']
+        let forcedOut = this.rsvData['habSelected']['summarySearch']['salida']['forced']
+
+        let fmsg = ''
+
+        if( forcedIn) {
+          fmsg += ' ** Vuelo de llegada forzado manualmente, no se encontro en FlightAware ** '
+        }
+
+        if( forcedOut ) {
+          fmsg += ' ** Vuelo de salida forzado manualmente, no se encontro en FlightAware ** '
+        }
+
+        let comments = json.replace(re, ' ') + '// Contacto: ' + this.rsvForm.get('data.xfer.xfer.whatsapp_contact').value + fmsg
         this.rsvForm.get('data.xfer.xfer.comments').setValue( comments )
         this.buildJsonObj( comments )
       }else{

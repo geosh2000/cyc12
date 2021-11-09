@@ -1,0 +1,19 @@
+/* :host ::ng-deep .mat-tab-header {
+    z-index:100000;
+    position: fixed;
+    width:100%;
+    background: white;
+    top: 63px;
+}
+
+:host ::ng-deep .mat-tab-body-content {
+    top: 112px;
+    padding-left: 5px;
+    padding-right: 5px;
+    position: fixed;
+    overflow: auto!important;
+    width:  calc(100% - 350px);
+    height: calc(100% - 160px);
+    transition: width 1s;
+    transition-timing-function: ease-out;
+}    */

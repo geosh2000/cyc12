@@ -1,0 +1,25 @@
+<div class="list-group list-group-flush border-bottom scrollarea">
+    <mat-selection-list class="pt-0" [multiple]="false">
+        <!-- // FULL RSV -->
+        <mat-list-option (click)="itemSelected('full')" color="accent" value="full" [style.height.px]="43">
+            <mat-icon mat-list-icon>dashboard</mat-icon>
+            <div class="container-fluid">
+                <div class="d-flex w-100 align-items-center justify-content-between">
+                    <span class="mb-1" [style.color]="'#673ab7'" [style.fontWeight]="500">{{ _trl.trl('Reserva Completa') }}</span>
+                </div>
+            </div>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        <ng-container *ngFor="let i of items">
+            <mat-list-option (click)="itemSelected(i['val'])" [value]="i['val']" style="height: 60px!important; padding-left: 10px;">
+                <mat-icon mat-list-icon>{{ i['icon'] }}</mat-icon>
+                <div class="container-fluid">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <span class="mb-1" [style.fontWeight]="500">{{ _trl.trl(i['title']) }}</span>
+                    </div>
+                </div>
+            </mat-list-option>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-selection-list>
+  </div>

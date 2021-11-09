@@ -95,26 +95,26 @@
                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
                                     <mat-label>Menores</mat-label>
                                     <input matInput class="text-center" type="number" formControlName="menores" min=0 max=3 autocomplete="off">
-                                    <mat-hint>0 a 11 años</mat-hint>
+                                    <mat-hint>0 a 12 años</mat-hint>
                                     <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
                                 </mat-form-field>
                                 <ng-container formGroupName="edades">
                                     <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
                                         <mat-label>Edad 1</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=11 autocomplete="off">
-                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=12 autocomplete="off">
+                                        <mat-hint>0 a 12 años</mat-hint>
                                         <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
                                     </mat-form-field>
                                     <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
                                         <mat-label>Edad 2</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=11 autocomplete="off">
-                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=12 autocomplete="off">
+                                        <mat-hint>0 a 12 años</mat-hint>
                                         <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
                                     </mat-form-field>
                                     <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
                                         <mat-label>Edad 3</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=11 autocomplete="off">
-                                        <mat-hint>0 a 11 años</mat-hint>
+                                        <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=12 autocomplete="off">
+                                        <mat-hint>0 a 12 años</mat-hint>
                                         <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
                                     </mat-form-field>
                                 </ng-container>

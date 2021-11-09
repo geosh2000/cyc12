@@ -1,0 +1,45 @@
+<!-- NAVBAR -->
+<mat-toolbar class='matNavbar' role="heading">
+    <div class="d-flex justify-content-between container-fluid px-3">
+      <!-- LOGO   -->
+      <div>
+        <img [style.cursor]="'pointer'" (click)="sb_open = true" data-eventcategory="General" data-eventaction="Barra navegacion" data-eventlabel="Icono Oasis" data-eventtrigger="clicGeneral" class="img-black" src="https://oasishoteles.sfo2.cdn.digitaloceanspaces.com/assets/img/logos/logo-oasis-negro.png" alt="Icono Oasis Negro" title="Icono Oasis Negro">
+      </div>
+  
+      <!-- Data General  -->
+      <div>
+        <app-navbar-details [ml]="master"></app-navbar-details>
+      </div>
+    </div>
+</mat-toolbar>
+  
+<!-- SIDEBAR -->
+<mat-drawer-container class="drawer-container">
+  <!-- <mat-drawer #sidenav mode="side" [(opened)]="sb_open" position="start" [fixedInViewport]="true" [fixedTopGap]="60" [style.width.px]="350" > -->
+  <mat-drawer #sidenav [mode]="sb_style" [opened]="sb_open" position="start" [style.width.px]="350" >
+    <app-item-list [lang]="master['idioma']" [sb_style]="sb_style" [(menuOpen)]="sb_open" (fixedMain)="fixedMain = $event" (selected)="showItem($event)"></app-item-list>
+  </mat-drawer>
+
+  <mat-drawer-content >
+    <div class="container-fluid main-container" >
+      <div class="d-block text-left" *ngIf="!sb_open">
+        <button mat-icon-button (click)="sb_open = true">
+          <mat-icon>arrow_back</mat-icon><span class="ms-1">Menu</span>
+        </button> 
+      </div>
+      <ng-container *ngIf="loading['content']">
+        <div class="d-flex container justify-content-center mt-5">
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
+      </ng-container>
+      <app-dashboard [parentLoading]="loading['content']" [menuStatus]="sb_open"></app-dashboard>
+    </div>
+    
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<div class="footer container-fluid d-flex justify-content-end align-items-center">
+  <div class="d-flex align-items-center">
+    <mat-icon>copyright</mat-icon><span class="ms-1">Oasis Hotels & Resorts {{ thisYear() }}</span>
+  </div>
+</div>

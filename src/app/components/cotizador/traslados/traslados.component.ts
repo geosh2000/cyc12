@@ -123,14 +123,16 @@ export class CotizaTrasladosComponent implements OnInit {
       ['llegada']:        new FormGroup({
                                 ['fecha']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
                                 ['vuelo']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
-                                ['hora']:     new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),          
+                                ['hora']:     new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),     
+                                ['forced']:   new FormControl( { value: false, disabled: true } )     
       }),
       ['salida']:        new FormGroup({
                                 ['fecha']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
                                 ['vuelo']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
                                 ['hora']:     new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),          
                                 ['horaAbierto']:    new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),
-                                ['pickup']:   new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),          
+                                ['pickup']:   new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),    
+                                ['forced']:   new FormControl( { value: false, disabled: true } )      
                               }),
     })
 
@@ -468,6 +470,16 @@ export class CotizaTrasladosComponent implements OnInit {
     let flight = this.xferSearch.get(dest + '.vuelo').value.toString().trim().replace(/[a-zA-Z\\s]*/gi,'')
 
     let selected = await this._flight.selectFlight(start, flight, arrv)
+
+    if( !selected ){
+      this.xferSearch.get(dest + '.forced').setValue(false)
+      this.xferSearch.get(dest + '.forced').enable()
+      return false
+    }else{
+      this.xferSearch.get(dest + '.forced').setValue(false)
+      this.xferSearch.get(dest + '.forced').disable()
+
+    }
 
     // console.log( selected )
 

@@ -1,0 +1,8 @@
+.footer {
+    position: fixed;
+    bottom: 0px;
+}
+
+.drawer-container{
+    height: calc(100vh - 90px);
+}

@@ -98,9 +98,9 @@
 
                                     <div class="container-fluid py-0 d-flex justify-content-end flex-wrap">
                                         <!-- LLEGADA / SALIDA -->
-                                        <div [style.maxWidth.px]="700" class="me-auto">
+                                        <div [style.maxWidth.px]="790" class="me-auto">
                                             <!-- LLEGADA -->
-                                            <div class="p-0  mx-3 d-flex justify-content-between flex-wrap" formGroupName="llegada" *ngIf="showArrival">
+                                            <div class="p-0  mx-3 d-flex justify-content-between flex-wrap align-items-center" formGroupName="llegada" *ngIf="showArrival">
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="200">
                                                     <mat-label>Fecha Llegada</mat-label>
                                                     <input matInput readonly [matDatepicker]="fechaLlegada" formControlName="fecha" [min]="minDate" [max]="maxDate" autocomplete="off">
@@ -117,15 +117,16 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="237" *ngIf="!xferSearch.get('llegada.hora').disabled">
                                                     <mat-label>Hora Llegada</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
-                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight()" *ngIf="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') && !(xferSearch.get('llegada.forced').value && xferSearch.get('llegada.forced').enabled)">
+                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight()" *ngIf="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') && !(xferSearch.get('llegada.forced').value && xferSearch.get('llegada.forced').enabled)">
                                                         <mat-icon>search</mat-icon>
                                                     </button>
                                                     <mat-hint>Formato 24 hrs (HH:MM)</mat-hint>
                                                     <mat-error *ngIf="xferSearch.get('llegada.hora').invalid">{{ getErrorMessage('llegada.hora') }}</mat-error>
                                                 </mat-form-field>
+                                                <mat-slide-toggle formControlName="forced" *ngIf="xferSearch.get('llegada.forced').enabled">Forzar</mat-slide-toggle>
                                             </div>
-                                            <div class="p-0  mx-3 d-flex justify-content-between flex-wrap" formGroupName="salida" *ngIf="showDeparture">
+                                            <div class="p-0  mx-3 d-flex justify-content-between flex-wrap align-items-center" formGroupName="salida" *ngIf="showDeparture">
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="200">
                                                     <mat-label>Fecha Salida</mat-label>
                                                     <input matInput readonly [matDatepicker]="fechaSalida" formControlName="fecha" [min]="xferSearch.get('llegada.fecha').value == '' ? minDate : xferSearch.get('llegada.fecha').value" [max]="maxDate" autocomplete="off">
@@ -142,13 +143,14 @@
                                                 </mat-form-field>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="115" *ngIf="!xferSearch.get('salida.hora').disabled">
                                                     <mat-label>Hora Salida</mat-label>
-                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
-                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight( false )" *ngIf="xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way'">
+                                                    <input matInput class="text-center" type="text" formControlName="hora" min=0 autocomplete="off" [readonly]="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') && !(xferSearch.get('salida.forced').value && xferSearch.get('salida.forced').enabled)">
+                                                    <button type="button" matSuffix mat-icon-button aria-label="Buscar" (click)="selectFlight( false )" *ngIf="(xferSearch.get('ruta').value['name'] != 'Intermedio Round Trip' && xferSearch.get('ruta').value['name'] != 'Intermedio One Way') && !(xferSearch.get('salida.forced').value && xferSearch.get('salida.forced').enabled)">
                                                         <mat-icon>search</mat-icon>
                                                     </button>
                                                     <mat-hint>Formato 24 hrs (HH:MM)</mat-hint>
                                                     <mat-error *ngIf="xferSearch.get('salida.hora').invalid">{{ getErrorMessage('salida.hora') }}</mat-error>
                                                 </mat-form-field>
+                                                <mat-slide-toggle formControlName="forced" *ngIf="xferSearch.get('salida.forced').enabled">Forzar</mat-slide-toggle>
                                                 <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="115" *ngIf="!xferSearch.get('salida.pickup').disabled">
                                                     <mat-label>Hora Pickup</mat-label>
                                                     <input matInput class="text-center" type="text" formControlName="pickup" min=0 autocomplete="off">

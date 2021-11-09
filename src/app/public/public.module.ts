@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { DomSeguroPipe } from '../pipes/dom-seguro.pipe';
+import { PublicManageModule } from './public-manage/public-manage.module';
 
 
 @NgModule({
@@ -23,6 +24,8 @@ import { DomSeguroPipe } from '../pipes/dom-seguro.pipe';
   imports: [
     CommonModule,
     FormsModule,
+
+    PublicManageModule,
 
     MatCardModule, 
     MatProgressBarModule,

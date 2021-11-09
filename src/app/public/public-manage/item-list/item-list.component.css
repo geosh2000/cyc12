@@ -1,0 +1,15 @@
+.xldItem{
+    text-decoration-line: line-through;
+    color: darkred!important;
+    background: burlywood;
+}
+
+.expiredItem{
+    text-decoration-line: line-through;
+    color: darkred!important;
+    background: khaki;
+}
+
+.quoteItem{
+    background: khaki;
+}

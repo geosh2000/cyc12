@@ -1,0 +1,17 @@
+<mat-tab-group mat-align-tabs="start">
+    <mat-tab [label]="_trl.trl('Resumen')">
+
+        <!-- Items de hotel -->
+        <div class="container-fluid d-flex flex-wrap justify-content-start">
+            <ng-container *ngFor="let i of items">
+                <app-hotel-item [item]="i" *ngIf="i['itemType'] == 1"></app-hotel-item>
+            </ng-container>
+        </div>
+    </mat-tab>
+    <mat-tab [label]="_trl.trl('Huespedes')">
+        <pre>{{ items | json }}</pre>
+    </mat-tab>
+    <mat-tab [label]="_trl.trl('Traslados')">Traslados</mat-tab>
+    <mat-tab [label]="_trl.trl('Pagos')">Pagos</mat-tab>
+    <mat-tab [label]="_trl.trl('Facturacion')">Facturacion</mat-tab>
+</mat-tab-group>
