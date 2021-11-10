@@ -168,8 +168,9 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
       if( this.rsvForm.get('data.xfer.xfer.whatsapp_contact').valid ){
 
-        let forcedIn = this.rsvData['habSelected']['summarySearch']['llegada']['forced']
-        let forcedOut = this.rsvData['habSelected']['summarySearch']['salida']['forced']
+        // console.log(this.rsvData['habSelected']['summarySearch'])
+        let forcedIn = this.rsvData['habSelected']['summarySearch']['llegada'] && this.rsvData['habSelected']['summarySearch']['llegada']['forced'] ? true : false
+        let forcedOut = this.rsvData['habSelected']['summarySearch']['salida'] && this.rsvData['habSelected']['summarySearch']['salida']['forced'] ? true : false
 
         let fmsg = ''
 
