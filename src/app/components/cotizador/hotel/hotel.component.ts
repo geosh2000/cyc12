@@ -335,7 +335,7 @@ export class CotizaHotelComponent implements OnInit {
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                   }
 
-                  // console.log(result)
+                  console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
                   
@@ -409,6 +409,7 @@ export class CotizaHotelComponent implements OnInit {
           'n2': {'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
           'n3': {'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
           'n4': {'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+          'n5': {'monto': (neta * (1-r[f]['n5']['descuento'])), 'descuento': r[f]['n5']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n5']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
           isClosed: r[f]['isClosed'] == 1
         }
         
@@ -418,11 +419,13 @@ export class CotizaHotelComponent implements OnInit {
         b['porHabitacion'][h]['total']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
         b['porHabitacion'][h]['total']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
         b['porHabitacion'][h]['total']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
+        b['porHabitacion'][h]['total']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
         
         b['porHabitacion'][h]['total']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
         b['porHabitacion'][h]['total']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
         b['porHabitacion'][h]['total']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
         b['porHabitacion'][h]['total']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
+        b['porHabitacion'][h]['total']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
 
         // TOTALES GENERALES
         b['total']['monto']['neta']['monto'] += neta
@@ -430,21 +433,25 @@ export class CotizaHotelComponent implements OnInit {
         b['total']['monto']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
         b['total']['monto']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
         b['total']['monto']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
+        b['total']['monto']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
         
         b['total']['monto']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
         b['total']['monto']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
         b['total']['monto']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
         b['total']['monto']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
+        b['total']['monto']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
 
         b['total']['levels']['n1']['active'] = r[f]['n1']['active'] == 0 ? false : b['total']['levels']['n1']['active']
         b['total']['levels']['n2']['active'] = r[f]['n2']['active'] == 0 ? false : b['total']['levels']['n2']['active']
         b['total']['levels']['n3']['active'] = r[f]['n3']['active'] == 0 ? false : b['total']['levels']['n3']['active']
         b['total']['levels']['n4']['active'] = r[f]['n4']['active'] == 0 ? false : b['total']['levels']['n4']['active']
+        b['total']['levels']['n5']['active'] = r[f]['n5']['active'] == 0 ? false : b['total']['levels']['n5']['active']
         
         b['total']['levels']['n1']['enabled'] = (r[f]['n1']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n1']['enabled']
         b['total']['levels']['n2']['enabled'] = (r[f]['n2']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n2']['enabled']
         b['total']['levels']['n3']['enabled'] = (r[f]['n3']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n3']['enabled']
         b['total']['levels']['n4']['enabled'] = (r[f]['n4']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n4']['enabled']
+        b['total']['levels']['n5']['enabled'] = (r[f]['n5']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n5']['enabled']
         
         b['total']['levels']['noR'] = noR
 
@@ -583,13 +590,15 @@ export class CotizaHotelComponent implements OnInit {
           n1: {'monto': 0, 'relativeDisc': 0},
           n2: {'monto': 0, 'relativeDisc': 0},
           n3: {'monto': 0, 'relativeDisc': 0},
-          n4: {'monto': 0, 'relativeDisc': 0}
+          n4: {'monto': 0, 'relativeDisc': 0},
+          n5: {'monto': 0, 'relativeDisc': 0}
         },
         levels: {
           n1: {'active': true, 'enabled': true},
           n2: {'active': true, 'enabled': true},
           n3: {'active': true, 'enabled': true},
-          n4: {'active': true, 'enabled': true}
+          n4: {'active': true, 'enabled': true},
+          n5: {'active': true, 'enabled': true}
         },
         adultos: 0,
         menores: 0,
@@ -609,7 +618,8 @@ export class CotizaHotelComponent implements OnInit {
                                       n1: {'monto': 0, 'relativeDisc': 0},
                                       n2: {'monto': 0, 'relativeDisc': 0},
                                       n3: {'monto': 0, 'relativeDisc': 0},
-                                      n4: {'monto': 0, 'relativeDisc': 0}
+                                      n4: {'monto': 0, 'relativeDisc': 0},
+                                      n5: {'monto': 0, 'relativeDisc': 0}
                                     }
                                   }
 

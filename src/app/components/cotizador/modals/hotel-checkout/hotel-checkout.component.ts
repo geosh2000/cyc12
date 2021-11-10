@@ -290,7 +290,8 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
         'n1': d['n1'],
         'n2': d['n2'],
         'n3': d['n3'],
-        'n4': d['n4']
+        'n4': d['n4'],
+        'n5': d['n5']
       }
 
       resolve( true )

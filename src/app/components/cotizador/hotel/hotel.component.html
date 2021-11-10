@@ -370,7 +370,7 @@
                             <div class="d-xs-block d-lg-none col-xs-12" [style.height.px]="20"></div>
                             <div class="col-xs-12 col-lg-3 d-flex justify-content-start align-items-center">
                                 <div class="m-0 p-0" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true)">
-                                    <mat-slide-toggle [disabled]="!(extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1)" class="mx-1 mb-2" [(ngModel)]="c['habs']['hasTransfer']">
+                                    <mat-slide-toggle [disabled]="!(extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1)" class="mx-1 mb-2" [(ngModel)]="c['habs']['hasTransfer']">
                                         <small [ngClass]="{'text-success': c['habs']['hasTransfer'],'text-danger text-decoration-line-through': !c['habs']['hasTransfer']}">
                                             Traslado redondo para {{ c['habs']['total']['pax'] }} pax
                                             <br>
@@ -398,7 +398,7 @@
                                     </div>
                                     <div class="m-0 p-0 text-center">
                                         <small class="text-success">
-                                            Valor real de extras: {{ ((extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1) ? (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) : 0) + (( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                            Valor real de extras: {{ ((extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1) ? (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) : 0) + (( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} 
                                             <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                             <br>
                                             Valor en paquete: {{ paqAmmount(c, 'dif') | currency:'USD':'symbol-narrow':'.2-2' }} 
@@ -407,8 +407,8 @@
                                     <div class="me-1">
                                         <small style="font-size: xx-small;">
                                             *Incluye seguro 
-                                                <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1">, traslado</span>
-                                                <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['pax'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['pax'] > 1">, traslado</span>
+                                                <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1">, traslado</span>
+                                                <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1">, traslado</span>
                                             <br>** Pago inicial <b class="text-danger">no reembolsables</b>
                                             <br>** Pago minimo inicial {{ paqAmmount(c, 'min') | currency:'USD':'symbol-narrow':'.2-2' }}
                                         </small>
