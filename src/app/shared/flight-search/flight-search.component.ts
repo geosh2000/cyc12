@@ -78,7 +78,7 @@ export class FlightSearchComponent implements OnInit {
     let arr = {}
 
     for( let f of r ){
-      arr[i.toString()] = `Vuelo: <span class="text-primary"><b>${ f['ident'] }</b></span> -> ${ arrv ? 'Llegada: ' : 'Salida: '} <span class="text-success">${ f[ arrv ? 'arrivaltime' : 'departuretime' ] } hrs</span>`   
+      arr[i.toString()] = `<span class="text-primary"><b>${ f['ident'] }</b></span> -> ${ arrv ? '➘: ' : '⬈: '} <span class="text-success">${ f[ arrv ? 'arrivaltime' : 'departuretime' ] } hrs</span>`   
       i++
     }
 

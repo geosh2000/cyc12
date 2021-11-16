@@ -53,7 +53,7 @@ export class CotizaTrasladosComponent implements OnInit {
   xferSearch: FormGroup
   summarySearch = {}
 
-  minDate = moment().add(2, 'days')
+  minDate = moment().add(1, 'days')
   maxDate = moment(`${moment().add(1, 'years').format('YYYY')}-12-19`)
 
   // Listados
@@ -141,6 +141,8 @@ export class CotizaTrasladosComponent implements OnInit {
       if( x == 'Cortesia' ){
         let pax = this.totalPax()
         this.xferSearch.controls['tipo'].setValue('Compartido')
+        this.showUsd = true
+        this.summarySearch['isUSD'] = true
         // this.xferSearch.controls['tipo'].setValue( pax > 2 ? 'Privado' : 'Compartido')
         this.xferSearch.controls['tipo'].disable()
       }else{
@@ -401,6 +403,7 @@ export class CotizaTrasladosComponent implements OnInit {
     this.cotizacion = []
 
     this.summarySearch = JSON.parse(JSON.stringify( this.xferSearch.value ))
+    
 
     this._api.restfulPut( this.summarySearch, 'Cmaya/cotizarTraslado' )
                 .subscribe( res => {
@@ -420,6 +423,8 @@ export class CotizaTrasladosComponent implements OnInit {
                   if( defaults['tipo'] ){
                     this.xferSearch.get('tipo').disable()
                   }
+
+                  this.summarySearch['isUSD'] = this.showUsd
 
 
                   if( !this.noResults ){
@@ -499,7 +504,7 @@ export class CotizaTrasladosComponent implements OnInit {
   doRsv( r = {} ){
     let data = {
       traslado: r,
-      isUsd: this.showUsd,
+      isUSD: this.showUsd,
       summarySearch: this.summarySearch,
       type: 'xfer'
     }
@@ -511,7 +516,7 @@ export class CotizaTrasladosComponent implements OnInit {
   doQuote( r = {} ){
     let data = {
       traslado: r,
-      isUsd: this.showUsd,
+      isUSD: this.showUsd,
       summarySearch: this.summarySearch,
       type: 'xfer'
     }

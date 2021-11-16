@@ -273,7 +273,7 @@
         </mat-card-header>
         <mat-card-content>
             <div class="d-flex justify-content-end px-3">
-                <mat-slide-toggle [(ngModel)]="summarySearch.isUSD">USD</mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="summarySearch.isUSD" [disabled]="xferSearch.get('grupo').value == 'Cortesia'">USD</mat-slide-toggle>
             </div>
             <div class="container-fluid d-flex justify-content-center flex-wrap mt-2">
                 <mat-card class="container p-0 mb-1" *ngFor="let c of cotizacion" [style.width.px]="500">

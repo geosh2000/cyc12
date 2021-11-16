@@ -140,6 +140,10 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
           pax:          [adultos + juniors + menores, [ Validators.required ] ]
         }))
 
+        if( curr['habSelected']['summarySearch']['isPaq'] ){
+          (this.rsvForm.get('data.hab' + i + '.hotel.item') as FormGroup).addControl('isPaq', new FormControl(1, Validators.required ));
+        }
+
         
         for( let x = 2; x <= pax; x++ ){
           (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_nombre_' + x, new FormControl('', Validators.pattern(this.namePattern)));

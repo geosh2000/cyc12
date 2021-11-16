@@ -9,24 +9,27 @@
                     <p><b>Titular: </b>{{ rsvData['formRsv']['zdUser']['name'] }} (<mat-icon>emoji_events</mat-icon>{{ rsvData['formRsv']['orLevel'] }})</p>
                 </div>
                 Tarifa elegida: 
-                <button mat-stroked-button type="button" color="primary" [matMenuTriggerFor]="level">{{ levelSelected['data']['name'] }}</button>
-                <mat-menu #level="matMenu">
-                    <button mat-menu-item type="button" (click)="chgLevel(1, levelsData['n1'])" *ngIf="levelsData['n1']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l1_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
-                        {{ levelsData['n1']['name'] }}
-                    </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(2, levelsData['n2'])" *ngIf="levelsData['n2']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l2_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
-                        {{ levelsData['n2']['name'] }}
-                    </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(3, levelsData['n3'])" *ngIf="levelsData['n3']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l3_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
-                        {{ levelsData['n3']['name'] }}
-                    </button>
-                    <button mat-menu-item type="button" (click)="chgLevel(4, levelsData['n4'])" *ngIf="levelsData['n4']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l4_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
-                        {{ levelsData['n4']['name'] }}
-                    </button>
-                </mat-menu>
+                <ng-container *ngIf="!rsvData['habSelected']['summarySearch']['isPaq']">
+                    <button mat-stroked-button type="button" color="primary" [matMenuTriggerFor]="level">{{ levelSelected['data']['name'] }}</button>
+                    <mat-menu #level="matMenu">
+                        <button mat-menu-item type="button" (click)="chgLevel(1, levelsData['n1'])" *ngIf="levelsData['n1']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l1_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
+                            {{ levelsData['n1']['name'] }}
+                        </button>
+                        <button mat-menu-item type="button" (click)="chgLevel(2, levelsData['n2'])" *ngIf="levelsData['n2']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l2_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
+                            {{ levelsData['n2']['name'] }}
+                        </button>
+                        <button mat-menu-item type="button" (click)="chgLevel(3, levelsData['n3'])" *ngIf="levelsData['n3']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l3_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
+                            {{ levelsData['n3']['name'] }}
+                        </button>
+                        <button mat-menu-item type="button" (click)="chgLevel(4, levelsData['n4'])" *ngIf="levelsData['n4']['active'] == 1 && (rsvData['habSelected']['extraInfo']['grupo']['l4_allEnabled'] == 1 || _init.checkSingleCredential('app_cotizador_noRestrict') ) ">
+                            {{ levelsData['n4']['name'] }}
+                        </button>
+                    </mat-menu>
+                </ng-container>
+                <span *ngIf="rsvData['habSelected']['summarySearch']['isPaq']" class="text-primary"><b>Paquete</b></span>
                 <div 
                     class="py-1 mt-1 d-block alert alert-warning text-center" 
-                    *ngIf="rsvData['habSelected']['extraInfo']['grupo']['isOR'] == '1' && levelCompare(levelSelected['data']['name'])"
+                    *ngIf="rsvData['habSelected']['extraInfo']['grupo']['isOR'] == '1' && levelCompare(levelSelected['data']['name']) && !rsvData['habSelected']['summarySearch']['isPaq']"
                     role="alert">
                     El nivel del usuario permite elegir una mejor tarifa. Da click 
                     <button type="button" mat-stroked-button color="primary" (click)="selectBestLevel()">Aquí</button>
@@ -61,8 +64,8 @@
                 </span>
                 </mat-checkbox><br>
                 <mat-checkbox
-                            [ngClass]="{'text-decoration-line-through': !rsvData['habSelected']['hotel']['habs']['hasTransfer']}" 
-                            [checked]="rsvData['habSelected']['hotel']['habs']['hasTransfer']"
+                            [ngClass]="{'text-decoration-line-through': !rsvData['habSelected']['hotel']['habs']['hasTransfer'] && !rsvData['habSelected']['summarySearch']['paqXfer']}" 
+                            [checked]="rsvData['habSelected']['hotel']['habs']['hasTransfer'] || rsvData['habSelected']['summarySearch']['paqXfer']"
                             [disabled]="true"
                             color="primary">
                 Traslado compartido Redondo

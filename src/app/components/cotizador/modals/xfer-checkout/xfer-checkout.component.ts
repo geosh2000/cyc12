@@ -99,7 +99,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
           salida_pickup:        [ { value: tr.info['salida'] ? tr.info['salida'].pickup || '' : '', disabled: false } ],
           transfer_type:        [ { value: tr.info.transfer_type, disabled: false }, Validators.required ],
           user_id:              [ { value: tr.info.user_id, disabled: false }, Validators.required ],
-          whatsapp_contact:     [ { value: user['whatsapp'] != '' && user['whatsapp'] != null ? user['whatsapp'] : user['phone'], disabled: false }, [Validators.required, Validators.pattern("[+]*\\d{8,}")] ],
+          whatsapp_contact:     [ { value: user['whatsapp'] != '' && user['whatsapp'] != null ? user['whatsapp'] : user['phone'], disabled: false }, [Validators.required] ],
           json_names:           [ { value: '', disabled: false }, Validators.required ],
           json_object:          [ JSON.stringify( tr ), Validators.required ]
         }),

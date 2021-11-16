@@ -246,7 +246,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
       nacionalidad: [{ value: r['formRsv']['isNacional'] ? 1 : 2,  disabled: false }, [ Validators.required ] ],
       isUSD:        [{ value: sum['isUSD'] ? 'MXN' : 'USD',                 disabled: false }, [ Validators.required ] ],
       hasInsurance: [{ value: r['formRsv']['rsvInsurance'] || false,      disabled: false }, [Validators.required ] ],
-      hasTransfer:  [{ value: r['habSelected']['hotel'] ? (r['habSelected']['hotel']['habs']['hasTransfer'] || false) : false, disabled: false }, [Validators.required ] ],
+      hasTransfer:  [{ value: r['habSelected']['hotel'] ? ((r['habSelected']['hotel']['habs']['hasTransfer'] || sum['paqXfer']) || false) : false, disabled: false }, [Validators.required ] ],
       newMaster:    [{ value: r['formRsv']['isNew'] || false,             disabled: false }, [Validators.required ] ],
       masterloc:    [{ value: (r['formRsv']['isNew'] || false) ? 'noLoc' : r['userInfo']['masterloc']['masterlocatorid'],             disabled: false }, [Validators.required ] ],
       zdTicket:     [ '', [ Validators.required ] ],

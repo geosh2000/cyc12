@@ -323,7 +323,7 @@ export class CotizaHotelComponent implements OnInit {
                   this.summarySearch['cobertura'] = 'normal'
 
                   this.extraInfo['grupo'] = res['extra']['grupo']
-                  this.extraInfo['grupo']['insuranceIncluded'] = res['extra']['grupo']['insuranceAtFirst'] == '1' && this.summarySearch['nacionalidad'] == 'internacional'
+                  this.extraInfo['grupo']['insuranceIncluded'] = res['extra']['grupo']['insuranceAtFirst'] == '1' && this.summarySearch['nacionalidad'] == 'internacional' && this.extraInfo['grupo']['hasPaq'] == 0
 
                   this.selectedLevel = res['extra']['grupo']['defaultLevel']
                   let result = res['data']
@@ -335,7 +335,7 @@ export class CotizaHotelComponent implements OnInit {
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                   }
 
-                  console.log(result)
+                  // console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
                   
@@ -457,8 +457,8 @@ export class CotizaHotelComponent implements OnInit {
 
       }
 
-      if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['pax'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['pax'] > 1 ){
-        b['hasTransfer'] = true
+      if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){
+        b['hasTransfer'] = false
       }
 
       
@@ -678,6 +678,28 @@ export class CotizaHotelComponent implements OnInit {
     data = JSON.parse(JSON.stringify(data))
     this.rsv.emit({ action: 'doRsv', data })
   }
+
+  rsvPaq( r = {} ){
+
+    let ss = JSON.parse(JSON.stringify(this.summarySearch))
+    let ei = JSON.parse(JSON.stringify(this.extraInfo))
+    
+    ss['isPaq'] = true
+    ss['paqXfer'] = this.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
+    ei['grupo']['insuranceIncluded'] = true
+
+    let data = {
+      hotel: r,
+      level: this.selectedLevel,
+      extraInfo: ei,
+      summarySearch: ss,
+      selectedLevel: this.paqAmmount( r, 'level' ),
+      type: 'hotel'
+    }
+
+    data = JSON.parse(JSON.stringify(data))
+    this.rsv.emit({ action: 'doRsv', data })
+  }
   
   doQuote( r = {} ){
     let data = {
@@ -710,19 +732,48 @@ export class CotizaHotelComponent implements OnInit {
   }
 
   paqAmmount( c, v ){
-    let hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + this.extraInfo['grupo']['paqLevel']]['monto']
-    let hotel_ref = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
-    let seguro = (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
-    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
 
-    switch(v){
-      case 'total':
-          return hotel + seguro
-      case 'min':
-          return seguro + (hotel / nights)
-      case 'dif':
-          return (hotel + seguro) - hotel_ref
+    let paqLevels = JSON.parse( this.extraInfo['grupo']['paqLevel'] )
+
+    // console.log(paqLevels)
+
+    let limit = paqLevels.length
+
+    let hotel = 0
+    let hotel_base = 0
+    let hotel_ref = 0
+    let seguro = 0
+    let nights = 0
+
+    let i = 1
+
+    for( let pl of paqLevels ){
+      hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + pl]['monto']
+      hotel_base = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto']
+      hotel_ref = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
+      seguro = (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
+      nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+
+      if( ((hotel + seguro) > hotel_ref  &&  (hotel + seguro) <= hotel_base) || i == limit ){
+
+        switch(v){
+          case 'total':
+              // console.log(c['hotel'], c['habName'], pl, hotel_ref, hotel_base, hotel + seguro, (hotel + seguro) - hotel_ref)
+              return hotel + seguro
+          case 'min':
+              return seguro + (hotel / nights)
+          case 'dif':
+              return (hotel + seguro) - hotel_ref
+          case 'level':
+              return pl
+        }
+      }
+
+      i++
+
     }
+
+
   }
   
   totalPN( c, l ){
@@ -742,6 +793,7 @@ export class CotizaHotelComponent implements OnInit {
     // console.log(nights, hotel, seguros)
     return (hotel + seguros) / nights
   }
+  
 
 
 }

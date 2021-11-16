@@ -62,10 +62,12 @@ export class UploadComplementosComponent implements OnInit {
           dtCaptura : this.excelDate(r["CAP F"])
         }
 
-        cielo[index].push( row )
-        i++
-
-        this.allRegs++
+        if( r['CAN U'].trim() == '' ){
+          cielo[index].push( row )
+          i++
+          this.allRegs++
+        }
+        
       }
 
      this.data = cielo
