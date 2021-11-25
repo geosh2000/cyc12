@@ -32,6 +32,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { RsvModule } from '../rsv/rsv.module';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     CotizadorModule,
     PagosModule,
     ConfigModule,
+    RsvModule,
 
     MatToolbarModule,
     MatSidenavModule,

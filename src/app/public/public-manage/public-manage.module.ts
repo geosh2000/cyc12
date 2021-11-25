@@ -27,6 +27,7 @@ import { HotelItemComponent } from './dashboard/hotel-item/hotel-item.component'
 import { MainViewPMComponent } from './main-view/main-view.component';
 import { PmStartComponent } from './pm-start/pm-start.component';
 import { NotFoundPMComponent } from './not-found/not-found.component';
+import { ConfirmWidgetComponent } from './dashboard/confirm-widget/confirm-widget.component';
 
 
 
@@ -44,6 +45,7 @@ import { NotFoundPMComponent } from './not-found/not-found.component';
     ItemRsvComponent,
     HotelItemComponent,
     NotFoundPMComponent,
+    ConfirmWidgetComponent,
 
     PmStartComponent,
   ],
@@ -59,7 +61,7 @@ import { NotFoundPMComponent } from './not-found/not-found.component';
     FullRsvComponent,
     ItemRsvComponent,
     HotelItemComponent,
-
+    ConfirmWidgetComponent,
     PmStartComponent,
   ],
   imports: [    

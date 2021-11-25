@@ -9,6 +9,7 @@ export class DashboardComponent implements OnInit {
 
   @Input() parentLoading = false
   @Input() menuStatus = true
+  @Input() insuranceQuote = {}
 
   items = []
   ml = {}

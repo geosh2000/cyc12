@@ -13,6 +13,7 @@ export class MainViewPMComponent implements OnInit, OnChanges {
 
   @Input() items = []
   @Input() master = {}
+  @Input() insuranceQuote = {}
   @Input() shown = false
 
   sb_open = true;
@@ -25,14 +26,11 @@ export class MainViewPMComponent implements OnInit, OnChanges {
   screenHeight = 0;
   screenWidth = 0;
 
-  responsiveWidth = 1000;
+  responsiveWidth = 750;
 
   @HostListener('window:resize', ['$event'])
     onResize(event?) {
-      this.screenHeight = window.innerHeight;
-      this.screenWidth = window.innerWidth;
-
-      this.responsiveEval()
+      this.responsiveEval( window.innerWidth )
     }
 
 
@@ -41,16 +39,17 @@ export class MainViewPMComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-
+    this.responsiveEval( window.innerWidth )
   }
 
-  responsiveEval(){
-    if( this.screenWidth >= this.responsiveWidth ){
+  responsiveEval( sw ){
+
+    if( sw >= this.responsiveWidth ){
       console.log('Big Screen, with fixed menu')
       this.sb_open = true
       this.sb_style = 'side'
     }else{
-      console.log( this.screenWidth, this.responsiveWidth )
+      console.log( sw, this.responsiveWidth )
       this.sb_open = true
       this.sb_style = 'over'
     }
@@ -66,7 +65,7 @@ export class MainViewPMComponent implements OnInit, OnChanges {
         this._dash.showItem(true, this.items, this.master)
         this.loading['content'] = false
 
-        this.responsiveEval()
+        this.responsiveEval( window.innerWidth )
       },500)
     } 
 

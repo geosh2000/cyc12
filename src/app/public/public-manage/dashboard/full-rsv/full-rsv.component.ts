@@ -9,6 +9,7 @@ import { GlobalServicesService } from 'src/app/services/service.index';
 export class FullRsvComponent implements OnInit {
 
   @Input() ml = {}
+  @Input() insuranceQuote = {}
   @Input() items = []
 
   constructor( public _trl: GlobalServicesService ) { }

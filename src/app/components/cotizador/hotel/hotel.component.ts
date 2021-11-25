@@ -335,7 +335,7 @@ export class CotizaHotelComponent implements OnInit {
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                   }
 
-                  // console.log(result)
+                  console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
                   
@@ -681,15 +681,17 @@ export class CotizaHotelComponent implements OnInit {
 
   rsvPaq( r = {} ){
 
+    let htl = JSON.parse(JSON.stringify(r))
     let ss = JSON.parse(JSON.stringify(this.summarySearch))
     let ei = JSON.parse(JSON.stringify(this.extraInfo))
     
     ss['isPaq'] = true
     ss['paqXfer'] = this.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
     ei['grupo']['insuranceIncluded'] = true
+    htl['habs']['hasTransfer'] = this.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
 
     let data = {
-      hotel: r,
+      hotel: htl,
       level: this.selectedLevel,
       extraInfo: ei,
       summarySearch: ss,

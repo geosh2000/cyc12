@@ -1,0 +1,3 @@
+.text-glow{
+    text-shadow: 2px 0 4px #fff, -2px 0 4px #fff, 0 2px 4px #fff, 0 -2px 4px #fff, 1px 1px #fff, -1px -1px 4px #fff, 1px -1px 4px #fff, -1px 1px 4px #fff;
+}

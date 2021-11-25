@@ -19,3 +19,12 @@
     background: khaki;
 }
   
+.assist-card{
+  /* background-image: url('/../../../../assets/images/background/assistlogo.jfif'); */
+  background-color: #b5424240;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-blend-mode: soft-light;
+  /* font-size: initial;text-shadow: 2px 0 4px #fff, -2px 0 4px #fff, 0 2px 4px #fff, 0 -2px 4px #fff, 1px 1px #fff, -1px -1px 4px #fff, 1px -1px 4px #fff, -1px 1px 4px #fff; */
+}

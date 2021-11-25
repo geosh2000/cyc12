@@ -6,6 +6,6 @@
 
 
 <ng-container *ngIf="!loading['rsv']">
-    <app-main-view-pm [items]="items" [master]="master" [shown]="items.length > 0" *ngIf="items.length > 0"></app-main-view-pm>
+    <app-main-view-pm [items]="items" [master]="master" [insuranceQuote]="insuranceQuote" [shown]="items.length > 0" *ngIf="items.length > 0"></app-main-view-pm>
     <app-not-found-pm *ngIf="items.length == 0"></app-not-found-pm>
 </ng-container> 

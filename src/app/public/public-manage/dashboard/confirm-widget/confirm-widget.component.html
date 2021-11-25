@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-between align-items-center" >
+    <mat-icon>tag</mat-icon>
+    <div class="ms-1 d-inline-block  text-truncate text-center">
+        <ng-container [ngSwitch]="item['itemStatus']">
+            <ng-container *ngSwitchCase="'Confirmado'">
+                <ng-container *ngIf="item['confirm'] == 'Pendiente'">
+                    <span class="text-success text-glow"><b>{{ _trl.trl('Confirmado') }}</b></span>
+                </ng-container>
+                <ng-container *ngIf="item['confirm'] != 'Pendiente'">
+                    <p class="m-0"><span class="text-success text-glow"><b>{{ item['confirm'] }}</b></span></p>
+                    <p class="m-0"><small><a href="" target="_blank">(Pre-check in)</a></small></p>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Cotizacion Expirada'">
+                <span class="text-danger text-glow"><b>{{ _trl.trl('Expirada') }}</b></span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Cotizacion'">
+                <span class="text-warning text-glow"><b>{{ _trl.trl(item['montoEnValidacion'] > 0 ? 'En Validacion' : 'Cotizacion') }}</b></span>
+
+                <ng-container *ngIf="item['montoEnValidacion'] == 0">
+                    <p class="m-0"><small><a href="" target="_blank">{{ _trl.trl('Pagar') }}</a></small></p>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Cancelado'">
+                <span class="text-danger text-glow"><b>{{ _trl.trl('Cancelada') }}</b></span>
+                <p class="m-0 text-danger"><small>{{ ft(item['dtCancel']) }}</small></p>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>

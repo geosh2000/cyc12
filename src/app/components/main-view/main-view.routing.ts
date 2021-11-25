@@ -8,6 +8,7 @@ import { BlankComponent } from './blank/blank.component';
 import { CotizadorRoutingModule } from '../cotizador/cotizador.routing';
 import { PagosRoutingModule } from '../pagos/pagos.routing';
 import { ConfigRoutingModule } from '../config/config.routing';
+import { RsvRoutingModule } from '../rsv/rsv.routing';
 
 
 
@@ -29,6 +30,7 @@ const routes: Routes = [
       CotizadorRoutingModule,
       PagosRoutingModule,
       ConfigRoutingModule,
+      RsvRoutingModule,
     ],
   exports: [RouterModule]
 })
