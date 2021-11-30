@@ -9,6 +9,7 @@ import { UploadCieloComponent } from './uploads/upload-cielo/upload-cielo.compon
 import { UploadLoyaltyComponent } from './uploads/upload-loyalty/upload-loyalty.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { UploadComplementosComponent } from './uploads/upload-complementos/upload-complementos.component';
+import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desplazos.component';
 
 
 
@@ -18,12 +19,14 @@ import { UploadComplementosComponent } from './uploads/upload-complementos/uploa
     UploadCieloComponent,
     UploadLoyaltyComponent,
     UploadComplementosComponent,
+    UploadDesplazosComponent,
   ],
   exports: [
     UploadsComponent,
     UploadCieloComponent,
     UploadLoyaltyComponent,
     UploadComplementosComponent,
+    UploadDesplazosComponent,
   ],
   imports: [
     CommonModule,

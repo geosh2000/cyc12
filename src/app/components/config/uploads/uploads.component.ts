@@ -8,6 +8,7 @@ import { UploadLoyaltyComponent } from './upload-loyalty/upload-loyalty.componen
 
 import Swal from 'sweetalert2';
 import { UploadComplementosComponent } from './upload-complementos/upload-complementos.component';
+import { UploadDesplazosComponent } from './upload-desplazos/upload-desplazos.component';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class UploadsComponent implements OnInit {
   @ViewChild( UploadCieloComponent ) private _cielo: UploadCieloComponent
   @ViewChild( UploadLoyaltyComponent ) private _loyalty: UploadLoyaltyComponent
   @ViewChild( UploadComplementosComponent ) private _complementos: UploadComplementosComponent
+  @ViewChild( UploadDesplazosComponent ) private _desplazos: UploadDesplazosComponent
 
   upList = []
   selectedType:any
@@ -115,7 +117,6 @@ export class UploadsComponent implements OnInit {
               case 'cieloLlegadas':
                 flag = await this._cielo.buildVouchers(jsonFile)
                 Swal.close()
-
                 break;
               case 'loyaltyRB':
                 flag = await this._loyalty.buildVouchers(jsonFile)
@@ -123,6 +124,10 @@ export class UploadsComponent implements OnInit {
                 break;
               case 'complementos':
                 flag = await this._complementos.buildVouchers(jsonFile)
+                Swal.close()
+                break;
+              case 'desplazos':
+                flag = await this._desplazos.buildVouchers(jsonFile)
                 Swal.close()
                 break;
               default:

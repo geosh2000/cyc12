@@ -11,6 +11,7 @@
                         <mat-option value="">Selecciona...</mat-option>
                         <mat-option value="cieloLlegadas">Llegadas Cielo</mat-option>
                         <mat-option value="complementos">Complementos Cielo</mat-option>
+                        <mat-option value="desplazos">Desplazos Cielo</mat-option>
                         <mat-option value="loyaltyRB">Loyalty ORewards</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -25,5 +26,6 @@
         <app-upload-cielo *ngIf="selectedType=='cieloLlegadas'"></app-upload-cielo>
         <app-upload-loyalty *ngIf="selectedType=='loyaltyRB'"></app-upload-loyalty>
         <app-upload-complementos *ngIf="selectedType=='complementos'"></app-upload-complementos>
+        <app-upload-desplazos *ngIf="selectedType=='desplazos'"></app-upload-desplazos>
     </div>
 </div>
