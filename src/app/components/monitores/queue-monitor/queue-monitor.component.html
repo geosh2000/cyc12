@@ -1,0 +1,149 @@
+<div class="container-fluid d-flex flex-wrap justify-content-start">
+    <ng-container *ngFor="let agent of data">
+        <mat-card class="agent-card m-1" [ngClass]="bgStatus(agent)" *ngIf="agent['online_time']>0">
+            <mat-card-content>
+                <div class="row ms-2">
+                    <div class="col-4 agent-photo" [style.background]="'url(' + agent['avatar_url'] + ')'"></div>
+                    <div class="col-8">
+                        <h1 class="text-truncate pb-2" style="font-size: xx-large">{{ agent['name'] }}</h1>
+                        <div class="row ms-1">
+                            <div class="col-6 px-1">
+                                <div class="bg-success monitor-chip chipOnlineTime">
+                                    <div class="row">                                        
+                                        <div class="col-2 text-center">                                        
+                                            <mat-icon>update</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ printVal('online_time', agent['online_time']) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 px-1">
+                                <div class="bg-primary monitor-chip chipPauseTime">
+                                    <div class="row">
+                                        <div class="col-2 text-center">
+                                            <mat-icon>pause_circle_filled</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ printVal('away_time', agent['away_time']) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row ms-1 mt-1">
+                            <div class="col-6 px-1">
+                                <div class="bg-success monitor-chip chipAccepted">
+                                    <div class="row">
+                                        <div class="col-2 text-center">
+                                            <mat-icon>support_agent</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ agent['calls_accepted'] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 px-1">
+                                <div class="bg-primary monitor-chip chipTalkTime">
+                                    <div class="row">
+                                        <div class="col-2 text-center">
+                                            <mat-icon>support_agent</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ printVal('total_call_duration', agent['total_call_duration']) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row ms-1 mt-1">
+                            <div class="col-6 px-1">
+                                <div class="bg-success monitor-chip chipMissed">
+                                    <div class="row">
+                                        <div class="col-2 text-center">
+                                            <mat-icon>phone_missed</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ agent['calls_missed'] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 px-1">
+                                <div class="bg-primary monitor-chip chipDenied">
+                                    <div class="row">
+                                        <div class="col-2 text-center">
+                                            <mat-icon>phone_disabled</mat-icon>
+                                        </div>
+                                        <div class="col text-center">
+                                            <span>{{ agent['calls_denied'] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row ms-2">
+                    <div class="col-4 whatsLogo" [style.background]="'url(../../../assets/images/logos/logo-whatsapp.png)'"></div>
+                    <div class="col-2 px-0 pt-3">
+                        <div class="bg-primary monitor-chip chipOnlineTime">
+                            <div class="row">
+                                <div class="col-5 text-center" *ngIf="agent['whatsapp']['chatsAbiertos'] < 100">
+                                    <mat-icon>mark_chat_read</mat-icon>
+                                </div>
+                                <div class="col text-center">
+                                    <span>{{ agent['whatsapp']['chatsAbiertos'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 px-0 pt-3">
+                        <div class="bg-primary monitor-chip" [ngClass]="{'flash': (agent['whatsapp']['chatsPendientes'] && agent['whatsapp']['chatsPendientes'] > 0), 'chipMissed': !(agent['whatsapp']['chatsPendientes'] && agent['whatsapp']['chatsPendientes'] > 0)}">
+                            <div class="row">
+                                <div class="col-5 text-center" *ngIf="agent['whatsapp']['chatsPendientes'] < 100">
+                                    <mat-icon>mark_chat_unread</mat-icon>
+                                </div>
+                                <div class="col text-center">
+                                    <span>{{ agent['whatsapp']['chatsPendientes'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 px-0 pt-3">
+                        <div class="bg-primary monitor-chip" [ngClass]="{'flash': (agent['whatsapp']['chatsPendientes'] && agent['whatsapp']['chatsUrgentes'] > 0), 'chipMissed': !(agent['whatsapp']['chatsPendientes'] && agent['whatsapp']['chatsUrgentes'] > 0)}">
+                            <div class="row">
+                                <div class="col-5 text-center" *ngIf="agent['whatsapp']['chatsUrgentes'] < 100">
+                                    <mat-icon>sms_failed</mat-icon>
+                                </div>
+                                <div class="col text-center">
+                                    <span>{{ agent['whatsapp']['chatsUrgentes'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 px-0 pt-3">
+                        <div class="bg-primary monitor-chip chipMissed">
+                            <div class="row">
+                                <div class="col-5 text-center" *ngIf="agent['whatsapp']['chatsPerdidos'] < 100">
+                                    <mat-icon>auto_delete</mat-icon>
+                                </div>
+                                <div class="col text-center">
+                                    <span>{{ agent['whatsapp']['chatsPerdidos'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- <pre>{{ agent | json }}</pre> -->
+            </mat-card-content>
+        </mat-card>
+    </ng-container>
+    <div class="container-fluid d-block text-end" style="position: fixed; bottom: 20px; right: 20px">
+        <p style="font-size: xxx-large;">Last Update: {{ lu }}</p>
+    </div>
+</div>
+

@@ -33,6 +33,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { RsvModule } from '../rsv/rsv.module';
+import { MonitoresModule } from '../monitores/monitores.module';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { RsvModule } from '../rsv/rsv.module';
     PagosModule,
     ConfigModule,
     RsvModule,
+    MonitoresModule,
 
     MatToolbarModule,
     MatSidenavModule,

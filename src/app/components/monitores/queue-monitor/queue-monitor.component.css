@@ -1,0 +1,108 @@
+.agent-card {
+    width: 455px;
+}
+
+.agent-photo {
+    height: 174px!important;
+    background-position: center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+    border-radius: 35px;
+    border: solid 4px white;
+}
+
+.whatsLogo {
+    height: 66px!important;
+    background-position: center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+}
+
+.monitor-chip {
+    border-radius: 35px;
+    height: 35px;
+    font-size: larger;
+    font-weight: 500;
+    vertical-align: middle;
+    text-align: center;
+    padding: 6px 5px 0px 5px;
+    border: solid 2px white;
+}
+
+.chipAccepted {
+    background-color: #71c4ff!important;
+    color: black!important;
+}
+
+.chipTalkTime {
+    background-color: #8bc34a!important;
+    color: black!important;
+}
+
+.chipPauseTime {
+    background-color: #f1d449!important;
+    color: black!important;
+}
+
+.chipOnlineTime {
+    background-color: #3700B3!important;
+    color: white!important;
+}
+
+.chipMissed {
+    background-color: #e33d3d!important;
+    color: white!important;
+}
+
+.chipDenied {
+    background-color: #464646!important;
+    color: white!important;
+}
+
+.mat-icon {
+    vertical-align: middle;
+}
+
+.status-call {
+    background-color: #8bc34a;
+    color: 'black';
+}
+.status-pause {
+    background-color: #f1d449;
+    color: 'black';
+}
+.status-avail {
+    background-color: #efefef;
+    color: 'black';
+}
+.status-unavail {
+    background-color: #7e8184;
+    color: #bfbcb8;
+}
+.status-transfer {
+    background-color: #6392e7   ;
+    color: white;
+}
+.status-wrap {
+    background-color: #71c4ff;
+    color: 'black';
+}
+
+.flash {
+    -webkit-animation: flash linear 1s infinite;
+    animation: flash linear 1s infinite;
+    background-color: #9c1414!important;
+    color: #fff;
+}
+
+@-webkit-keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: .1; }
+    100% { opacity: 1; }
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: .1; }
+    100% { opacity: 1; }
+}

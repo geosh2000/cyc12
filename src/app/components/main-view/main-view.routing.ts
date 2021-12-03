@@ -9,6 +9,7 @@ import { CotizadorRoutingModule } from '../cotizador/cotizador.routing';
 import { PagosRoutingModule } from '../pagos/pagos.routing';
 import { ConfigRoutingModule } from '../config/config.routing';
 import { RsvRoutingModule } from '../rsv/rsv.routing';
+import { MonitoresRoutingModule } from '../monitores/monitores.routing';
 
 
 
@@ -31,6 +32,7 @@ const routes: Routes = [
       PagosRoutingModule,
       ConfigRoutingModule,
       RsvRoutingModule,
+      MonitoresRoutingModule,
     ],
   exports: [RouterModule]
 })
