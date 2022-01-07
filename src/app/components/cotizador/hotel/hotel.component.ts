@@ -335,9 +335,11 @@ export class CotizaHotelComponent implements OnInit {
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                   }
 
+
                   console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
+
                   
                 }, err => {
                   this.loading['cotizar'] = false;
@@ -794,6 +796,13 @@ export class CotizaHotelComponent implements OnInit {
 
     // console.log(nights, hotel, seguros)
     return (hotel + seguros) / nights
+  }
+
+  validateCurr(){
+    let curr = this.hotelSearch.get('isUSD').value
+    let flag = this.extraInfo['grupo'][ (curr ? 'usd' : 'mxn') + 'Active' ] == 1
+
+    return flag
   }
   
 

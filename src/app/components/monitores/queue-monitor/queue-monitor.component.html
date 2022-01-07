@@ -142,6 +142,22 @@
             </mat-card-content>
         </mat-card>
     </ng-container>
+    <div class="ms-auto m-1" [style.width.px]="455" *ngIf="queue['agents_online']">
+        <mat-card-content>
+            <mat-card class="d-flex justify-content-between">
+                <h1 style="font-size: xxx-large;">Online</h1>
+                <h1 style="font-size: xxx-large;">{{ queue['agents_online'] }}</h1>
+            </mat-card>
+            <mat-card class="d-flex justify-content-between" [ngClass]="{'chipPauseTime': queue['calls_waiting'] > 0}">
+                <h1 style="font-size: xxx-large;">Waiting</h1>
+                <h1 style="font-size: xxx-large;">{{ queue['calls_waiting'] }}</h1>
+            </mat-card>
+            <mat-card class="d-flex justify-content-between mt-2">
+                <h1 style="font-size: xxx-large;">Time waiting</h1>
+                <h1 style="font-size: xxx-large;">{{ queue['longest_wait_time'] }}</h1>
+            </mat-card>
+        </mat-card-content>
+    </div>
     <div class="container-fluid d-block text-end" style="position: fixed; bottom: 20px; right: 20px">
         <p style="font-size: xxx-large;">Last Update: {{ lu }}</p>
     </div>

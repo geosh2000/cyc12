@@ -14,10 +14,12 @@ import { ToastrModule } from 'ngx-toastr';
 
 import { MainViewModule } from './components/main-view/main-view.module';
 import { PublicModule } from './public/public.module';
+import { NoDobuleClickDirective } from './directives/no-dobule-click.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
+    NoDobuleClickDirective,
   ],
   imports: [
     BrowserModule,

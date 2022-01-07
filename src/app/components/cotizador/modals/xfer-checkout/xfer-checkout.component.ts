@@ -60,6 +60,22 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
     this._validate.createForm( this.rsvData, user );
 
+    let jsobj = JSON.parse(JSON.stringify( tr ))
+
+    if( jsobj['info']['llegada'] ){
+      // console.log(jsobj['info']['llegada']['date'])
+      jsobj['info']['llegada']['test']=1
+      jsobj['info']['llegada']['date'] = moment( jsobj['info']['llegada']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
+      // console.log(jsobj['info']['llegada']['date'])
+    }
+    
+    if( jsobj['info']['salida'] ){
+      // console.log(jsobj['info']['salida']['date'])
+      jsobj['info']['salida']['test']=1
+      jsobj['info']['salida']['date'] = moment( jsobj['info']['salida']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
+      // console.log(jsobj['info']['salida']['date'])
+    }
+
     (this.rsvForm.get('data') as FormGroup).addControl('xfer', this.fb.group({
         xfer:       this.fb.group({
           xfr_id:               [ { value: '', disabled: true }, Validators.required ],
@@ -101,7 +117,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
           user_id:              [ { value: tr.info.user_id, disabled: false }, Validators.required ],
           whatsapp_contact:     [ { value: user['whatsapp'] != '' && user['whatsapp'] != null ? user['whatsapp'] : user['phone'], disabled: false }, [Validators.required] ],
           json_names:           [ { value: '', disabled: false }, Validators.required ],
-          json_object:          [ JSON.stringify( tr ), Validators.required ]
+          json_object:          [ JSON.stringify( jsobj ), Validators.required ]
         }),
         item:       this.fb.group({
           itemType:     [{ value: 11,  disabled: false }, [ Validators.required ] ],
@@ -200,6 +216,21 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
   buildJsonObj( c ){
     let trData = JSON.parse(JSON.stringify( this.rsvData['habSelected']['traslado'] ))
+
+    // let jsobj = JSON.parse(JSON.stringify( tr ))
+
+    if( trData['info']['llegada'] ){
+      // console.log(jsobj['info']['llegada']['date'])
+      trData['info']['llegada']['date'] = moment( trData['info']['llegada']['date'] ).tz('America/Bogota').format('YYYY-MM-DD') + 'T05:03:00.000Z'
+      // console.log(jsobj['info']['llegada']['date'])
+    }
+    
+    if( trData['info']['salida'] ){
+      // console.log(jsobj['info']['salida']['date'])
+      trData['info']['salida']['date'] = moment( trData['info']['salida']['date'] ).tz('America/Bogota').format('YYYY-MM-DD') + 'T05:03:00.000Z'
+      // console.log(jsobj['info']['salida']['date'])
+    }
+
     trData['comments'] = c
     this.rsvForm.get('data.xfer.xfer.json_object').setValue( JSON.stringify(trData) )
   }

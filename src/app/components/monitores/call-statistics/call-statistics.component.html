@@ -1,0 +1,19 @@
+<div class="container-fluid row">
+    <div class="col-2">
+        <form [formGroup]="filterSearch">
+            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
+                <mat-label>Fecha</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate readonly autocomplete="off" formControlName="inicio" placeholder="Inicio">
+                    <input matEndDate  readonly autocomplete="off" formControlName="fin" placeholder="Fin">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+        </form>
+        <div [style.width.%]="100">
+            <button mat-raised-button class="d-block" color="primary" (click)="getCalls(filterSearch.get('inicio').value, filterSearch.get('fin').value)">Buscar</button>
+        </div>
+    </div>
+    <div echarts [options]="options" [loading]="loading['chart']" theme="macarons" class="callChart col-10"></div>
+</div>

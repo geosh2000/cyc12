@@ -15,6 +15,8 @@ export class QueueMonitorComponent implements OnInit {
   wa = {}
   lu = 'waiting...'
 
+  queue = {}
+
   loading = {}
   timeout:any
   
@@ -22,6 +24,7 @@ export class QueueMonitorComponent implements OnInit {
 
   ngOnInit(): void {
     this.getData()
+    this.queueStatus()
   }
 
   getData() {
@@ -44,7 +47,7 @@ export class QueueMonitorComponent implements OnInit {
                   this.data = data
                   
                   this.lu = moment(res['date']['lu']).format('DD/MMM HH:mm:ss')
-                  // this.timeout = setTimeout( () => this.getData(), 2000 )
+                  this.timeout = setTimeout( () => this.getData(), 10000 )
 
                 }, err => {
 
@@ -55,6 +58,33 @@ export class QueueMonitorComponent implements OnInit {
                   console.error(err.statusText, error.msg);
 
                   this.timeout = setTimeout( () => this.getData(), 2000 )
+
+                });
+  }
+
+  queueStatus() {
+
+    this.loading['queue'] = true;
+
+    this._api.restfulGet( '', `Calls/talkStatus` )
+                .subscribe( res => {
+
+                  this.loading['queue'] = false;
+                  let data = []
+
+                  this.queue = res['data']['data']['current_queue_activity']
+
+                  this.timeout = setTimeout( () => this.queueStatus(), 9000 )
+
+                }, err => {
+
+                  this.loading['queue'] = false;
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                  this.timeout = setTimeout( () => this.queueStatus(), 2000 )
 
                 });
   }

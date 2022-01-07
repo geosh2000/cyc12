@@ -486,11 +486,13 @@ export class CotizaTrasladosComponent implements OnInit {
 
     }
 
-    // console.log( selected )
-
+    console.log( selected )
+    
     let formControl = arrv ? 'llegada' : 'salida'
     let timeControl = arrv ? 'arrivaltime' : 'departuretime'
-
+    
+    console.log( moment(selected[ timeControl ]) )
+    
     this.xferSearch.get( formControl + '.fecha' ).setValue( moment(selected[ timeControl ]) )
     this.xferSearch.get( formControl + '.hora' ).setValue( moment(selected[ timeControl ]).format('HH:mm') )
     this.xferSearch.get( formControl + '.vuelo' ).setValue( selected['ident'] )
