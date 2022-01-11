@@ -1,0 +1,24 @@
+.mat-online{
+    background: #00ad00;
+    /* border: solid 5px white; */
+}
+
+.mat-away{
+    background: #d8c008;
+    /* border: solid 5px white; */
+}
+
+.mat-transfers_only{
+    background: #176db8;
+    /* border: solid 5px white; */
+}
+
+.mat-wrapup{
+    background: #0befff;
+    /* border: solid 5px white; */
+}
+
+.mat-offline{
+    background: #a4a4a4;
+    /* border: solid 5px white; */
+}

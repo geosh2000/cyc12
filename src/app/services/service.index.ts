@@ -9,5 +9,6 @@ export { LoginService } from './login.service';
 // export { TokenCheckService } from './token-check.service';
 export { ZonaHorariaService } from './zona-horaria.service';
 export { AuthService } from './auth.service';
+export { WebSocketService } from './web-socket.service';
 // export { RrobinService } from './rrobin.service';
 

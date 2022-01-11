@@ -34,6 +34,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { RsvModule } from '../rsv/rsv.module';
 import { MonitoresModule } from '../monitores/monitores.module';
+import { TalkWidgetComponent } from './talk-widget/talk-widget.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TicketWidgetComponent } from './ticket-widget/ticket-widget.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +47,8 @@ import { MonitoresModule } from '../monitores/monitores.module';
     BreadcrumbsComponent,
     GoToLocComponent,
     BlankComponent,
+    TalkWidgetComponent,
+    TicketWidgetComponent,
   ],
   exports: [
     MainViewComponent,
@@ -53,6 +58,8 @@ import { MonitoresModule } from '../monitores/monitores.module';
     BreadcrumbsComponent,
     GoToLocComponent,
     BlankComponent,
+    TalkWidgetComponent,
+    TicketWidgetComponent,
   ],
   imports: [
     SharedModule,
@@ -78,6 +85,7 @@ import { MonitoresModule } from '../monitores/monitores.module';
     MatListModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    MatProgressSpinnerModule,
   ]
 })
 export class MainViewModule { }

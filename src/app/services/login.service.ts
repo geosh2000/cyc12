@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 
 import { ApiService } from './api.service';
 import { InitService } from './init.service';
-import { WsService } from './ws.service';
+import { WebSocketService } from './web-socket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class LoginService {
 
   
 
-  constructor( private _api:ApiService, private _init:InitService, private ws: WsService ) { 
+  constructor( private _api:ApiService, private _init:InitService, private ws: WebSocketService ) { 
     this._api.tokenCheck.asObservable()
       .subscribe(r => {
         if( !r ){
@@ -47,7 +47,9 @@ export class LoginService {
         );
         localStorage.setItem('token', res['token'])
         localStorage.setItem('nombre', res['hcInfo']['Nombre_Corto'])
+        console.log('run socket')
         this.ws.cargarStorage()
+        console.log('end run socket')
         this._init.getPreferences()
         this._init.agentName = res['hcInfo']['Nombre_Corto']
         this._init.loadingRouteConfig = false

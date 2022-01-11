@@ -1,0 +1,32 @@
+<button style="zoom: 60%" mat-icon-button [color]="loading['status'] ? '' : status['status']" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon *ngIf="!loading['status']">phone_enabled</mat-icon>
+    <mat-spinner color="accent" style="zoom: 34%" *ngIf="loading['status']"></mat-spinner>
+</button>
+
+
+    
+<mat-menu #menu="matMenu">
+    <div class="mx-2 text-center">
+        <h4>
+            <mat-icon>{{ status['icon'] }}</mat-icon>
+            <span>{{ status['title'] }}</span>
+        </h4>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="setStatus('online')">
+        <mat-icon>play_circle_outline</mat-icon>
+        <span>Conectado</span>
+    </button>
+    <button mat-menu-item (click)="setStatus('away')">
+        <mat-icon>pause_circle_outline</mat-icon>
+        <span>Ausente</span>
+    </button>
+    <button mat-menu-item (click)="setStatus('transfers_only')">
+        <mat-icon>phone_callback</mat-icon>
+        <span>Transferencias</span>
+    </button>
+    <button mat-menu-item (click)="setStatus('offline')">
+        <mat-icon>highlight_off</mat-icon>
+        <span>Desconectado</span>
+    </button>
+</mat-menu>

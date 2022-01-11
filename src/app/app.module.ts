@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { environment } from '../environments/environment';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-const config: SocketIoConfig = { url: environment.wsUrl, options: {} };
+// const config: SocketIoConfig = { url: 'https://cyc-socket.herokuapp.com', options: {} };
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +27,7 @@ import { NoDobuleClickDirective } from './directives/no-dobule-click.directive';
     HttpClientModule,
     
     ToastrModule.forRoot(),
-    SocketIoModule.forRoot(config),
+    // SocketIoModule.forRoot(config),
 
     AppRoutingModule,
 
