@@ -163,6 +163,11 @@ export class WebSocketService extends Socket {
     // return this.listen( '373677886491' );
     return this.listen( 'talk' );
   }
+
+  confirmation( i = '') {
+    let item = i != '' ? `-${i}` : ''
+    return this.listen( 'rsv-confirmation' + item );
+  }
   
   ticket( id ) {
     return this.listen( id );

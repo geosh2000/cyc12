@@ -1,0 +1,15 @@
+.table-button{
+    font-size: inherit;
+}
+
+.table-icon{
+    font-size: 10px;
+    line-height: 8px;
+}
+
+.table-button-copy{
+    font-size: inherit;
+    width: 24px;
+    height: 24px;
+    padding-top: 0px;
+}

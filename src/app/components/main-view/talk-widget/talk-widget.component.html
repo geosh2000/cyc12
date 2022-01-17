@@ -8,7 +8,7 @@
 <mat-menu #menu="matMenu">
     <div class="mx-2 text-center">
         <h4>
-            <mat-icon>{{ status['icon'] }}</mat-icon>
+            <mat-icon style="vertical-align: bottom;" [color]="status['status']" class="mr-2">{{ status['icon'] }}</mat-icon>
             <span>{{ status['title'] }}</span>
         </h4>
     </div>

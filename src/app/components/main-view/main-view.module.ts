@@ -37,6 +37,7 @@ import { MonitoresModule } from '../monitores/monitores.module';
 import { TalkWidgetComponent } from './talk-widget/talk-widget.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TicketWidgetComponent } from './ticket-widget/ticket-widget.component';
+import { ReportingModule } from '../reporting/reporting.module';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { TicketWidgetComponent } from './ticket-widget/ticket-widget.component';
     ConfigModule,
     RsvModule,
     MonitoresModule,
+    ReportingModule,
 
     MatToolbarModule,
     MatSidenavModule,

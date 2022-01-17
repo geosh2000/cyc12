@@ -24,7 +24,7 @@ export class TalkWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     this.talk$ = this._ws.talk().subscribe(
       msg => {
 
-        console.log( 'status recibido', msg)
+        // console.log( 'status recibido', msg)
 
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -32,7 +32,7 @@ export class TalkWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
         
         if( currentUser.hcInfo.zdId == msg['zdId'] ){
           console.log('Status: ' + msg['data']['status'] )
-          this.status = msg['data']['status']
+          this.buildStatus(msg['data']['status'])
         }
       })
   }

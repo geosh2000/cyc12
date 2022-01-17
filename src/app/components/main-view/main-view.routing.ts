@@ -10,6 +10,7 @@ import { PagosRoutingModule } from '../pagos/pagos.routing';
 import { ConfigRoutingModule } from '../config/config.routing';
 import { RsvRoutingModule } from '../rsv/rsv.routing';
 import { MonitoresRoutingModule } from '../monitores/monitores.routing';
+import { ReportingRoutingModule } from '../reporting/reporting.routing';
 
 
 
@@ -33,6 +34,7 @@ const routes: Routes = [
       ConfigRoutingModule,
       RsvRoutingModule,
       MonitoresRoutingModule,
+      ReportingRoutingModule,
     ],
   exports: [RouterModule]
 })
