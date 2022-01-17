@@ -2,158 +2,174 @@
 
     <button mat-raised-button color="primary" (click)="getPending()" *ngIf="!loading['pendientes']">Reload</button>
 
-    <div class="container mt-5 d-flex justify-content-center">
+    <div class="container mt-5 mb-4">
         
-        <mat-card class="container mat-elevation-z8 m-0 p-0">
-
-            <mat-card-content *ngIf="!loading['pendientes']">
-                <div class="alert alert-warning" role="alert" *ngIf=" pendientes.length == 0 ">
-                    No hay confirmaciones pendientes por capturar
-                </div>
-
-                <table class="table table-sm table-hover table-striped table-bordered" style="font-size: xx-small;" *ngIf=" pendientes.length > 0 ">
-                    <thead>
-                        <tr>
-                            <th>itemLocatorId</th>
-                            <th>created</th>
-                            <th>hotel</th>
-                            <th>mdo</th>
-                            <th>agencia</th>
-                            <th>gpoTfa</th>
-                            <th>inicio</th>
-                            <th>noches</th>
-                            <th>adultos</th>
-                            <th>juniors</th>
-                            <th>menores</th>
-                            <th>categoria</th>
-                            <th>lv</th>
-                            <th>Apellido</th>
-                            <th>Nombre</th>
-                            <th>monto</th>
-                            <th>montoPagado</th>
-                            <th>creador</th>
-                            <th>correo</th>
-                            <th>orId</th>
-                            <th>orLevel</th>
-                            <th>Notas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <ng-container *ngFor="let r of pendientes">
-                            <tr [ngClass]="rowStatus(r)">
-                                <td rowspan=3>
-                                    <div class="text-center">
-                                        {{ r['itemLocatorId']                   }}
-                                    </div>
-                                    <div class="text-center">
-                                        <button mat-icon-button class="table-button-copy" (click)="copy(r['confirmation'])"      >  <mat-icon class="table-icon">content_copy</mat-icon>  </button>
-                                    </div>
-                                </td>
-                                <td>{{ r['created']                         }}</td>
-                                <td class="text-center">{{ r['hotel']                           }}</td>
-                                <td class="text-center">{{ r['mdo']                             }}</td>
-                                <td class="text-center">{{ r['agencia']                         }}</td>
-                                <td class="text-center">{{ r['gpoTfa']                          }}</td>
-                                <td class="text-center">{{ dateCieloPrint( r['inicio'] )        }}</td>
-                                <td class="text-center">{{ r['noches']                          }}</td>
-                                <td class="text-center">{{ r['adultos']                         }}</td>
-                                <td class="text-center">{{ r['juniors']                         }}</td>
-                                <td class="text-center">{{ r['menores']                         }}</td>
-                                <td class="text-center">{{ r['categoria']                       }}</td>
-                                <td class="text-center">{{ r['lv']                              }}</td>
-                                <td class="text-center">{{ r['Apellido']                        }}</td>
-                                <td class="text-center">{{ r['Nombre']                          }}</td>
-                                <td class="text-center">{{ r['monto']       | number:'.2-2'     }}</td>
-                                <td class="text-center">{{ r['montoPagado'] | number:'.2-2'     }}</td>
-                                <td class="text-center">{{ r['creador']                         }}</td>
-                                <td class="text-center">{{ r['correo']                          }}</td>
-                                <td class="text-center">{{ r['orId']                            }}</td>
-                                <td class="text-center">{{ r['orLevel']                            }}</td>
-                                <td>{{ r['notas1'] + r['notas2']            }}</td>
-                            </tr>
-                            <tr [ngClass]="rowStatus(r)">
-                                <td  class="text-center"></td>
-                                <td  class="text-center"></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['mdo'])"          [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['agencia'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['gpoTfa'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(dateCieloPrint( r['inicio'] ))" [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['noches'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['adultos'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['juniors'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['menores'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['categoria'])"    [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['lv'])"           [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['Apellido'])"     [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['Nombre'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['monto'])"        [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['montoPagado'])"  [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['creador'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['correo'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['orId'])"         [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['orLevel'])"         [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                                <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy( r['notas1'] + r['notas2'])" [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
-                            </tr>
-                            <tr [ngClass]="rowStatus(r)" class="table-primary">
-                                <td colspan=14>
-                                    <div *ngIf="r['insurance']">
-                                        Contiene seguro: <br>
-                                        <ng-container  *ngIf="r['insurance']['cieloCaptured'] == '1'">
-                                            <b>SEGURO YA CAPTURADO</b>
-                                        </ng-container>
-                                        <ng-container  *ngIf="r['insurance']['cieloCaptured'] == '0' && !r['insurance']['loading']">
-                                            <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
-                                            <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
-                                            <b>Moneda: </b>{{ r['insurance']['moneda'] }} || 
-                                            <b>Cantidad: </b>{{ r['insurance']['sg_pax'] }} || 
-                                            <b>Total: </b>{{ r['insurance']['monto'] }} ||
-                                            <b>Comprobante: </b>{{ r['insurance']['confirm'] }} || 
-                                            <b>Voucher: </b>{{ r['insurance']['itemLocatorId'] }}
-                                            <button mat-icon-button class="table-button" color="primary" (click)="setCaptured(r)" [disabled]="r['insurance']['loading']"><mat-icon>check_circle</mat-icon></button>
-                                        </ng-container>
-                                        <ng-container *ngIf="r['insurance']['cieloCaptured'] == '0' && r['insurance']['loading']">
-                                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                        </ng-container>
-                                    </div>
-                                </td>
-
-                                <td colspan=100>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <ng-container *ngIf="!r['loading'] && r['confirmation'] && r['confirmed']">
-                                            Confirmacion: <b>{{ r['confirmation']}}</b> guardada por <b>{{ r['userConfirm'] }}</b>
-                                        </ng-container>
-                                        <ng-container *ngIf="!r['loading'] && r['confirmation'] && !r['confirmed']">
-                                            <ng-container *ngIf="r['insurance']">
-                                                Necesitas capturar el seguro de esta reserva
+        <ng-container *ngIf="!loading['pendientes']">
+            <ng-container *ngFor="let r of pendientes">
+    
+                <mat-card class="container mat-elevation-z8 m-0 p-0 mb-2">
+    
+                    <mat-card-content>
+                        
+                        <table class="table table-sm table-hover table-striped table-bordered" style="font-size: xx-small;" *ngIf=" pendientes.length > 0 ">
+                            <thead>
+                                <tr>
+                                    <th>itemLocatorId</th>
+                                    <th>created</th>
+                                    <th>hotel</th>
+                                    <th>mdo</th>
+                                    <th>agencia</th>
+                                    <th>gpoTfa</th>
+                                    <th>inicio</th>
+                                    <th>noches</th>
+                                    <th>adultos</th>
+                                    <th>juniors</th>
+                                    <th>menores</th>
+                                    <th>categoria</th>
+                                    <th>lv</th>
+                                    <th>Apellido</th>
+                                    <th>Nombre</th>
+                                    <th>monto</th>
+                                    <th>montoPagado</th>
+                                    <th>creador</th>
+                                    <th>correo</th>
+                                    <th>orId</th>
+                                    <th>orLevel</th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                <tr [ngClass]="rowStatus(r)">
+                                    <td rowspan=3>
+                                        <div class="text-center">
+                                            {{ r['itemLocatorId']                   }}
+                                        </div>
+                                        <div class="text-center">
+                                            <button mat-icon-button class="table-button-copy" (click)="copy(r['confirmation'])"      >  <mat-icon class="table-icon">content_copy</mat-icon>  </button>
+                                        </div>
+                                    </td>
+                                    <td>{{ r['created']                         }}</td>
+                                    <td class="text-center">{{ r['hotel']                           }}</td>
+                                    <td class="text-center">{{ r['mdo']                             }}</td>
+                                    <td class="text-center">{{ r['agencia']                         }}</td>
+                                    <td class="text-center">{{ r['gpoTfa']                          }}</td>
+                                    <td class="text-center">{{ dateCieloPrint( r['inicio'] )        }}</td>
+                                    <td class="text-center">{{ r['noches']                          }}</td>
+                                    <td class="text-center">{{ r['adultos']                         }}</td>
+                                    <td class="text-center">{{ r['juniors']                         }}</td>
+                                    <td class="text-center">{{ r['menores']                         }}</td>
+                                    <td class="text-center">{{ r['categoria']                       }}</td>
+                                    <td class="text-center">{{ r['lv']                              }}</td>
+                                    <td class="text-center">{{ r['Apellido']                        }}</td>
+                                    <td class="text-center">{{ r['Nombre']                          }}</td>
+                                    <td class="text-center">{{ r['monto']       | number:'.2-2'     }}</td>
+                                    <td class="text-center">{{ r['montoPagado'] | number:'.2-2'     }}</td>
+                                    <td class="text-center">{{ r['creador']                         }}</td>
+                                    <td class="text-center">{{ r['correo']                          }}</td>
+                                    <td class="text-center">{{ r['orId']                            }}</td>
+                                    <td class="text-center">{{ r['orLevel']                            }}</td>
+                                    <td>{{ r['notas1'] + r['notas2']            }}</td>
+                                </tr>
+                                <tr [ngClass]="rowStatus(r)">
+                                    <td  class="text-center"></td>
+                                    <td  class="text-center"></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['mdo'])"          [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['agencia'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['gpoTfa'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(dateCieloPrint( r['inicio'] ))" [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['noches'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['adultos'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['juniors'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['menores'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['categoria'])"    [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['lv'])"           [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['Apellido'])"     [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['Nombre'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['monto'])"        [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['montoPagado'])"  [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['creador'])"      [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['correo'])"       [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['orId'])"         [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy(r['orLevel'])"         [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                    <td  class="text-center"><button mat-icon-button class="table-button-copy" (click)="copy( r['notas1'] + r['notas2'])" [disabled]="r['confirmation']">  <mat-icon class="table-icon">content_copy</mat-icon>  </button></td>
+                                </tr>
+                                <tr [ngClass]="rowStatus(r)" class="table-primary">
+                                    <td colspan=14>
+                                        <div class="alert alert-warning m-0" role="alert" *ngIf="r['urgente'] == '1' || r['xfer']">
+                                            <span *ngIf="r['urgente'] == '1'">Esta reserva fue pagada con deposito. Confirmar para que se envíe la validación</span>
+                                            <span *ngIf="r['xfer']">Revisar Traslados</span>
+                                        </div>
+                                        <div *ngIf="r['insurance']" class="text-center">
+                                            Contiene seguro: <br>
+                                            <ng-container  *ngIf="r['insurance']['cieloCaptured'] == '1'">
+                                                <b>SEGURO YA CAPTURADO</b>
                                             </ng-container>
-                                            <ng-container *ngIf="!r['insurance']">
-                                                Esta reserva tiene algún pendiente... revisa el localizador -> 
-                                                <button mat-raised-button class="table-button" color="primary" (click)="goToLoc( r )">Ir a Loc</button>
+                                            <ng-container  *ngIf="r['insurance']['cieloCaptured'] == '0' && !r['insurance']['loading']">
+                                                <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
+                                                <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
+                                                <b>Moneda: </b>{{ r['insurance']['moneda'] }} || 
+                                                <b>Cantidad: </b>{{ r['insurance']['sg_pax'] }} ||  
+                                                <b>Total: </b>{{ r['insurance']['monto'] }} ||
+                                                <b>Comprobante: </b>{{ r['insurance']['confirm'] }} || 
+                                                <b>Voucher: </b>{{ r['insurance']['itemLocatorId'] }}
+                                                <button mat-icon-button class="table-button" color="primary" (click)="setCaptured(r)" [disabled]="r['insurance']['loading']"><mat-icon>check_circle</mat-icon></button>
                                             </ng-container>
-                                        </ng-container>
-                                        <ng-container *ngIf="!r['loading'] && !r['confirmation']">
-                                            <span>Ingresar Clave:</span> 
-                                            <mat-form-field appearance="outline">
-                                                <input matInput type="text" placeholder="confirmacion cielo" style="width: 200px" autocomplete="off" #confInput> 
-                                            </mat-form-field>
-                                            <button mat-raised-button class="table-button" color="primary" (click)="confirm(true, r,confInput.value)" [disabled]="confInput.value == ''">Confirmar</button>
-                                        </ng-container>
-                                        <ng-container *ngIf="r['loading']">
-                                            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                        </ng-container>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                    <!-- <div class="col">
+                                            <ng-container *ngIf="r['insurance']['cieloCaptured'] == '0' && r['insurance']['loading']">
+                                                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                            </ng-container>
+                                        </div>
+                                    </td>
 
-                        <pre *ngIf=" pendientes.length > 0 ">{{ pendientes | json }}</pre>
-                    </div> -->
-                </table>
+                                    <td colspan=100>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <ng-container *ngIf="!r['loading'] && r['confirmation'] && r['confirmed']">
+                                                <ng-container *ngIf="r['xfer']">
+                                                    <div class="alert alert-warning m-0 text-center" [style.width.%]="100" role="alert">
+                                                        Confirmacion: <b>{{ r['confirmation']}}</b> guardada por <b>{{ r['userConfirm'] }}</b><br>
+                                                        Revisar Traslados
+                                                        <button mat-raised-button class="table-button" color="primary" (click)="goToLoc( r )">Ir a Loc</button>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngIf="!r['xfer']">
+                                                    Confirmacion: <b>{{ r['confirmation']}}</b> guardada por <b>{{ r['userConfirm'] }}</b><br>
+                                                </ng-container>
+                                            </ng-container>
+                                            <ng-container *ngIf="!r['loading'] && r['confirmation'] && !r['confirmed']">
+                                                <ng-container *ngIf="r['insurance']">
+                                                    Confirmacion: <b>{{ r['confirmation'] }}</b>... Necesitas capturar el seguro de esta reserva
+                                                </ng-container>
+                                                <ng-container *ngIf="!r['insurance']">
+                                                    Confirmacion: <b>{{ r['confirmation'] }}</b>... Esta reserva tiene algún pendiente... revisa el localizador -> 
+                                                    <button mat-raised-button class="table-button" color="primary" (click)="goToLoc( r )">Ir a Loc</button>
+                                                </ng-container>
+                                            </ng-container>
+                                            <ng-container *ngIf="!r['loading'] && !r['confirmation']">
+                                                <span>Ingresar Clave:</span> 
+                                                <mat-form-field appearance="outline">
+                                                    <input matInput type="text" placeholder="confirmacion cielo" style="width: 200px" autocomplete="off" #confInput> 
+                                                </mat-form-field>
+                                                <button mat-raised-button class="table-button" color="primary" (click)="confirm(true, r,confInput.value)" [disabled]="confInput.value == ''">Confirmar</button>
+                                            </ng-container>
+                                            <ng-container *ngIf="r['loading']">
+                                                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+    
+                    </mat-card-content>
+    
+                </mat-card>
+            </ng-container>
+        </ng-container>
 
-            </mat-card-content>
-
+        <mat-card class="container mat-elevation-z8 m-0 p-0 mb-2">
+            <div class="alert alert-warning" role="alert" *ngIf="!loading['pendientes'] && pendientes.length == 0 ">
+                No hay confirmaciones pendientes por capturar
+            </div>
             <!-- Progressbar -->
             <mat-card-footer>
                 <mat-progress-bar mode="indeterminate" *ngIf="loading['pendientes']"></mat-progress-bar>
