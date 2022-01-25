@@ -1,3 +1,23 @@
-<p>rsv works!</p>
+<!-- <app-generate-auth-file></app-generate-auth-file> -->
+<div class="container">
 
-<app-generate-auth-file></app-generate-auth-file>
+    <mat-progress-bar  mode="indeterminate" *ngIf="loading['loc']"></mat-progress-bar>
+
+    <ng-container *ngIf="!ml">
+        No se recibió ningún localizador... &nbsp;&nbsp;&nbsp;
+        <app-go-to-loc></app-go-to-loc>
+    </ng-container>
+    <ng-container *ngIf="ml">
+    
+        <div class="alert alert-danger" role="alert" *ngIf="!mlExist">
+            El localizador  {{ ml }} no se encontró en la base. Revisa que se haya ingresado correctamente<br>
+            <app-go-to-loc></app-go-to-loc>
+        </div>
+
+        <ng-container *ngIf="mlExist && data['items']">
+            <rsv-main-frame [data]="data" (reload)="getLoc($event)"></rsv-main-frame>
+        </ng-container>
+    
+    </ng-container>
+    
+</div>

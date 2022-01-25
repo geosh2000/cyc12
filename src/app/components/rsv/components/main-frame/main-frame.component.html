@@ -1,0 +1,177 @@
+<mat-card style="width: 100%; max-width: 1125px;" class="mat-elevation-z10 ms-auto me-auto mb-4">
+
+    <mat-card-content>
+
+        <!-- ====================== TITULO INICIO ====================== -->
+        <div class="d-flex justify-content-between flex-wrap">
+
+            <div class="d-flex justify-content-start flex-wrap">
+                <!-- MASTERLOCATOR -->
+                <div class="locFrame pt-3 mb-5 me-5">
+                    <b>{{ data['master']['masterlocatorid'] }}</b>
+                </div>
+    
+                <!-- CREADOR Y FECHA DE CREACION -->
+                <div matTooltipPosition="above" [matTooltip]="data['master']['nombreCliente']">
+                    <div>
+                        <h1 style="font-size: xx-large; line-height: initial;" class="text-truncate text-wrap text-capitalize"><b>{{ data['master']['nombreCliente'] }}</b></h1>
+                    </div>
+                    <p style="margin-top: -15px;" >Creada el <b>{{ _h.formatDate(data['master']['dtCreated'], 'DD MMM YYYY HH:mm') }} hrs.</b> por <b>{{ data['master']['creador'] }} <span *ngIf="_init.checkSingleCredential('rsv_changeCreator')"><button style="font-size: x-small;" mat-button color="primary" (click)="chCreatorDialog(data)">cambiar</button></span></b></p>
+                </div>
+            </div>
+
+            <!-- STATUS RSVA -->
+            <div class="ms-auto d-flex justify-content-end text-center mb-2">
+                <div>
+                    <mat-chip-list class="d-flex justify-content-end" aria-label="Fish selection">
+                        <mat-chip [color]="data['rsvType'] == 'Cotizacion' ? 'alert' : data['rsvType'] == 'Reserva' ? 'primary' : 'danger'" selected>{{ data['rsvType'] }}</mat-chip>
+                    </mat-chip-list>
+                    <button mat-button style="zoom: 0.8" color="warn" (click)="addBlacklist()" [disabled]="loading['loc']" *ngIf="data['master']['blacklisted'] == 0 && _init.checkSingleCredential('rsv_blacklistAdd')"><mat-icon>warning</mat-icon> Agregar a Blacklist</button>
+                </div>
+            </div>
+        </div>
+        <!-- ====================== TITULO FIN ====================== -->
+
+        
+        <!-- BLACKLIST ALERT  -->
+        <div class="d-flex justify-content-between flex-wrap align-items-center alert alert-danger" role="alert" *ngIf="data['master']['blacklisted'] == 1">
+            <span>
+                Reserva Bloqueada por alerta de fraude!! Solicita a Gerencia que sea desbloqueada después de haber solicitado documentos de verificación
+            </span>
+            
+            <div class="d-flex justify-content-center ms-auto">
+                <button mat-button style="zoom: 0.8" color="warn" (click)="removeBlacklist()" [disabled]="loading['loc']" *ngIf="_init.checkSingleCredential('rsv_blacklistRemove')"><mat-icon>warning</mat-icon> Quitar Blacklist</button>
+            </div>
+        </div>
+        
+        <!-- TRANSFER ALERT  -->
+        <div class="d-flex justify-content-between flex-wrap align-items-center alert alert-warning" role="alert" *ngIf="data['master']['hasTransfer'] == 1">
+            <span>
+                Reserva con traslados en cortesía pendientes por programar
+            </span>
+            
+            <div class="d-flex justify-content-center ms-auto">
+                <button mat-button style="zoom: 0.8" color="danger" (click)="addCourtesyTransfer(false)" [disabled]="loading['cTransfer']"><mat-icon>airport_shuttle</mat-icon> Eliminar Traslado Cortesía</button>
+            </div>
+        </div>
+
+        <!-- ====================== BODY INICIO ====================== -->
+        <div class="d-flex justify-content-between flex-wrap">
+
+
+            <!-- ITEMS -->
+            <!-- <div style=""> -->
+                <mat-card style="width: 100%; max-width: 800px; background: #673ab721;" class="mat-elevation-z5 mb-2 p-1">
+                    <mat-card-content>
+
+                        <!-- ACTIONS BAR -->
+                        <div class="d-flex flex-wrap justify-content-end p-1" *ngIf="_init.checkSingleCredential('app_cotizador')">
+                            <button mat-button class="me-auto" style="zoom: 0.8" color="primary" (click)="addCourtesyTransfer()" [disabled]="loading['cTransfer']" *ngIf="data['master']['hasTransfer'] == 0"><mat-icon>airport_shuttle</mat-icon> Traslado Cortesía</button>
+                            <button mat-button style="zoom: 0.8" color="primary" *ngIf="_init.checkSingleCredential('rsv_paymentReg')"><mat-icon>play_for_work</mat-icon> Registrar Pago</button>
+                            <button mat-button style="zoom: 0.8" color="primary"><mat-icon>payment</mat-icon> Saldar</button>
+                        </div>
+                        
+                        <!-- CUADRO DE ITEMS  -->
+                        <mat-card class="d-block mb-1 p-1">
+
+                            <!-- BARRA DE TITULOS DE SALDOS -->
+                            <div class="row px-3">
+                                <div class="col-4"></div>
+                                <div class="col-2 text-center"><b>Conf.</b></div>
+                                <div class="col-2 text-end"><b>Total</b></div>
+                                <div class="col-2 text-end text-success"><b><small>Prepago</small></b></div>
+                                <div class="col-2 text-end text-primary"><b><small>Pago Hotel</small></b></div>
+                            </div>
+                            <hr class="hrItems">
+
+                            <!-- DETALLE DE ITEMS -->
+                            <app-item-sum [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-item-sum>
+                            <hr class="hrItems">
+
+                            <!-- RESUMEN CON TOTALES -->
+                            <div class="row px-3">
+                                <div class="col-4"><b>TOTAL MXN</b></div>   
+                                <div class="col-2"></div>
+                                <div class="col-2 text-end"><b>{{ data['master']['totalMontoMXN'] | currency:'MXN':'symbol-narrow':'.2-2' }}</b></div>
+                                <div class="col-2 text-end">
+                                    <p class="text-success"><b><small>{{ data['master']['totalMontoPagadoMXN'] | currency:'MXN':'symbol-narrow':'.2-2' }}</small></b></p>
+                                    <p style="font-size: 10px" [ngClass]="'text-warning'" *ngIf="data['master']['totalMontoValidandoMXN'] > 0"><b>(validando: {{ data['master']['totalMontoValidandoMXN'] | currency:'MXN':'symbol-narrow':'.2-2' }})</b></p>
+                                    <p style="font-size: 10px" [ngClass]="{'text-danger': data['master']['totalMontoSaldoMXN'] > 0, 'text-success': data['master']['totalMontoSaldoMXN'] <= 0}"><b>(saldo: {{ data['master']['totalMontoSaldoMXN'] | currency:'MXN':'symbol-narrow':'.2-2' }})</b></p>
+                                </div>
+                                <div class="col-2 text-end">
+                                    <div [ngClass]="{'text-primary': data['master']['totalMontoHotelMXN'] > 0, 'text-success': data['master']['totalMontoHotelMXN'] <= 0}"><b>{{ data['master']['totalMontoHotelMXN'] | currency:'MXN':'symbol-narrow':'.2-2' }}</b></div>
+                                </div>
+                            </div>
+
+                            <div class="row px-3">
+                                <div class="col-4"><b>TOTAL USD</b></div>
+                                <div class="col-2"></div>
+                                <div class="col-2 text-end"><b>{{ data['master']['totalMontoUSD'] | currency:'MXN':'symbol-narrow':'.2-2' }}</b></div>
+                                <div class="col-2 text-end">
+                                    <p class="text-success"><b><small>{{ data['master']['totalMontoPagadoUSD'] | currency:'MXN':'symbol-narrow':'.2-2' }}</small></b></p>
+                                    <p style="font-size: 10px" [ngClass]="'text-warning'" *ngIf="data['master']['totalMontoValidandoUSD'] > 0"><b>(validando: {{ data['master']['totalMontoValidandoUSD'] | currency:'MXN':'symbol-narrow':'.2-2' }})</b></p>
+                                    <p style="font-size: 10px" [ngClass]="{'text-danger': data['master']['totalMontoSaldoUSD'] > 0, 'text-success': data['master']['totalMontoSaldoUSD'] <= 0}"><b>(saldo: {{ data['master']['totalMontoSaldoUSD'] | currency:'MXN':'symbol-narrow':'.2-2' }})</b></p>
+                                </div>
+                                <div class="col-2 text-end">
+                                    <div [ngClass]="{'text-primary': data['master']['totalMontoHotelUSD'] > 0, 'text-success': data['master']['totalMontoHotelUSD'] <= 0}"><b>{{ data['master']['totalMontoHotelUSD'] | currency:'MXN':'symbol-narrow':'.2-2' }}</b></div>
+                                </div>
+                            </div>
+
+                        </mat-card>
+
+
+                    </mat-card-content>
+                </mat-card>
+            <!-- </div> -->
+
+            <!-- SUMMARY -->
+            <div class="ps-2" style="width: 280px;">
+                <app-loc-sum [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-loc-sum>
+            </div>
+
+        </div>
+        <!-- ====================== BODY FIN ====================== -->
+
+    </mat-card-content>
+    
+    
+    <!-- ====================== HISTORIAL INICIO ====================== -->
+    <mat-card-footer class="px-2">
+
+        <!-- INSERTAR COMENTARIO -->
+        <div class="form d-flex justify-content-between align-items-center pe-3">
+            <div class="form-group p-1">
+                <div class="input-group">
+                    <textarea rows="4" cols="136" style="max-width: 50vw;" [(ngModel)]="comment" placeholder="Agrega notas a la reserva" id="notas"></textarea>
+                </div>
+            </div>
+            <div class="p-1">
+                <button mat-raised-button color='primary' (click)="sendComment()" [disabled]="comment==''"><span *ngIf="!loading['comment']">Enviar</span><span *ngIf="loading['comment']"><i class="fa fa-spinner fa-pulse"></i></span></button>
+            </div>
+        </div>
+
+        <!-- LOADER -->
+        <div class="container d-flex justify-content-lg-center" *ngIf="loading['history']">
+            <mat-spinner></mat-spinner>
+        </div>
+
+        <!-- HISTORIAL -->
+        <mat-list *ngIf="!loading['history']">
+            <ng-container *ngFor="let c of history">
+
+                <div class="container row  p-2">
+                    <div class="ms-3" [style.width.px]="130">
+                        <small><b>{{ _h.formatDate(c['Fecha'], 'ddd DD MMM YYYY') }} <span class="text-info">{{ _h.formatDate(c['Fecha'], 'HH:mm') }} hrs</span>:</b></small>
+                    </div>
+                    <div class="col ps-0">
+                        <span class="text-secondary" [innerHTML]="formatHistory(c['msg'])"></span>
+                    </div>
+                </div>
+
+                <mat-divider class="px-2"></mat-divider>
+            </ng-container>
+        </mat-list>
+    </mat-card-footer>
+    <!-- ====================== HISTORIAL FIN ====================== -->
+
+</mat-card>

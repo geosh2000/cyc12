@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -19,7 +19,7 @@ export interface Pais {
   templateUrl: './zd-user-edit.component.html',
   styleUrls: ['./zd-user-edit.component.css']
 })
-export class ZdUserEditComponent implements OnInit {
+export class ZdUserEditComponent implements OnInit, AfterViewInit {
   
   @ViewChild( MergeUsersComponent ) _merge: MergeUsersComponent
 
@@ -71,6 +71,10 @@ export class ZdUserEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
+  }
+
+  ngAfterViewInit(): void {
     this.userForm.get('pais').valueChanges.subscribe( x => { 
      
       if( x && x['id'] ){
@@ -140,7 +144,7 @@ export class ZdUserEditComponent implements OnInit {
    }, 100);
   }
 
-  validateUser( u, loc = 0, mlData = null ){
+  validateUser( u, loc = 0, mlData = null, valFlag = true ){
 
     this.ml = loc
     // console.log(u)
@@ -171,20 +175,23 @@ export class ZdUserEditComponent implements OnInit {
 
     this.optionalEdit = this.userForm.valid
 
-    if( this.optionalEdit ){
-      if( this.nextStep != null ){
-        // console.log('emit next', this.nextStep)
-        this.next.emit([true, this.nextStep,{ userForm: this.userForm,  mlData }])
+    if( valFlag ){
+      if( this.optionalEdit ){
+        if( this.nextStep != null ){
+          // console.log('emit next', this.nextStep)
+          this.next.emit([true, this.nextStep,{ userForm: this.userForm,  mlData }])
+        }else{
+          // console.log('emit saved', this.userForm.value)
+          this.saved.emit([true,this.userForm.value])
+        }
       }else{
-        // console.log('emit saved', this.userForm.value)
-        this.saved.emit([true,this.userForm.value])
-      }
-    }else{
-      if( this.nextStep != null ){
-        // console.log('emit next, reEdit', this.thisStep)
-        this.next.emit([true, this.thisStep])
+        if( this.nextStep != null ){
+          // console.log('emit next, reEdit', this.thisStep)
+          this.next.emit([true, this.thisStep])
+        }
       }
     }
+
   }
 
   createSaveZdUser( ml = this.ml ){

@@ -1,3 +1,7 @@
+<div class='loader-container' *ngIf="_api.isLoading | async">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+
 <mat-toolbar class='matNavbar' role="heading" [style.paddingBottom.px]="10" color="primary">
     <main-navbar (menuChange)="menuChange()" [style.width.%]="100"></main-navbar>
 </mat-toolbar>

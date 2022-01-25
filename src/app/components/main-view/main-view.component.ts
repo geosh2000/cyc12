@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationStart, ResolveEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { InitService, WebSocketService } from 'src/app/services/service.index';
+import { ApiService, InitService, WebSocketService } from 'src/app/services/service.index';
 
 @Component({
   selector: 'app-main-view',
@@ -15,6 +15,7 @@ export class MainViewComponent implements OnInit, OnDestroy {
   routerS$: Subscription;
 
   constructor( public _init: InitService, 
+    public _api: ApiService,
     private _ws: WebSocketService,
     private router: Router,) { 
       this._ws.cargarStorage()

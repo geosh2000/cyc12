@@ -124,7 +124,7 @@ export class InitService {
 
   snackbar( t, title, msg ){
 
-    console.trace()
+    // console.trace()
 
     this.snack.next( {
       status: true,
@@ -132,6 +132,15 @@ export class InitService {
       title,
       t
     } )
+
+    setTimeout( () => {
+      this.snack.next( {
+        status:false,
+        msg: '',
+        title: '',
+        t: 'error'
+      })
+    },1000)
   }
 
   

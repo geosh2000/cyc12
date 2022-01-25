@@ -4,7 +4,6 @@ import { AppRoutingModule } from 'src/app/app-routing.module';
 
 import { SharedModule } from 'src/app/shared/shared.module';
 
-import { GoToLocComponent } from './go-to-loc/go-to-loc.component';
 import { MainViewComponent } from './main-view.component';
 import { MenuComponent } from './menu/menu.component';
 import { NavbarComponent, LoginDialog } from './navbar/navbar.component';
@@ -46,7 +45,6 @@ import { ReportingModule } from '../reporting/reporting.module';
     AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
-    GoToLocComponent,
     BlankComponent,
     TalkWidgetComponent,
     TicketWidgetComponent,
@@ -57,7 +55,6 @@ import { ReportingModule } from '../reporting/reporting.module';
     AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
-    GoToLocComponent,
     BlankComponent,
     TalkWidgetComponent,
     TicketWidgetComponent,

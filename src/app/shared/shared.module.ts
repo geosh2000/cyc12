@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CapitalizadoPipe } from '../pipes/capitalizado.pipe';
 import { KeysPipe } from '../pipes/keys.pipe';
 import { LowercasePipe } from '../pipes/lowercase.pipe';
+import { DomSeguroPipe } from '../pipes/dom-seguro.pipe';
 
 import { SnackBarTemplateComponent } from './snack-bar-template/snack-bar-template.component';
 import { SnackBarComponent } from './snack-bar/snack-bar.component';
@@ -29,15 +30,19 @@ import { LocSearchComponent } from './loc-search/loc-search.component';
 import { ZdUserEditComponent } from './zd-user-edit/zd-user-edit.component';
 import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { MergeUsersComponent } from './merge-users/merge-users.component';
+import { GoToLocComponent } from './go-to-loc/go-to-loc.component';
 
 
 @NgModule({
   declarations: [
+    GoToLocComponent,
     SnackBarComponent,
     SnackBarTemplateComponent,
     CapitalizadoPipe,
     LowercasePipe,
     KeysPipe,
+    // DomSeguroPipe,
+
     ZdUserSearchComponent,
     LocSearchComponent,
     ZdUserEditComponent,
@@ -53,7 +58,9 @@ import { MergeUsersComponent } from './merge-users/merge-users.component';
     CapitalizadoPipe,
     LowercasePipe,
     KeysPipe,
+    // DomSeguroPipe,
 
+    GoToLocComponent,
     SnackBarComponent,
     SnackBarTemplateComponent,
     ZdUserSearchComponent,

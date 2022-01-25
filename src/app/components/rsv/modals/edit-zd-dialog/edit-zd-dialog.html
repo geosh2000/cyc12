@@ -1,0 +1,8 @@
+<div class="cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing" *ngIf="loading['search']">
+    <mat-spinner style="top: 50%; left: 50%;"></mat-spinner>
+</div>
+<app-zd-user-edit (saved)="onNoClick( true )"></app-zd-user-edit>
+
+<div class="d-block text-end" [style.width.vw]="77">
+    <button mat-raised-button (click)="onNoClick()" [disabled]="loading['chgAgent']">Cerrar</button>
+</div>

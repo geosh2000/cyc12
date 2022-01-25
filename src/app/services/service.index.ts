@@ -10,5 +10,6 @@ export { LoginService } from './login.service';
 export { ZonaHorariaService } from './zona-horaria.service';
 export { AuthService } from './auth.service';
 export { WebSocketService } from './web-socket.service';
+export { HelpersService } from './helpers.service';
 // export { RrobinService } from './rrobin.service';
 

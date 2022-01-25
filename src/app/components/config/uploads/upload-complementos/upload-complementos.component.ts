@@ -59,8 +59,12 @@ export class UploadComplementosComponent implements OnInit {
           monto     : r["IMPORTE"],
           capturo   : r["CAP U"],
           updated   : 1,
-          dtCaptura : this.excelDate(r["CAP F"])
+          dtCaptura : this.excelDate(r["CAP F"])        }
+
+        if( row['dtCaptura'] == 'Fecha inválida' ){
+          row['dtCaptura'] = moment(r["CAP F"], 'DD/MM/YY').format('YYYY-MM-DD')
         }
+        
 
         if( r['CAN U'].trim() == '' ){
           cielo[index].push( row )

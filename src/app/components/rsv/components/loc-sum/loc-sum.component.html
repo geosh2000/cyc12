@@ -1,0 +1,159 @@
+<!-- CONFIRMACIONES -->
+<div class="d-flex justify-content-start align-items-center">
+    <div *ngIf="!loading['sendConf']">
+        <button style="zoom: 0.8" mat-button color="primary" (click)="sendMailConfirm()"><mat-icon>mail</mat-icon> Enviar Reserva por Correo</button>
+    </div>
+    <mat-progress-bar mode="buffer" *ngIf="loading['sendConf']"></mat-progress-bar>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div *ngIf="!loading['sendConf']">
+        <button style="zoom: 0.8" mat-button color="primary" (click)="_init.copyToClipboard(urlCopy(data['master']))"><mat-icon>file_copy</mat-icon> Copiar link de confirmación</button>
+    </div>
+</div>
+<hr>
+
+<!-- GESTIONAR SEGUROS -->
+<!-- <div class="d-flex justify-content-start align-items-center">
+    <div>
+        <button style="zoom: 0.8" mat-button color="primary" (click)="manageIns()"><mat-icon>verified_user</mat-icon> Gestionar Seguros</button>
+    </div>
+    <div style="text-align: center" class="p-2 d-flex justify_content-end align-items-center">
+        <ui-switch color="#3f51b5" size="small" name='hide' [(ngModel)]="hideInsXld"></ui-switch>
+            <span class='ml-1' [style.color]="'#3f51b5'"><small>Hide Xld</small></span>
+    </div>
+</div>
+<hr> -->
+
+<!-- DATOS DE CONTACTO -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Titular:</b></div>
+    <div class="clientInfo">{{ data['master']['nombreCliente'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Tel:</b></div>
+    <div class="clientInfo">{{ data['master']['telCliente'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Correo:</b></div>
+    <div class="clientInfo">{{ data['master']['correoCliente'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Whatsapp:</b></div>
+    <div class="clientInfo">{{ data['master']['waCliente'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Viajero:</b></div>
+    <div class="clientInfo">{{ data['master']['esNacional'] != null ? (data['master']['esNacional'] == '1' ? 'Nacional' : 'Internacional') : null }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Idioma:</b></div>
+    <div class="clientInfo">{{ data['master']['idioma'] }}</div>
+</div>
+
+<!-- OREWARDS -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>OR Id:</b></div>
+    <div class="clientInfo" *ngIf="data['master']['orId']">{{ data['master']['orId'] }}</div>
+    <mat-progress-bar mode="buffer" *ngIf="loading['orUpdate']"></mat-progress-bar>
+    <div class="clientInfo" *ngIf="!data['master']['orId'] && !loading['orUpdate']"><button style="zoom: 0.8" mat-button color="primary" (click)="updateOr()"><mat-icon>refresh</mat-icon> Actualizar ORewards</button></div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>OR Level:</b></div>
+    <div class="clientInfo" *ngIf="data['master']['orLevel']">{{ data['master']['orLevel'] }}</div>
+    <mat-progress-bar mode="buffer" *ngIf="loading['orUpdate']"></mat-progress-bar>
+</div>
+
+<!-- ZENDESK ID -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Zendesk:</b></div>
+    <div class="clientInfo"><a target="_blank" [href]=" domSanitizer.bypassSecurityTrustResourceUrl( 'https://oasishoteles.zendesk.com/agent/users/' + data['master']['zdUserId'])">{{ data['master']['zdUserId'] }}</a></div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><button mat-icon-button color="primary" aria-label="edit cc button" (click)="ccFlag = true" *ngIf="!ccFlag">
+        <mat-icon style="zoom: 0.8">edit</mat-icon>
+      </button> <b>CC:</b></div>
+    <div class="clientInfo">
+        <ng-container *ngIf="!ccFlag">
+            {{ data['master']['cc'] }}
+        </ng-container>
+        <ng-container *ngIf="ccFlag">
+            <mat-form-field class="example-full-width" [style.width.px]="120">
+                <input style="font-size: 11px" matInput placeholder="Correo CC" pattern="^(.)+@(.)+\.(.)+$" [value]="data['master']['cc']" #mailInput>
+            </mat-form-field>
+            <button style="zoom: 0.8; width: 28px" mat-icon-button color='warn' (click)="ccFlag = false" [disabled]="loading['editCC']"><mat-icon *ngIf="!loading['editCC']">cancel</mat-icon><span *ngIf="loading['editCC']"><i class="fa fa-spinner fa-pulse"></i></span></button>
+            <button style="zoom: 0.8; width: 28px" mat-icon-button color='primary' (click)="editCCMail(mailInput)" [disabled]="loading['editCC']"><mat-icon *ngIf="!loading['editCC']">done</mat-icon><span *ngIf="loading['editCC']"><i class="fa fa-spinner fa-pulse"></i></span></button>
+        </ng-container>
+    </div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div>
+        <button style="zoom: 0.8" mat-button color="primary" (click)="zdEditDialog(data['master'])"><mat-icon>refresh</mat-icon> Actualizar datos de contacto</button>
+    </div>
+</div>
+<hr>
+
+<!-- RESUMEN ESTA RSVA -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Llegada:</b></div>
+    <div class="clientInfo">{{ _h.formatDate(data['master']['llegada'], 'DD MMM YYYY') }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Grupo:</b></div>
+    <div class="clientInfo">{{ data['master']['grupos'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>FDP:</b></div>
+    <div class="clientInfo">{{ data['master']['tiposPago'] }}</div>
+</div>
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Tickets:</b></div>
+    <div class="clientInfo" *ngIf="!loading['rlTicket'] && data['master']['tickets'].length > 0">
+        <p *ngFor="let t of data['master']['tickets']" class="mb-0"><a target="_blank" [href]=" domSanitizer.bypassSecurityTrustResourceUrl( 'https://oasishoteles.zendesk.com/tickets/' + t )">{{ t }}</a></p>
+    </div>
+    <ng-container *ngIf="loading['rlTicket']">
+        <mat-progress-bar mode="buffer"></mat-progress-bar>
+    </ng-container>
+    <div class="clientInfo" *ngIf="data['master']['tickets'].length == 0 && !loading['rlTicket']"><button style="zoom: 0.8" mat-button color="primary" (click)="updateRelatedTicket()"><mat-icon>refresh</mat-icon>Obtener Tickets</button></div>
+</div>
+<hr>
+
+<!-- HISTORIAL RSVAS -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Reservas:</b></div>
+    <div class="clientInfo">
+        <ul *ngIf="!loading['rsvHistory'] && data['rsvHistory'] && data['rsvHistory'].length > 0">
+            <ng-container *ngFor="let rh of rsvHistory; index as rhi">
+                <ng-container *ngIf="rh.ml != data['master']['masterlocatorid'] && (rhi<5 || showMore)">
+                    <li *ngIf="rh.st != 'X'" [ngClass]="{'text-warning': rh.st == 'Q', 'text-success': rh.st == 'R','text-info': rh.st == 'Exp'}"><a href="/#/rsv2/{{ rh.ml }}" target="_blank">{{ rh.ml }} ({{ rh.services }})</a></li>
+                    <li *ngIf="rh.st == 'X'" class='text-danger'><del><a href="/#/rsv2/{{ rh.ml }}" target="_blank">{{ rh.ml }} ({{ rh.services }})</a></del></li>
+                </ng-container>
+                <ng-container *ngIf="rh.ml != data['master']['masterlocatorid'] && rhi == 5 && !showMore">
+                    <div>
+                        <button style="zoom: 0.8" mat-button color="primary" (click)="showMore = true">Mostrar {{ rsvHistory.length - 5 }} más...</button>
+                    </div>
+                </ng-container>
+            </ng-container> 
+        </ul>
+        <!-- <ng-container *ngIf="loading['rsvHistory']"> -->
+        <ng-container *ngIf="loading['rsvHistory']">
+            <mat-progress-bar mode="buffer"></mat-progress-bar>
+        </ng-container>
+    </div>
+</div>
+<hr>
+
+<!-- PAGOS -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Pagos:</b></div>
+    <div class="clientInfo">
+        <button mat-button (click)="pagosDialog( data['master']['masterlocatorid'] )">Ver pagos</button>
+    </div>
+</div>
+<hr>
+
+
+<!-- COMISION -->
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Comision:</b></div>
+    <div class="clientInfo">{{ data['master']['comision'] }} MXN</div>
+</div>

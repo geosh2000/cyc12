@@ -11,6 +11,12 @@ const childRoutes: Routes = [
     canActivate: [ AuthGuard ],
     data: { title: 'Rsv Manager', role: 'app_cotizador_rsv' } 
   },
+  { 
+    path: ':loc', 
+    component: RsvComponent ,
+    canActivate: [ AuthGuard ],
+    data: { title: 'Rsv Manager', role: 'app_cotizador_rsv' } 
+  },
 ]
 
 

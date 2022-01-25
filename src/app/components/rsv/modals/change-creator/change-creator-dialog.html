@@ -1,0 +1,28 @@
+<div class="d-flex justify-content-center">
+
+    <ng-container *ngIf="loading['zdAgents']">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </ng-container>
+    
+    <ng-container *ngIf="!loading['zdAgents']">
+        <h6>Selecciona un Agente</h6>
+        
+        <mat-progress-bar *ngIf="loading['chgAgent']" mode="indeterminate"></mat-progress-bar>
+        
+        <mat-form-field *ngIf="!loading['chgAgent']">
+            <mat-label>Agentes Zendesk</mat-label>
+            <mat-select (selectionChange)="selectedAg($event)">
+                <ng-container *ngFor="let ag of zdUsers">
+                    <mat-option [value]="ag">
+                        {{ ag.nCorto }}
+                    </mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    
+    </ng-container>
+</div>
+
+<div class="d-block text-end" [style.width.vw]="15">
+    <button mat-raised-button (click)="onNoClick()" [disabled]="loading['chgAgent']">Cerrar</button>
+</div>

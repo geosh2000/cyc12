@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as Globals from '../globals';
 import { map, catchError, filter, share } from 'rxjs/operators'
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 declare global {
   interface Window {
@@ -19,6 +19,8 @@ declare global {
 export class ApiService {
 
   localIp = sessionStorage.getItem('LOCAL_IP');
+
+  public isLoading:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private ipRegex = new RegExp(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/);
 

@@ -35,6 +35,8 @@ export class TalkWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
           this.buildStatus(msg['data']['status'])
         }
       })
+
+    this.getStatus()    
   }
 
   ngOnDestroy(){
@@ -42,7 +44,6 @@ export class TalkWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.getStatus()    
   }
 
   buildStatus( st ){
