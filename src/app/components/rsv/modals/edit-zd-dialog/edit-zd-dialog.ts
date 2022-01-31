@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService, InitService } from 'src/app/services/service.index';
-import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.component';
+import { ZdUserEditComponent } from '../../../shared/zd-user-edit/zd-user-edit.component';
 
 
 @Component({

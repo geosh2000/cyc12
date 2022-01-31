@@ -2,7 +2,7 @@
     <ng-container *ngFor="let i of data['items']">
 
         <!-- ESCONDE SEGUROS CANCELADOS SI EL FLAG ESTA ACTIVADO -->
-        <mat-expansion-panel *ngIf="!(i['itemType'] == 10 && hideInsXld && i['isCancel'] == '1')" [hideToggle]="true">
+        <mat-expansion-panel class="my-2" style="background: #ebe6f640;" *ngIf="!(i['itemType'] == 10 && hideInsXld && i['isCancel'] == '1')" [hideToggle]="true">
 
             <!-- RESUMEN CONTRAIDO -->
             <mat-expansion-panel-header class="p-0">
@@ -11,35 +11,42 @@
                     
                     <!-- LOCALIZADOR, ICONO Y DESCRIPCION -->
                     <div class="col-4 d-flex justify-content-start align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
-                        <span class="me-2">{{ i['itemLocatorId'] }}</span>
-                        <div class="d-flex align-items-center">
-                            <mat-icon>{{ i['icon'] }}</mat-icon><span class="ms-2">{{ i['tipoServicio'] }}</span>
-                        </div>
+                        <span class="me-2" [style.width.px]="76">{{ i['itemLocatorId'] }}</span>
+                            <div class="d-flex align-items-center">
+                                <mat-icon>{{ i['icon'] }}</mat-icon>
+                                <div class="ms-2">
+                                    <span style="font-size: 13px;">{{ i['tipoServicio'] }}</span>
+                                    <ng-container *ngIf="i['itemType'] == 1">
+                                        <br>
+                                        <span style="font-size: xx-small;">{{ _h.formatDate(i['inicio'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
+                                    </ng-container>
+                                </div>
+                            </div>
                     </div>
 
                     <!-- CONFIRMACION, STATUS DE RSVA Y PAGO SI NO ESTA CANCELADO -->
                     <ng-container *ngIf="i['isCancel'] == 0">
 
-                        <div class="d-flex align-items-center flex-wrap justify-content-center col-2 mt-auto mb-auto text-center text-truncate p-0" [ngClass]="colorConfirm(i['confirm'], isVigente(i['vigencia']), i['isQuote'] == 1)">
+                        <div class="d-flex align-items-center flex-wrap justify-content-center col-2 mt-auto mb-auto text-center text-truncate p-0" [ngClass]="colorConfirm(i['confirm'], _h.isVigente(i['vigencia']), i['isQuote'] == 1)">
                             <div class='text-center'>
 
                                 <!-- CONFIRMACION -->
                                 <p style="font-size: smaller;">
-                                    {{ i['isQuote'] == 1 && !isVigente(i['vigencia']) ? 'Expirada' : i['confirm'] }}
+                                    {{ i['isQuote'] == 1 && !_h.isVigente(i['vigencia']) ? 'Expirada' : i['confirm'] }}
                                 </p>
                                 <ng-container *ngIf="i['confirmOK'] != null && i['confirmOK'] != i['confirm']">
                                     <p style="font-size: xx-small; line-height: 8px;">({{ i['confirmOK'] }})</p>
                                 </ng-container>
 
                                 <!-- STATUS PAGO -->
-                                <span [matTooltip]="i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-success" *ngIf="i['tipoPago'] == 'PT'">PT</span>
-                                <span [matTooltip]="i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-secondary" *ngIf="i['tipoPago'] == 'OD'">OD</span>
-                                <span [matTooltip]="i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-oldSec" *ngIf="i['tipoPago'] == 'PP'">PP</span>
-                                <span [matTooltip]="i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-matPrimary" *ngIf="i['tipoPago'] == 'PH'">PH</span>
-                                <span [matTooltip]="i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-warning" *ngIf="i['tipoPago'] == 'PDT'">PDT</span>
+                                <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-success" *ngIf="i['tipoPago'] == 'PT'">PT</span>
+                                <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-secondary" *ngIf="i['tipoPago'] == 'OD'">OD</span>
+                                <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-oldSec" *ngIf="i['tipoPago'] == 'PP'">PP</span>
+                                <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-ph" *ngIf="i['tipoPago'] == 'PH'">PH</span>
+                                <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-warning" *ngIf="i['tipoPago'] == 'PDT'">PDT</span>
 
                                 <!-- STATUS CIELO -->
-                                <span [ngSwitch]="i['cieloStatus']" [matTooltip]="i['cieloStatus']" [matTooltipPosition]="'above'">
+                                <span [ngSwitch]="i['cieloStatus']" [matTooltip]="'Status CIELO: ' + i['cieloStatus']" [matTooltipPosition]="'above'" *ngIf="i['itemType']==1">
                                     <span class="badge-status badge rounded-pill bg-danger" *ngSwitchCase="'c'">C</span>
                                     <span class="badge-status badge rounded-pill bg-warning" *ngSwitchCase="'n'">N</span>
                                     <span class="badge-status badge rounded-pill bg-success" *ngSwitchCase="'b'">B</span>
@@ -48,6 +55,15 @@
                                     <span class="badge-status badge rounded-pill bg-oldSec" *ngSwitchCase="'o'">O</span>
                                     <span class="badge-status badge rounded-pill bg-warning" *ngSwitchCase="'pdt'">PDT</span>
                                     <span class="badge-status badge rounded-pill bg-success" *ngSwitchDefault>D</span>
+                                </span>
+                                
+                                <!-- Politica -->
+                                <span matTooltip="Politica No Reembolsable" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-danger" *ngIf="i['itemType'] == 1 && i['isNR'] == 1">NR</span>
+                                <span matTooltip="Polìtica Flexible" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-oldSec" *ngIf="i['itemType'] == 1 && i['isNR'] == 0">FLX</span>
+                                
+                                <!-- Bed Preference -->
+                                <span [matTooltip]="'Preferencia de camas ' + ( i['bedPreference'] == 'Dobule Beds' ? 'Dobles' : 'King' )" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-beds" *ngIf="i['itemType'] == 1">
+                                    {{ i['bedPreference'] == 'Dobule Beds' ? 'D' : 'K' }}
                                 </span>
 
                             </div>
@@ -71,19 +87,22 @@
 
                     <!-- RESUMEN DE CANCELACION -->
                     <ng-container *ngIf="i['isCancel'] == 1">
-                        <div class="col-8 mt-auto mb-auto text-center itemCancelled">Item Cancelado conf. {{ i['confirmCancel'] ? i['confirmCancel'] : 'Pendiente' }}</div>
+                        <div class="col-8 mt-auto mb-auto text-center itemCancelled">
+                            Item Cancelado conf. {{ i['confirmCancel'] ? i['confirmCancel'] : 'Pendiente' }}<br>
+                            <b>Penalidad aplicada:</b> {{ i['montoPenalidad'] | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'] }}
+                        </div>
                     </ng-container>
                 </div>
             </mat-expansion-panel-header>
 
             <!-- ALERTAS DE COTIZACION -->
-            <div class="alert" [ngClass]="{'alert-danger': !isVigente(i['vigencia']), 'alert-warning': isVigente(i['vigencia'])}" role="alert" *ngIf="i['isQuote'] == 1">
-                <span *ngIf="isVigente(i['vigencia'])">Cotización expira el {{ formatDate(i['vigencia'], 'DD MMM YYYY HH:mm', true) }} hrs</span>
-                <span *ngIf="!isVigente(i['vigencia'])">Cotización expirada. Venció el {{ formatDate(i['vigencia'], 'DD MMM YYYY HH:mm', true) }} hrs</span>
+            <div style="font: small" class="alert py-1" [ngClass]="{'alert-danger': !_h.isVigente(i['vigencia']), 'alert-warning': _h.isVigente(i['vigencia'])}" role="alert" *ngIf="i['isQuote'] == 1">
+                <span *ngIf="_h.isVigente(i['vigencia'])">Cotización expira el {{ _h.formatDate(i['vigencia'], 'DD MMM YYYY HH:mm', true) }} hrs</span>
+                <span *ngIf="!_h.isVigente(i['vigencia'])">Cotización expirada. Venció el {{ _h.formatDate(i['vigencia'], 'DD MMM YYYY HH:mm', true) }} hrs</span>
             </div>
 
             <!-- ALERTAS CORTESIA -->
-            <div class="alert alert-info" role="alert" *ngIf="i['isFree'] == 1">
+            <div style="font: small" class="alert alert-info py-1" role="alert" *ngIf="i['isFree'] == 1">
                 Item marcado como cortesía, relacionado con reservas {{ i['cieloRelates'] }}
             </div>
 
@@ -105,69 +124,74 @@
                 <!-- NOTAS -->
                 <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas: </span><span class="clientInfo">{{ i['notas'] }}</span></div>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="primary"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="_cp.viewPricesLoad(i)"
                     *ngIf="i['itemType'] == 1 && i['isCancel'] == 0 && i['isOpen'] == 0">
                     <mat-icon>request_quote</mat-icon>
                     &nbsp;Ver Precios
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="primary"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="openOD(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isQuote'] == 0 && i['isCancel'] == 0  && i['itemType'] != '10'">
+                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isQuote'] == 0 && i['isCancel'] == 0  && i['itemType'] == 1">
                     <mat-icon>meeting_room</mat-icon>
                     &nbsp;Fechas Abiertas
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="primary"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="openODSet(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isOpen'] == 1 && i['isCancel'] == 0 && i['isQuote'] == 0">
+                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isOpen'] == 1 && i['isCancel'] == 0 && i['isQuote'] == 0"
+                    [disabled]="loading['setNR']">
                     <mat-icon>beach_access</mat-icon>
                     &nbsp;Establecer Fechas
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="danger"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
+                    (click)="setNR(i, false)"
+                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isCancel'] == 0 && i['itemType'] == 1 && i['isNR'] == 1"
+                    [disabled]="loading['setNR']">
+                    <mat-icon>payment</mat-icon>
+                    &nbsp;Set Flexible
+                </button>
+                
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
+                    (click)="setNR(i, true)"
+                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isCancel'] == 0 && i['itemType'] == 1 && i['isNR'] == 0">
+                    <mat-icon>credit_card_off</mat-icon>
+                    &nbsp;Set NR
+                </button>
+                
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
                     (click)="cancelItem(i)"
-                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10'">
+                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && i['isCancel'] == 0">
                     <mat-icon>remove_circle</mat-icon>
                     &nbsp;Cancelar
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="alert"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="alert"
                     (click)="changeItem(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isOpen'] == 0  && i['isCancel'] == 0  && i['itemType'] != '10'">
+                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isOpen'] == 0  && i['isCancel'] == 0  && i['itemType'] == '1'">
                     <mat-icon>swap_horizontal_circle</mat-icon>
                     &nbsp;Modificar
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="success"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="success"
                     (click)="validateCert(i)"
                     *ngIf="_init.checkSingleCredential('rsv_validateCert') && i['grupo']=='CORT' && i['isQuote']==1">
                     <mat-icon>done_outline</mat-icon>
                     &nbsp;Validar Certificado
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="alert"
-                    (click)="reactivate(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_reactivate') && !isVigente(i['vigencia']) && i['isQuote'] == 1 && i['isCancel'] == 0">
-                    <ng-container *ngIf="loading['reactivate']">
-                        <span><i class="fas fa-spinner fa-pulse"></i></span>
-                    </ng-container>
-                    <ng-container *ngIf="!loading['reactivate']">
-                        <mat-icon>alarm_add</mat-icon> Reactivar
-                    </ng-container>
-                </button>
-                
-                <button class='p-1' mat-button style="zoom: 0.8" color="primary"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="confirmItem(i)"
-                    *ngIf="(i['isQuote'] == 0 || i['isConfirmable'] == 1) && i['confirmOK'] == null  && i['itemType'] != '10'">
+                    *ngIf="(i['isQuote'] == 0 || i['isConfirmable'] == 1) && i['confirmOK'] == null && i['isCancel'] == 0">
                     <mat-icon>done_outline</mat-icon>
                     &nbsp;Confirmar
                 </button>
                 
-                <button class='p-1' mat-button style="zoom: 0.8" color="primary"
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="resetConfirm(false,i)"
-                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['isQuote'] == 0 && i['confirmOK'] != null  && i['itemType'] != '10'">
+                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['isQuote'] == 0 && i['isCancel'] == 0 && i['confirmOK'] != null  && i['itemType'] != '10' && i['itemType'] != '11'">
                     <mat-icon>delete_forever</mat-icon>
                     &nbsp;Reset Confirmación
                 </button>

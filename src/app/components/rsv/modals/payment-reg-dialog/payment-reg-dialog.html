@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Registro de Pagos</h1>
+
+<div mat-dialog-content>
+    <app-payment-register (close)="onNoClick()"></app-payment-register>
+</div>
+
+<div mat-dialog-actions class="d-block text-end" [style.width.vw]="55">
+    <button mat-raised-button (click)="onNoClick()" [disabled]="_api.isLoading | async">Cerrar</button>
+</div>

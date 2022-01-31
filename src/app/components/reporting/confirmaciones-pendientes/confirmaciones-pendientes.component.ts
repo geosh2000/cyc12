@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
-import { ApiService, InitService, WebSocketService } from 'src/app/services/service.index';
+import { ApiService, HelpersService, InitService, WebSocketService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
@@ -23,6 +23,7 @@ export class ConfirmacionesPendientesComponent implements OnInit, OnDestroy {
  
   constructor( 
     private _api: ApiService, 
+    public _h: HelpersService, 
     public _init: InitService,
     private _ws: WebSocketService
     ) { 

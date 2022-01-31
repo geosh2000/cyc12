@@ -1,11 +1,19 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrderPipe } from 'ngx-order-pipe';
 import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import { ChangeCreatorDialog } from '../../modals/change-creator/change-creator-dialog';
 
+import Swal from 'sweetalert2';
+
 import * as moment from 'moment-timezone';
+import { ReactivateDialog } from '../../modals/reactivate-dialog/reactivate-dialog';
+import { PaymentRegDialog } from '../../modals/payment-reg-dialog/payment-reg-dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { FormGroup, NgForm } from '@angular/forms';
+import { EditPaymentDialog } from '../../modals/edit-payments-dialog/edit-payments-dialog';
 
 @Component({
   selector: 'rsv-main-frame',
@@ -14,12 +22,23 @@ import * as moment from 'moment-timezone';
 })
 export class MainFrameComponent implements OnInit, AfterViewInit {
 
+  @ViewChild('filterFormDom') form: NgForm;
+  @ViewChild( MatPaginator ) paginator: MatPaginator;
+  
   @Input() data = {}
   @Output() reload = new EventEmitter
 
+
   loading = {}
   comment = ''
-  history = []
+
+  // HISTORY
+  history = new MatTableDataSource([])
+  displayColumns = [
+    'Fecha',
+    'msg'
+  ]
+
   showMore = false
 
   hideInsXld = true
@@ -27,7 +46,7 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
   constructor( 
     public domSanitizer: DomSanitizer,
     public _init: InitService,
-    private _api: ApiService,
+    public _api: ApiService,
     private orderPipe: OrderPipe,
     public _h: HelpersService,
     private _zh: ZonaHorariaService,
@@ -39,6 +58,15 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.history.filter = filterValue.trim().toLowerCase();
+
+    if (this.history.paginator) {
+      this.history.paginator.firstPage();
+    }
   }
 
 
@@ -55,7 +83,8 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
 
                     this.loading['history'] = false;
 
-                    this.history = this.orderPipe.transform(res['data'], 'Fecha', true)
+                    this.history = new MatTableDataSource(this.orderPipe.transform(res['data'], 'Fecha', true))
+                    this.history.paginator = this.paginator;
 
                   }, err => {
                     this.loading['history'] = false;
@@ -239,6 +268,50 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
       dialogRef.afterClosed().subscribe(result => {
         if( result ){
           this.getHistory( this.data['mlTicket'] )
+        }
+      });
+    }
+    
+    paymentRegDialog( d:any = null ): void {
+      const dialogRef = this.dialog.open(PaymentRegDialog, {
+        data: d,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+
+      });
+    }
+    
+    editPaymentDialog( d:any = null ): void {
+      const dialogRef = this.dialog.open(EditPaymentDialog, {
+        data: d,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+
+      });
+    }
+
+    reactivateDialog( d:any = null ): void {
+      const dialogRef = this.dialog.open(ReactivateDialog, {
+        data: d,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if( result === true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
+
+        if( result == 'false-reload' ){
+          Swal.fire('No hay items para reactivar', '', 'info')
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
+
+        if( result === false ){
+          Swal.fire('No hay items para reactivar', '', 'info')
         }
       });
     }

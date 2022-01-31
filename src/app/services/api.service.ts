@@ -99,6 +99,30 @@ export class ApiService {
 
   }
 
+  restfulUpload( params, apiRoute, loginReq = true ){
+
+    let url
+
+    if( loginReq ){
+      let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      url = `${ this.apiRestful }${ apiRoute }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}`
+    }else{
+      url = `${ this.apiRestful }${ apiRoute }`
+    }
+
+    let urlOK = this.transform( url )
+
+    let body = JSON.stringify( params );
+    let headers = new HttpHeaders({
+      'Content-Type':'application/json'
+    });
+
+    // return this.http.put( urlOK.changingThisBreaksApplicationSecurity, body, { headers } )
+    return this.http.put( url, body, { headers, reportProgress: true, observe: 'events' } )
+        .pipe()
+        
+  }
+
   restfulPut( params, apiRoute, loginReq = true ){
 
     let url
@@ -123,7 +147,7 @@ export class ApiService {
            share(),
            map( res => res ),
            filter( res => {
-             if( res['msg'] && res['msg'] == 'Token Expired' ){
+             if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
                
                this.tokenCheck.next( false )
                return false
@@ -163,7 +187,7 @@ export class ApiService {
         .pipe(
            map( res => res ),
            filter( res => {
-            if( res['msg'] && res['msg'] == 'Token Expired' ){
+            if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
               
               this.tokenCheck.next( false )
               return false
@@ -225,6 +249,7 @@ export class ApiService {
         )
   }
 
+
   restfulGet( id, apiRoute ){
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -240,7 +265,7 @@ export class ApiService {
         .pipe(
            map( res => res ),
            filter( res => {
-            if( res['msg'] && res['msg'] == 'Token Expired' ){
+            if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
               
               this.tokenCheck.next( false )
               return false

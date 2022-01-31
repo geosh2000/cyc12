@@ -13,9 +13,11 @@ import { ApiService, InitService } from 'src/app/services/service.index';
     pagos = []
     loading = {}
 
+    changed = false
+
     constructor(
       public pagosDialog: MatDialogRef<PagosDialog>,
-      private _api: ApiService,
+      public _api: ApiService,
       private _init: InitService,
       @Inject(MAT_DIALOG_DATA) public data) {
 
@@ -26,7 +28,7 @@ import { ApiService, InitService } from 'src/app/services/service.index';
     }
   
     onNoClick(): void {
-      this.pagosDialog.close();
+      this.pagosDialog.close( this.changed );
     }
 
     getPayments(){
@@ -41,6 +43,29 @@ import { ApiService, InitService } from 'src/app/services/service.index';
   
                   }, err => {
                     this.loading['pagos'] = false;
+  
+                    const error = err.error;
+                    this._init.snackbar( 'error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+  
+                  });
+    }
+      
+    applyPayments( id ){
+
+      this.loading['apply'] = true
+  
+      this._api.restfulPut( { itemId: id }, 'Rsv/applyPaymentsCielo' )
+                  .subscribe( res => {
+  
+                    this.loading['apply'] = false;
+                    this._init.snackbar( 'success', 'Aplicadas', res['msg'] );
+                    this.getPayments()
+
+                    this.changed = true
+  
+                  }, err => {
+                    this.loading['apply'] = false;
   
                     const error = err.error;
                     this._init.snackbar( 'error', error.msg, err.status );

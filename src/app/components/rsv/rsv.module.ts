@@ -8,19 +8,28 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrderModule } from 'ngx-order-pipe';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ComponentsSharedModule } from '../shared/components-shared.module';
 import { ItemSumComponent } from './components/item-sum/item-sum.component';
 import { LocSumComponent } from './components/loc-sum/loc-sum.component';
 import { MainFrameComponent } from './components/main-frame/main-frame.component';
 import { GenerateAuthFileComponent } from './generate-auth-file/generate-auth-file.component';
 import { ChangeCreatorDialog } from './modals/change-creator/change-creator-dialog';
+import { EditPaymentDialog } from './modals/edit-payments-dialog/edit-payments-dialog';
 import { EditZdDialog } from './modals/edit-zd-dialog/edit-zd-dialog';
+import { ManageInsDialog } from './modals/manage-ins/manage-ins.dialog';
 import { PagosDialog } from './modals/pagos-modal/pagos-modal';
+import { PaymentRegDialog } from './modals/payment-reg-dialog/payment-reg-dialog';
+import { ReactivateDialog } from './modals/reactivate-dialog/reactivate-dialog';
 import { RsvComponent } from './rsv.component';
 
 
@@ -37,6 +46,10 @@ import { RsvComponent } from './rsv.component';
     PagosDialog,
     ChangeCreatorDialog,
     EditZdDialog,
+    ManageInsDialog,
+    ReactivateDialog,
+    PaymentRegDialog,
+    EditPaymentDialog,
   ],
   exports: [
     RsvComponent,
@@ -49,10 +62,15 @@ import { RsvComponent } from './rsv.component';
     PagosDialog,
     ChangeCreatorDialog,
     EditZdDialog,
+    ManageInsDialog,
+    ReactivateDialog,
+    PaymentRegDialog,
+    EditPaymentDialog,
   ],
   imports: [
     OrderModule,
     SharedModule,
+    ComponentsSharedModule,
 
     MatProgressBarModule,
     MatCardModule,
@@ -67,6 +85,10 @@ import { RsvComponent } from './rsv.component';
     MatFormFieldModule,
     MatSelectModule,
     MatExpansionModule,
+    MatSlideToggleModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatSortModule,
   ]
 })
 export class RsvModule { }

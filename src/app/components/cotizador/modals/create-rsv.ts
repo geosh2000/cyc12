@@ -9,7 +9,8 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation } from '@angular/cdk/stepper';
 
 import { ApiService, InitService } from 'src/app/services/service.index';
-import { ZdUserEditComponent } from 'src/app/shared/zd-user-edit/zd-user-edit.component';
+import { ZdUserEditComponent } from '../../shared/zd-user-edit/zd-user-edit.component';
+
 
 @Component({
     selector: 'create-rsv',

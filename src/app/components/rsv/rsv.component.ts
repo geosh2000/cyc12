@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { ApiService, InitService } from 'src/app/services/service.index';
+import { ApiService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import { MainFrameComponent } from './components/main-frame/main-frame.component';
 import { SearchLocDialog } from './modals/search-loc/search-loc.component';
+
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-rsv',
@@ -28,6 +30,7 @@ export class RsvComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private _api: ApiService,
     private _init: InitService,
+    private _zh: ZonaHorariaService,
     public dialog: MatDialog ) { }
 
   ngOnInit(): void {
@@ -153,21 +156,40 @@ export class RsvComponent implements OnInit, AfterViewInit {
   }
 
   rsvTypeCheck(){
-    let x = 0
-    let c = 0
+    let x = 0   // Total de items
+    let c = 0   // Items cancelados
+    let e = 0   // Items expirados
+    let a = 0   // Items Activos
+    let rt = 'Cotizacion'
+
     for( let i of this.data['items'] ){
       x++
       if( i['isQuote'] == 0 && i['isCancel'] == 0 ){
-        this.data['rsvType'] = 'Reserva'
+        rt = 'Reserva'
       }
+
+      if( i['isQuote'] == 1 && i['isCancel'] == 0 ){
+        if( moment.tz(i['vigencia'],this._zh.defaultZone).tz(this._zh.zone) < moment() ){
+          e++
+        }
+      }
+
       if( i['isCancel'] == '1' ){
         c++
+      }else{
+        a++
       }
     }
 
     if( c == x ){
-      this.data['rsvType'] = 'Cancelada'
+      rt = 'Cancelada'
     }
+
+    if( e == a ){
+      rt = 'Expirada'
+    }
+
+    this.data['rsvType'] = rt
   }
 
 

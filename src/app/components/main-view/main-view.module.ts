@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ComponentsSharedModule } from '../shared/components-shared.module';
 
 import { MainViewComponent } from './main-view.component';
 import { MenuComponent } from './menu/menu.component';
@@ -38,6 +39,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TicketWidgetComponent } from './ticket-widget/ticket-widget.component';
 import { ReportingModule } from '../reporting/reporting.module';
 
+
 @NgModule({
   declarations: [
     MainViewComponent,
@@ -61,6 +63,7 @@ import { ReportingModule } from '../reporting/reporting.module';
   ],
   imports: [
     SharedModule,
+    ComponentsSharedModule,
 
     CotizadorModule,
     PagosModule,

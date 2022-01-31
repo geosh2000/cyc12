@@ -18,6 +18,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PagosRegistroComponent } from './pagos-registro/pagos-registro.component';
+import { ComponentsSharedModule } from '../shared/components-shared.module';
 
 
 @NgModule({ 
@@ -25,15 +27,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     PagosComponent,
     LinkGeneratorComponent,
     LinkReportComponent,
+    PagosRegistroComponent,
   ],
   exports: [
     PagosComponent,
     LinkGeneratorComponent,
     LinkReportComponent,
+    PagosRegistroComponent,
   ],
   imports: [    
 
     SharedModule,
+    ComponentsSharedModule,
 
     MatCardModule,
     MatFormFieldModule,

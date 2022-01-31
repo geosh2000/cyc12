@@ -48,6 +48,10 @@
                                         <div class="text-center">
                                             <button mat-icon-button class="table-button-copy" (click)="copy(r['itemLocatorId'])"      >  <mat-icon class="table-icon">content_copy</mat-icon>  </button>
                                         </div>
+                                        <div class="mt-4 text-center">
+                                            Creada: <br>
+                                            {{ _h.formatDate( r['created'], 'DD-MMM-YY') }}
+                                        </div>
                                     </td>
                                     <td>{{ r['created']                         }}</td>
                                     <td class="text-center">{{ r['hotel']                           }}</td>

@@ -7,22 +7,22 @@
 </div>
 <div class="d-flex justify-content-start align-items-center">
     <div *ngIf="!loading['sendConf']">
-        <button style="zoom: 0.8" mat-button color="primary" (click)="_init.copyToClipboard(urlCopy(data['master']))"><mat-icon>file_copy</mat-icon> Copiar link de confirmación</button>
+        <button style="zoom: 0.8" mat-button color="primary" (click)="_h.copyToClipboard(urlCopy(data['master']))"><mat-icon>file_copy</mat-icon> Copiar link de confirmación</button>
+        <a style="zoom: 0.8" class="ms-2" mat-icon-button color="primary" target="_blank" [href]=" domSanitizer.bypassSecurityTrustResourceUrl( urlCopy(data['master']) )"><mat-icon>open_in_new</mat-icon></a>
     </div>
 </div>
 <hr>
 
 <!-- GESTIONAR SEGUROS -->
-<!-- <div class="d-flex justify-content-start align-items-center">
+<div class="d-flex justify-content-start align-items-center">
     <div>
         <button style="zoom: 0.8" mat-button color="primary" (click)="manageIns()"><mat-icon>verified_user</mat-icon> Gestionar Seguros</button>
     </div>
     <div style="text-align: center" class="p-2 d-flex justify_content-end align-items-center">
-        <ui-switch color="#3f51b5" size="small" name='hide' [(ngModel)]="hideInsXld"></ui-switch>
-            <span class='ml-1' [style.color]="'#3f51b5'"><small>Hide Xld</small></span>
+        <mat-slide-toggle [checked]="hideInsXld" class="mx-1 mb-2 text-mat-primary" style="font-size: x-small;" (toggleChange)="changeHide()">Hide Xld</mat-slide-toggle>
     </div>
 </div>
-<hr> -->
+<hr>
 
 <!-- DATOS DE CONTACTO -->
 <div class="d-flex justify-content-start align-items-center">

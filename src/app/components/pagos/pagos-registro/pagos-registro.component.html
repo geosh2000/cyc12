@@ -1,0 +1,6 @@
+<div class="container">
+    <h1>Registro de pagos</h1>
+    <hr>
+    <div class="d-block"><mat-progress-bar mode="buffer" *ngIf="reload"></mat-progress-bar></div>
+    <app-payment-register (close)="reloadComponent()" *ngIf="!reload"></app-payment-register>
+</div>

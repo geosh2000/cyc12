@@ -1,0 +1,65 @@
+    <!-- PASO 1 DETALLES -->
+    <form [formGroup]="newPayment">
+            <ng-container *ngIf="!loading['saving']">
+                <section class="d-flex justify-content-center">
+                    <mat-radio-group #tipopagoselect class="p-3 m-1 mat-elevation-z3" aria-label="Select an option" formControlName="proveedor" (change)="chg('proveedor', $event)">
+                        <mat-radio-button value="Deposito" *ngIf="_init.checkSingleCredential('payment_dep')">Depósito</mat-radio-button>
+                        <mat-radio-button value="Roiback" *ngIf="_init.checkSingleCredential('payment_tpv')">RB</mat-radio-button>
+                        <mat-radio-button value="Central" *ngIf="_init.checkSingleCredential('payment_tpv')">Central</mat-radio-button>
+                        <mat-radio-button value="PayPal" *ngIf="_init.checkSingleCredential('payment_pp')">Paypal</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-radio-group class="p-3 m-1 mat-elevation-z3" aria-label="Select an option" formControlName="complejo" (change)="chg('complejo', $event)" [disabled]="this.newPayment.controls['proveedor'].errors && this.newPayment.controls['proveedor'].errors['required']">
+                        <mat-radio-button value="Cancun">Cancun</mat-radio-button>
+                        <mat-radio-button value="Palm">Palm</mat-radio-button>
+                        <mat-radio-button value="Smart">Smart</mat-radio-button>
+                        <mat-radio-button value="Vcm">VCM</mat-radio-button>
+                    </mat-radio-group>
+                </section>
+                <section class="d-flex justify-content-center mt-2">
+                    <mat-form-field [style.width.px]="250">
+                        <input autocomplete="off"matInput placeholder="Referencia" formControlName="referencia" class="ps-2 text-center">
+                    </mat-form-field>
+                    <mat-form-field [style.width.px]="250" class="ms-2">
+                        <input autocomplete="off"matInput placeholder="Operacion" formControlName="operacion" class="ps-2 text-center">
+                    </mat-form-field>
+                    <mat-form-field [style.width.px]="200" class="ms-2">
+                        <input autocomplete="off"matInput placeholder="Autorizacion" formControlName="aut" class="ps-2 text-center">
+                    </mat-form-field>
+                </section>
+                <section class="d-flex justify-content-center align-items-center" >
+                    <mat-form-field class="me-2">
+                        <span matPrefix>$ &nbsp;</span>
+                        <input autocomplete="off"type="number" matInput placeholder="Monto" formControlName="monto">
+                    </mat-form-field>
+
+                    <mat-radio-group aria-label="Select an option" formControlName="moneda">
+                        <mat-radio-button value="MXN">MXN</mat-radio-button>
+                        <mat-radio-button value="USD">USD</mat-radio-button>
+                    </mat-radio-group>
+
+                </section>
+                <section class="d-flex justify-content-center mt-2">
+                    <div class="mx-2 d-flex justify-content-between align-items-center mat-elevation-z3 p-2" [style.width.px]="470">
+                        <div class="text-truncate">
+                            <span><b>Archivo:</b> <span class="ms-1 fst-italic fw-lighter text-primary pe-1">{{ imageFileUp ? imageFileUp.name : 'Selecciona un archivo...' }}</span></span>
+                        </div>
+                        <div>
+                            <button mat-raised-button color="primary" (click)="swalUpload()">{{ imageFileUp ? 'Cambiar PDF' : 'Subir PDF' }}</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="d-flex justify-content-center" *ngIf="newPayment.controls['proveedor'].value=='Roiback'">
+                    <mat-form-field [style.width.px]="550">
+                        <input autocomplete="off"matInput placeholder="Notas" formControlName="paymentNotes" class="ps-2 text-center">
+                    </mat-form-field>
+                </section>
+            </ng-container>
+
+            <div class="'d-block">
+                <mat-progress-bar mode='buffer' *ngIf="loading['saving']"></mat-progress-bar>
+            </div>
+
+        <div class='container d-flex justify-content-end'>
+            <button class='ms-auto' color="primary" mat-button (click)="opValidation()" [disabled]="(_api.isLoading | async) || loading['saving'] || newPayment.invalid || !imageFileUp">Guardar</button>
+        </div>
+    </form>

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService, InitService } from 'src/app/services/service.index';
-import { MergeUsersComponent } from 'src/app/shared/merge-users/merge-users.component';
+import { MergeUsersComponent } from '../../../shared/merge-users/merge-users.component';
 import Swal from 'sweetalert2';
 
 @Component({

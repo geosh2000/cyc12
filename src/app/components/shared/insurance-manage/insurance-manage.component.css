@@ -1,3 +1,9 @@
+.bg-headers{
+    background: #673ab7;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+}
 
 .mat-radio-button~.mat-radio-button {
     margin-left: 16px;
@@ -13,11 +19,6 @@
     color: #fff;
 }
 
-.mat-beds {
-    background-color: #0a93c7c4;
-    color: #fff;
-}
-
 .mat-danger {
     background-color: #9c1414;
     color: #fff;
@@ -25,7 +26,7 @@
 
 .mat-button.mat-danger {
     color: #9c1414;
-    background-color: #fff0!important;
+    background-color: #fff!important;
 }
 
 .mat-info {
@@ -53,7 +54,7 @@
 }
 
 .locFrame {
-    color: #673ab7;
+    color: cornflowerblue;
     font-family: sans-serif;
     font-size: -webkit-xxx-large !important;
 }
@@ -107,36 +108,6 @@
 }
 
 .badge-status {
-    width: 30px;
+    width: 33px;
     margin-right: 1px;
-    font-size: xx-small;
-}
-
-p {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.text-mat-primary{
-    color: #673ab7;
-}
-
-.bg-oldSec{
-    background: #869ddd;
-}
-
-.bg-beds{
-    background: #0a93c7c4;
-}
-
-.bg-ph{
-    background: #0d6efd;
-}
-
-.bg-matPrimary{
-    background: #673ab7;
-}
-
-:host ::ng-deep .mat-expansion-panel-body {
-    padding: 0 1px 10px;
 }

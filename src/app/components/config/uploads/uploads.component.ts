@@ -101,10 +101,22 @@ export class UploadsComponent implements OnInit {
 
             switch( type ){
               case 'cieloLlegadas':
-                workbook = readXlsx(bstr, {type:'string'});
+                try {
+                  workbook = readXlsx(bstr, {type:'string'})
+                } catch (error) {
+                  console.error( error )
+                  Swal.fire('Error', 'Archivo corrupto o tipo de archivo incorrecto', 'error')
+                  return false
+                }
                 break
               default:
-                workbook = readXlsx(data, {type:'array'});
+                try {
+                  workbook = readXlsx(data, {type:'array'})
+                } catch (error) {
+                  console.error( error )
+                  Swal.fire('Error', 'Archivo corrupto o tipo de archivo incorrecto', 'error')
+                  return false
+                }
                 break
             }
 

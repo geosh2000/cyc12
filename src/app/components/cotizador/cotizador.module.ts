@@ -41,6 +41,7 @@ import { XferCheckoutComponent } from './modals/xfer-checkout/xfer-checkout.comp
 import { ValidateTicketComponent } from './modals/validate-ticket/validate-ticket.component';
 import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ComponentsSharedModule } from '../shared/components-shared.module';
 
 
 
@@ -76,6 +77,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   imports: [    
     OrderModule,
     SharedModule,
+    ComponentsSharedModule,
     
     MatSliderModule,
     MatListModule,

@@ -4,6 +4,7 @@ import { AuthGuard } from 'src/app/guard/auth.guard';
 
 import { LinkGeneratorComponent } from './link-generator/link-generator.component';
 import { LinkReportComponent } from './link-report/link-report.component';
+import { PagosRegistroComponent } from './pagos-registro/pagos-registro.component';
 
 const childRoutes: Routes = [
   { 
@@ -17,6 +18,12 @@ const childRoutes: Routes = [
     component: LinkReportComponent, 
     canActivate: [ AuthGuard ],
     data: { title: 'Reporte de Links de Pago', role: 'payment_linkGenerator' }
+  },
+  { 
+    path: 'paymentReg', 
+    component: PagosRegistroComponent, 
+    canActivate: [ AuthGuard ],
+    data: { title: 'Registro de pagos no automaticos', role: 'rsv_paymentReg' }
   },
 ]
 

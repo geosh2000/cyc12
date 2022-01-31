@@ -7,8 +7,9 @@
 
             <div class="d-flex justify-content-start flex-wrap">
                 <!-- MASTERLOCATOR -->
-                <div class="locFrame pt-3 mb-5 me-5">
-                    <b>{{ data['master']['masterlocatorid'] }}</b>
+                <div class="locFrame pt-3 mb-3 me-5">
+                    <b>{{ data['master']['masterlocatorid'] }}</b><br>
+                    <button mat-button style="zoom: 0.8" color="primary" (click)="reload.emit( data['master']['masterlocatorid'] )" [disabled]=" _api.isLoading | async" ><mat-icon>refresh</mat-icon> Volver a cargar</button>
                 </div>
     
                 <!-- CREADOR Y FECHA DE CREACION -->
@@ -67,8 +68,28 @@
                         <!-- ACTIONS BAR -->
                         <div class="d-flex flex-wrap justify-content-end p-1" *ngIf="_init.checkSingleCredential('app_cotizador')">
                             <button mat-button class="me-auto" style="zoom: 0.8" color="primary" (click)="addCourtesyTransfer()" [disabled]="loading['cTransfer']" *ngIf="data['master']['hasTransfer'] == 0"><mat-icon>airport_shuttle</mat-icon> Traslado Cortesía</button>
-                            <button mat-button style="zoom: 0.8" color="primary" *ngIf="_init.checkSingleCredential('rsv_paymentReg')"><mat-icon>play_for_work</mat-icon> Registrar Pago</button>
-                            <button mat-button style="zoom: 0.8" color="primary"><mat-icon>payment</mat-icon> Saldar</button>
+                            
+                            <button mat-button style="zoom: 0.8" color="primary" 
+                                (click)="reactivateDialog(data)"
+                                *ngIf="_init.checkSingleCredential('rsv_reactivate')">
+                                <mat-icon>alarm_add</mat-icon> Reactivar
+                            </button>
+                            
+                            <button mat-button style="zoom: 0.8" color="primary" 
+                                (click)="paymentRegDialog()"
+                                *ngIf="_init.checkSingleCredential('rsv_paymentReg')">
+                                <mat-icon>play_for_work</mat-icon> Registrar Pago
+                            </button>
+                            
+                            <button mat-button style="zoom: 0.8" color="primary" 
+                                (click)="editPaymentDialog(data)"
+                                *ngIf="_init.checkSingleCredential('rsv_paymentReg')">
+                                <mat-icon>production_quantity_limits</mat-icon> Editar Montos
+                            </button>
+                            
+                            <button mat-button style="zoom: 0.8" color="primary">
+                                <mat-icon>payment</mat-icon> Saldar
+                            </button>
                         </div>
                         
                         <!-- CUADRO DE ITEMS  -->
@@ -85,7 +106,7 @@
                             <hr class="hrItems">
 
                             <!-- DETALLE DE ITEMS -->
-                            <app-item-sum [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-item-sum>
+                            <app-item-sum [hideInsXld]="hideInsXld" [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )" (reloadHistory)="getHistory()"></app-item-sum>
                             <hr class="hrItems">
 
                             <!-- RESUMEN CON TOTALES -->
@@ -119,14 +140,13 @@
 
                         </mat-card>
 
-
                     </mat-card-content>
                 </mat-card>
             <!-- </div> -->
 
             <!-- SUMMARY -->
             <div class="ps-2" style="width: 280px;">
-                <app-loc-sum [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-loc-sum>
+                <app-loc-sum [data]="data" [(hideInsXld)]="hideInsXld" (reloadHistory)="getHistory()" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-loc-sum>
             </div>
 
         </div>
@@ -156,21 +176,52 @@
         </div>
 
         <!-- HISTORIAL -->
-        <mat-list *ngIf="!loading['history']">
-            <ng-container *ngFor="let c of history">
+        <div class="d-block">
+            <mat-form-field appearance="standard" class="px-2 ms-auto">
+                <mat-label>Filtrar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Item Locator Id" #filterInput>
+            </mat-form-field>
+        </div>
 
-                <div class="container row  p-2">
-                    <div class="ms-3" [style.width.px]="130">
-                        <small><b>{{ _h.formatDate(c['Fecha'], 'ddd DD MMM YYYY') }} <span class="text-info">{{ _h.formatDate(c['Fecha'], 'HH:mm') }} hrs</span>:</b></small>
-                    </div>
-                    <div class="col ps-0">
-                        <span class="text-secondary" [innerHTML]="formatHistory(c['msg'])"></span>
-                    </div>
-                </div>
-
-                <mat-divider class="px-2"></mat-divider>
+        <table mat-table [dataSource]="history" class="" [style.width.%]="100">
+    
+            <ng-container matColumnDef="Fecha" [sticky]="false" sticky>
+                <th mat-header-cell [style.width.px]="130" *matHeaderCellDef><b>Fecha</b></th>
+                <td class="text-start py-2" [style.width.px]="130"  mat-cell *matCellDef="let c">
+                    <small><b>{{ _h.formatDate(c['Fecha'], 'ddd DD MMM YYYY') }} <span class="text-info">{{ _h.formatDate(c['Fecha'], 'HH:mm') }} hrs</span>:</b></small>
+                </td>
             </ng-container>
-        </mat-list>
+
+            <ng-container matColumnDef="msg" [sticky]="false">
+                <th class="ps-3" mat-header-cell  *matHeaderCellDef><b>Descripcion</b></th>
+                <td class="p-1 ps-3 pt-2" style="vertical-align: top;" mat-cell *matCellDef="let c">
+                    <span class="text-secondary" [innerHTML]="formatHistory(c['msg'])"></span>
+                </td>
+            </ng-container>
+
+          
+
+            <!-- <ng-container matColumnDef="filler">
+                <th mat-header-cell *matHeaderCellDef> Filler header cell </th>
+                <td mat-cell *matCellDef="let element"> Filler data cell </td>
+                <td mat-footer-cell *matFooterCellDef> Filler footer cell </td>
+            </ng-container> -->
+
+            <!-- <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr> -->
+ 
+            <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4"><span *ngIf="filterInput.value != ''">No hay informaciòn que coincida con "{{filterInput.value}}"</span></td>
+            </tr>
+
+        </table>
+
+        <mat-paginator pageSize="50" [pageSizeOptions]="[20, 50, 100, 1000]"
+            showFirstLastButtons 
+            aria-label="Selecciona la pagina">
+        </mat-paginator>
     </mat-card-footer>
     <!-- ====================== HISTORIAL FIN ====================== -->
 
