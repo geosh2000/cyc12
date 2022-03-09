@@ -25,6 +25,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
+import { PanelMenuModule } from 'primeng/panelmenu';
+
 import { BlankComponent } from './blank/blank.component';
 import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
 import { AccountConfigComponent } from './account-config/account-config.component';
@@ -38,6 +40,7 @@ import { TalkWidgetComponent } from './talk-widget/talk-widget.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TicketWidgetComponent } from './ticket-widget/ticket-widget.component';
 import { ReportingModule } from '../reporting/reporting.module';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -88,6 +91,9 @@ import { ReportingModule } from '../reporting/reporting.module';
     MatDatepickerModule,
     MatMomentDateModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+
+    PanelMenuModule,
   ]
 })
 export class MainViewModule { }

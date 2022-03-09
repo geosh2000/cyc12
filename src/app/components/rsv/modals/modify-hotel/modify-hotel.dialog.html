@@ -1,0 +1,110 @@
+<div  mat-dialog-title>
+    <h1>Modificar Hospedaje...</h1>
+    <hr>
+</div>
+
+<div class="d-block" class="my-2" style="max-height: 75vh; overflow-y: auto;">
+
+    <mat-progress-bar mode="buffer" *ngIf="loading['hotelList']"></mat-progress-bar>
+
+    <div class="align-items-center d-block" *ngIf="hotels.length>0">
+        
+        <mat-list class="ps-5 pe-3 container" #shoes>
+            <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" @fade>
+                <div class="col-3"></div>
+                <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('selectedRoom')"><mat-icon>checklist</mat-icon></button></div>
+                <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('selectedOcc')"><mat-icon>checklist</mat-icon></button></div>
+                <div class="col-2 text-center"><button mat-icon-button color="warn" (click)="applyAll('llegada')"><mat-icon>checklist</mat-icon></button></div>
+                <div class="col-1 text-center"></div>
+                <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('nights')"><mat-icon>checklist</mat-icon></button></div>
+            </div>
+            <ng-container *ngFor="let i of hotels">
+                <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" @fade>
+                    <div class="col-3">
+                        <div class="d-flex text-mat-primary  justify-content-between align-items-center" >
+                            <item-sum [i]="i"></item-sum>
+                            
+                        </div>
+                    </div>
+                    <div class="col-1 mt-auto mb-auto text-center">
+                        <mat-form-field appearance="standard" [style.width.%]="100">
+                            <mat-label>{{ i['changes']['selectedRoom']['code'] }} / Cat</mat-label>
+                            <mat-select [(ngModel)]="i['changes']['selectedRoom']" [@remark]="i['changes']['selectedRoom']['code'] != i['hotel'] || i['changes']['selectedRoom']['habCode'] != i['categoria'] ? 'alert' : 'void'">
+                              <mat-optgroup *ngFor="let h of hotelList | keys" [label]="h">
+                                <mat-option *ngFor="let c of hotelList[h]" [value]="c">
+                                  {{ c['habCode'] }}
+                                </mat-option>
+                              </mat-optgroup>
+                            </mat-select>
+                            <mat-hint>og: {{ i['hotel'] }}-{{ i['categoria'] }}</mat-hint>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-1 text-center">
+                        <mat-form-field appearance="standard" [style.width.%]="100">
+                            <mat-label>Occup</mat-label>
+                            <mat-select [(ngModel)]="i['changes']['selectedOcc']" [@remark]="i['changes']['selectedOcc'] === null ? 'warn' : (i['changes']['selectedOcc'] != i['adultos']+'.'+i['juniors']+'.'+i['menores'] ? 'alert' : 'void')">
+
+                                <mat-option *ngFor="let o of i['changes']['selectedRoom']['occ']" [value]="o">
+                                  {{ o }}
+                                </mat-option>
+
+                            </mat-select>
+                            <mat-hint>Original: {{ i['adultos']+'.'+i['juniors']+'.'+i['menores'] }}</mat-hint>
+                        </mat-form-field>                                  
+                    </div>
+
+                    <div class="col-2 text-center">
+                        <mat-form-field  appearance="standard" [style.width.%]="100">
+                            <mat-label>Fecha Llegada</mat-label>
+                            <input matInput readonly [matDatepicker]="fechaLlegada" [(ngModel)]="i['changes']['llegada']" [min]="minDate" [max]="maxDate" autocomplete="off"  (dateChange)="outDateChange(i, $event.value, i['changes']['nights'] )" [@remark]="_h.formatDate(i['changes']['llegada'],'YYYY-MM-DD') != i['llegada'] ? 'alert' : 'void'">
+                            <mat-datepicker-toggle matSuffix [for]="fechaLlegada"></mat-datepicker-toggle>
+                            <mat-datepicker #fechaLlegada disabled="false"></mat-datepicker>
+                            <mat-hint>Original: {{ _h.formatDate(i['llegada'], 'DD MMM YY') }}</mat-hint>
+                        </mat-form-field>                    
+                    </div>
+                    
+                    <div class="col-1 text-center">
+                        <mat-form-field  appearance="standard" [style.width.%]="100">
+                            <mat-label>Fecha Fin</mat-label>
+                            <input matInput readonly [(ngModel)]="i['changes']['salida']" autocomplete="off" [@remark]="i['changes']['salida'] != i['salida'] ? 'alert' : 'void'">
+                            <mat-hint>Og: {{ _h.formatDate(i['salida'], 'DD MMM YY') }}</mat-hint>
+                        </mat-form-field>                    
+                    </div>
+
+                    <div class="col-1 text-center">
+                        <mat-form-field  appearance="standard" [style.width.%]="100">
+                            <mat-label>Noches</mat-label>
+                            <input matInput type="number" [min]="0" [(ngModel)]="i['changes']['nights']" [@remark]="i['changes']['nights'] != i['htlNoches'] ? 'alert' : 'void'"  autocomplete="off" (ngModelChange)="outDateChange(i, i['changes']['llegada'], $event )">
+                            <mat-hint>Original: {{ i['htlNoches'] }}</mat-hint>
+                        </mat-form-field>                     
+                    </div>
+                    
+                    <div class="col-1 text-center">
+                        Occup: {{ i['changes']['selectedOcc']  }}          
+                    </div>
+                    <!-- <div class="col-2 text-end" [ngClass]="{'text-danger': (i['monto'] - i['montoAllPaid']) > 0, 'text-success': (i['monto'] - i['montoAllPaid']) <= 0}">
+                        <b>{{ (i['montoSaldoTotal']) | currency:'MXN':'symbol-narrow':'.2-2' }}</b>
+                        <p><small [ngClass]="{'text-success': i['monto'] - i['montoAllPaid'] - (i['toPay'] ?? 0) <= 0}">saldo: ({{ (i['montoSaldoTotal'] - (i['toPay'] ?? 0)) | currency:'MXN':'symbol-narrow':'.2-2' }})</small></p>
+                    </div>
+
+                    <div class="col-2 mt-auto mb-auto text-end">
+                        <mat-form-field class="example-full-width" [style.width.px]="130">
+                            <input type="number" [max]="(i['monto'] - i['montoAllPaid'])"  (change)="changeAmmount($event.target.value, i)" [(ngModel)]="i['toPay']" min="0" style="font-size: 11px" matInput placeholder="Monto a Pagar" [name]="i['itemId']" [readonly]="!i['selected']">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-1">
+                        <mat-checkbox [disabled]="sumRemain() <= 0 && !i['selected']" class="example-margin" (change)="onSelect($event,i['itemId'], i)" [(ngModel)]="i['selected']"></mat-checkbox>
+                    </div> -->
+                </div>
+                <mat-divider></mat-divider>
+            </ng-container>
+        </mat-list>
+    </div>
+
+</div>
+
+
+<div class="d-block text-end" [style.width.vw]="70">
+    <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]=" _api.isLoading | async">Cerrar</button>
+</div>

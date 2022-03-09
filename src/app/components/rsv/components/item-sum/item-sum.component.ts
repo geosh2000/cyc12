@@ -37,6 +37,148 @@ export class ItemSumComponent implements OnInit {
 
   // **************************** APIS FIN ****************************
   
+    manualInsEmit( i ){
+      this.loading['manualEmit'] = true
+
+      this._api.restfulPut( { localizador: i }, 'Rsv/manualAssistEmit' )
+                  .subscribe( res => {
+
+                    this.loading['manualEmit'] = false;
+                    this._init.snackbar('success', 'Reserva actualizada', 'Correcto' );
+                    this.reload.emit( this.data['master']['masterlocatorid'] )
+                  }, err => {
+                    this.loading['manualEmit'] = false;
+
+                    const error = err.error;
+                    this._init.snackbar('error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+
+                  });
+    }
+
+    setPHLoading( i ){
+
+      return new Promise ( async resolve => {
+        Swal.fire({
+          title: `<strong>Fusionando Usuarios</strong>`,
+          focusConfirm: false,
+          showCancelButton: false,
+          confirmButtonText: 'Confirmar Fusión',
+          cancelButtonText: 'Cancelar'
+        })
+    
+        Swal.showLoading()
+    
+        resolve( await  this.setPHApi(i) )
+      })
+    }
+
+    setPHApi(i){
+
+      return new Promise ( async resolve => {
+
+        this.loading['setPH'] = true
+  
+      let params = {
+        original: i,
+        new: {
+          montoParcial: 0
+        },
+        itemId: i['itemId']
+      }
+  
+      this._api.restfulPut( params, 'Rsv/editMontoParcial' )
+                  .subscribe( res => {
+  
+                    this.loading['setPH'] = false;
+                    i['montoParcialOriginal'] = i['montoParcial']
+                    i['montoParcial'] = params['new']['montoParcial']
+  
+                    if( res['val'] && res['val'][2] ){
+                      res['data']['reload'] = res['val'][2]
+                    }else{
+                      res['data']['reload'] = false
+                    }
+
+                    this._init.snackbar( 'success', res['msg'], 'Guardado' );
+                    this.reload.emit( this.data['master']['masterlocatorid'] )
+                    resolve( true )
+                    
+                    
+                  }, err => {
+                    this.loading['setPH'] = false;
+                    
+                    const error = err.error;
+                    this._init.snackbar( 'error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+                    resolve( false )
+  
+                  });
+
+      })
+    }
+  
+    setPH( i ){
+
+      let params = {
+        original: i,
+        new: {
+          montoParcial: 0
+        },
+        itemId: i['itemId']
+      }
+  
+      Swal.fire({
+        title: 'Pago en hotel',
+        text: 'Deseas establecer el item ' + i['itemLocatorId'] + 'como Pago en Hotel?',
+        showCancelButton: true,
+        confirmButtonText: "Establecer PH",
+        icon: 'question'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          
+          Swal.fire({
+            title: `<strong>Estableciendo como PH</strong>`,
+            focusConfirm: false,
+            showCancelButton: false,
+            showConfirmButton: false
+          })
+      
+          Swal.showLoading()
+      
+          this.loading['setPH'] = true
+
+          this._api.restfulPut( params, 'Rsv/editMontoParcial' )
+                      .subscribe( res => {
+      
+                        this.loading['setPH'] = false;
+                        i['montoParcialOriginal'] = i['montoParcial']
+                        i['montoParcial'] = params['new']['montoParcial']
+      
+                        if( res['val'] && res['val'][2] ){
+                          res['data']['reload'] = res['val'][2]
+                        }else{
+                          res['data']['reload'] = false
+                        }
+
+                        this._init.snackbar( 'success', res['msg'], 'Guardado' );
+                        this.reload.emit( this.data['master']['masterlocatorid'] )
+                        Swal.close()
+                        
+                        
+                      }, err => {
+                        this.loading['setPH'] = false;
+                        
+                        const error = err.error;
+                        this._init.snackbar( 'error', error.msg, err.status );
+                        console.error(err.statusText, error.msg);
+                        Swal.close()
+                      });
+        }
+      })
+
+    }
+  
     setNR( i, f ){
       this.loading['setNR'] = true
 

@@ -63,17 +63,29 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     let jsobj = JSON.parse(JSON.stringify( tr ))
 
     if( jsobj['info']['llegada'] ){
-      // console.log(jsobj['info']['llegada']['date'])
-      jsobj['info']['llegada']['test']=1
-      jsobj['info']['llegada']['date'] = moment( jsobj['info']['llegada']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
-      // console.log(jsobj['info']['llegada']['date'])
+
+      if( jsobj['info']['llegada']['flight'] == null ){
+        delete jsobj['info']['llegada']
+      }else{
+        // console.log(jsobj['info']['llegada']['date'])
+        jsobj['info']['llegada']['test']=1
+        jsobj['info']['llegada']['date'] = moment( jsobj['info']['llegada']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
+        // console.log(jsobj['info']['llegada']['date'])
+      }
     }
     
     if( jsobj['info']['salida'] ){
-      // console.log(jsobj['info']['salida']['date'])
-      jsobj['info']['salida']['test']=1
-      jsobj['info']['salida']['date'] = moment( jsobj['info']['salida']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
-      // console.log(jsobj['info']['salida']['date'])
+
+      if( jsobj['info']['salida']['flight'] == null ){
+        delete jsobj['info']['salida']
+      }else{
+        // console.log(jsobj['info']['salida']['date'])
+        jsobj['info']['salida']['test']=1
+        jsobj['info']['salida']['date'] = moment( jsobj['info']['salida']['date'] ).tz('America/Bogota').format('YYYY-MM-DD')
+        // console.log(jsobj['info']['salida']['date'])
+      }
+
+      console.log(jsobj)
     }
 
     (this.rsvForm.get('data') as FormGroup).addControl('xfer', this.fb.group({

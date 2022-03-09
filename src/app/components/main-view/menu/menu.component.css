@@ -2,3 +2,7 @@
     padding-left: 24px;
     padding-right: 0px;
 }
+
+:host ::ng-deep .p-menuitem-link{
+    padding-left: 3rem!important;
+}

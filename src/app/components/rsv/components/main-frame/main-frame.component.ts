@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { OrderPipe } from 'ngx-order-pipe';
 import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import { ChangeCreatorDialog } from '../../modals/change-creator/change-creator-dialog';
+import { expand } from 'src/app/shared/animations';
 
 import Swal from 'sweetalert2';
 
@@ -14,16 +15,24 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormGroup, NgForm } from '@angular/forms';
 import { EditPaymentDialog } from '../../modals/edit-payments-dialog/edit-payments-dialog';
+import { SaldarDialog } from '../../modals/saldar-dialog/saldar-dialog';
+import { ModifyHotelDialog } from '../../modals/modify-hotel/modify-hotel.dialog';
+import { MenuItem } from 'primeng/api';
+
 
 @Component({
   selector: 'rsv-main-frame',
   templateUrl: './main-frame.component.html',
-  styleUrls: ['./main-frame.component.css']
+  styleUrls: ['./main-frame.component.css'],
+  animations: [
+    expand
+  ]
 })
 export class MainFrameComponent implements OnInit, AfterViewInit {
 
   @ViewChild('filterFormDom') form: NgForm;
   @ViewChild( MatPaginator ) paginator: MatPaginator;
+
   
   @Input() data = {}
   @Output() reload = new EventEmitter
@@ -42,6 +51,9 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
   showMore = false
 
   hideInsXld = true
+  actionsBar = false
+
+  actionMenu: MenuItem[]
 
   constructor( 
     public domSanitizer: DomSanitizer,
@@ -55,6 +67,13 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.getHistory( this.data['mlTicket'] )
     this.getRsvHistory( this.data['master']['zdUserId'] )
+
+    this.actionMenu = [
+      {label: 'New', icon: 'pi pi-fw pi-plus'},
+      {label: 'Open', icon: 'pi pi-fw pi-download'},
+      {label: 'Undo', icon: 'pi pi-fw pi-refresh'}
+    ];
+
   }
 
   ngAfterViewInit(): void {
@@ -259,6 +278,23 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
 
   // **************************** DIALOGS INICIO ****************************
 
+    saldarDialog( d:any = null ): void {
+      const dialogRef = this.dialog.open(SaldarDialog, {
+        data: d,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if( result === true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
+
+        if( result === false ){
+          Swal.fire('No hay items para saldar', '', 'info')
+        }
+      });
+    }
+
     chCreatorDialog( d:any = null ): void {
       const dialogRef = this.dialog.open(ChangeCreatorDialog, {
         data: d,
@@ -279,7 +315,9 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-
+        if( result === true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
       });
     }
     
@@ -290,6 +328,10 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
       });
 
       dialogRef.afterClosed().subscribe(result => {
+
+        if( result === true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
 
       });
     }
@@ -312,6 +354,19 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
 
         if( result === false ){
           Swal.fire('No hay items para reactivar', '', 'info')
+        }
+      });
+    }
+
+    modifyHotelDialog( d:any = null ): void {
+      const dialogRef = this.dialog.open(ModifyHotelDialog, {
+        data: d,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if( result == true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
         }
       });
     }

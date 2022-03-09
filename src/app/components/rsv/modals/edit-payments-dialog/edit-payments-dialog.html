@@ -5,48 +5,129 @@
 
 <div class="d-block" class="my-2" style="max-height: 75vh; overflow-y: auto;">
 
-    <ng-container *ngFor="let i of items">
+    <ng-container *ngFor="let i of items; index as x">
         <mat-card class="d-block mat-elevation-z5 m-2">
             <mat-card-container>
-                <div class="d-flex justify-content-start align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
-                    <div class="d-flex justify-content-start align-items-center">
-                        <span class="me-2" [style.width.px]="65">{{ i['itemLocatorId'] }}</span>
-                        <div class="d-flex align-items-center">
-                            <mat-icon>{{ i['icon'] }}</mat-icon>
-                            <div class="ms-1">
-                                <span class="ms-1" style="font-size: 13px;">{{ i['tipoServicio'] }}</span>
-                                <ng-container *ngIf="i['itemType'] == 1">
-                                    <br>
-                                    <span class="ms-1" style="font-size: xx-small;">{{ _h.formatDate(i['inicio'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
-                                </ng-container>
+                <div class="d-flex justify-content-between align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
+
+                    <!-- Descripcion del Item -->
+                    <div class="d-flex justify-content-start align-items-center" [style.width.px]="225">
+                        <item-sum [i]="i"></item-sum>
+                    </div>
+
+                    <ng-container *ngIf="i['loadingEdit'] || i['editTotalMontoLoading']">
+                        <div [style.width.px]="640"><mat-progress-bar mode="buffer"></mat-progress-bar></div>
+                    </ng-container>
+
+                    <ng-container *ngIf="!(i['loadingEdit'] || i['editTotalMontoLoading'])">
+
+                        <!-- Cuadro de Prepago -->
+                        <div class="ms-4 d-flex justify-content-start align-items-center" [style.width.px]="320">
+                            
+                                <div class="d-flex align-items-center">
+                                    <mat-icon class="text-success">paid</mat-icon>
+                                    <div class="ms-1" [style.width.px]="260">
+                                        <div class="row align-items-center">
+                                            <div class="col-5 pe-0">
+                                                <span class="ms-1 text-primary" style="font-size: 13px;">Prepago:</span>
+                                            </div>
+                                            <div class="col-5 text-end pe-0">
+                                                <mat-form-field appearance="fill" class="text-end" style="zoom: 0.7; width: 100px" *ngIf="items[x]['editFlag']" >
+                                                    <input matInput placeholder="Prepago" type='number' [(ngModel)]="items[x]['montoParcialEdit']">
+                                                </mat-form-field>
+                                                <span class="ms-1 text-primary text-end" style="font-size: 13px;" *ngIf="!items[x]['editFlag']">{{ _h.moneyInts( _h.moneyCents(items[x]['montoParcial']) ) | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'].substr(0,2) }}</span>
+                                            </div>
+                                            <div class="col-2 ps-0 d-flex justify-content-start">
+                                                <button style="zoom: 0.7;" mat-icon-button (click)="editParcial(x)" *ngIf="!items[x]['editFlag']"><mat-icon>edit</mat-icon></button>
+                                                <button class="ms-2" style="zoom: 0.5;" color="danger" mat-icon-button (click)="items[x]['editFlag'] = false" *ngIf="items[x]['editFlag']"><mat-icon>close</mat-icon></button>
+                                                <button class="ms-2" style="zoom: 0.5;" color="success" mat-icon-button (click)="editMontoPrepago( items[x], x )" [disabled]="_api.isLoading | async" *ngIf="items[x]['editFlag']"><mat-icon>done</mat-icon></button>
+                                            </div>
+                                        </div>
+                                        <div class="row align-items-center" *ngIf="_h.moneyCents(items[x]['montoParcialEdit']) < _h.moneyCents(items[x]['montoPagado']) && items[x]['editFlag']">
+                                            <div class="col-12 justify-content-end d-flex mb-2">
+                                                <mat-radio-group style="font-size: x-small;" color="accent" aria-label="Select an option" [(ngModel)]="items[x]['prepagoIsTraspaso']">
+                                                    <mat-radio-button [value]="true">Traspaso</mat-radio-button>
+                                                    <mat-radio-button [value]="false">Reembolso</mat-radio-button>
+                                                </mat-radio-group>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row align-items-center">
+                                            <div class="col-5">
+                                                <span class="ms-1 text-success" style="font-size: 13px;">Prepagado:</span>
+                                            </div>
+                                            <div class="col-5 text-end pe-0">
+                                                <span class="ms-1 ps-0 text-success text-end" style="font-size: 13px;">{{ _h.moneyInts( _h.moneyCents(items[x]['montoPagado']) + _h.moneyCents(items[x]['montoEnValidacion']) ) | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'].substr(0,2) }}</span>
+                                            </div>
+                                            <div class="col-2"></div>
+                                        </div>
+                                        <div class="row align-items-center">
+                                            <div class="col-5 pe-0">
+                                                <span class="ms-1 text-danger" style="font-size: 13px;">Saldo Prepago: </span>
+                                            </div>
+                                            <div class="col-5 text-end pe-0">
+                                                <span class="ms-1 text-danger text-end" style="font-size: 13px;">{{ _h.moneyInts(  _h.moneyCents(items[x]['montoSaldoPrepago']) ) | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'].substr(0,2) }}</span>
+                                            </div>
+                                            <div class="col-2 ps-0"></div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                        </div>
+    
+                        <!-- Cuadro de Total -->
+                        <div class="ms-4 d-flex justify-content-start align-items-center" [style.width.px]="320">
+                            <div class="d-flex align-items-center">
+                                <mat-icon class="text-success">request_quote</mat-icon>
+                                <div class="ms-1" [style.width.px]="260">
+                                    <div class="row align-items-center">
+                                        <div class="col-5 pe-0">
+                                            <span class="ms-1 text-primary" style="font-size: 13px;">Monto Total:</span>
+                                        </div>
+                                        <div class="col-5 text-end pe-0">
+                                            <mat-form-field appearance="fill" class="text-end" style="zoom: 0.7; width: 100px" *ngIf="items[x]['editTotalFlag']" >
+                                                <input matInput placeholder="Prepago" type='number' [(ngModel)]="items[x]['montoTotalEdit']">
+                                            </mat-form-field>
+                                            <span class="ms-1 text-primary text-end" style="font-size: 13px;" *ngIf="!items[x]['editTotalFlag']">{{ _h.moneyInts( _h.moneyCents(items[x]['monto']) ) | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'].substr(0,2) }}</span>
+                                        </div>
+                                        <div class="col-2 ps-0 d-flex justify-content-start">
+                                            <button style="zoom: 0.7;" mat-icon-button (click)="editTotal( x )" *ngIf="!items[x]['editTotalFlag']"><mat-icon>edit</mat-icon></button>
+                                            <button class="ms-2" style="zoom: 0.5;" color="danger" mat-icon-button (click)="items[x]['editTotalFlag'] = false" *ngIf="items[x]['editTotalFlag']"><mat-icon>close</mat-icon></button>
+                                            <button class="ms-2" style="zoom: 0.5;" color="success" mat-icon-button (click)="editTotalMonto( items[x], x )" [disabled]="(_api.isLoading | async) || items[x]['editTotalComments'] == ''" *ngIf="items[x]['editTotalFlag']"><mat-icon>done</mat-icon></button>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center" *ngIf="_h.moneyCents(items[x]['montoTotalEdit']) < _h.moneyCents(items[x]['montoPagado']) && items[x]['editTotalFlag']">
+                                        <div class="col-12 justify-content-end d-flex mb-2">
+                                            <mat-radio-group style="font-size: x-small;" color="accent" aria-label="Select an option" [(ngModel)]="items[x]['prepagoIsTraspaso']">
+                                                <mat-radio-button [value]="true">Traspaso</mat-radio-button>
+                                                <mat-radio-button [value]="false">Reembolso</mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center" *ngIf="items[x]['editTotalFlag']">
+                                        <div class="col-12 justify-content-end d-flex mb-2">
+                                            <mat-form-field appearance="fill" class="text-end" style="zoom: 0.7; width: 300px">
+                                                <input matInput placeholder="Comentarios" [(ngModel)]="items[x]['editTotalComments']">
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                    </ng-container>
+
+
                 </div>
             </mat-card-container>
         </mat-card>
     </ng-container>
 
-    <!-- <mat-selection-list [disabled]="_api.isLoading | async" #items>
-        <mat-list-option [value]="i['itemId']" *ngFor="let i of items">
-            <div class="d-flex justify-content-start align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
-                <span class="me-2" [style.width.px]="90">{{ i['itemLocatorId'] }}</span>
-                <div class="d-flex align-items-center">
-                    <mat-icon>{{ i['icon'] }}</mat-icon>
-                    <span class="ms-1" style="font-size: 13px;">{{ i['tipoServicio'] }}</span>
-                    <ng-container *ngIf="i['itemType'] == 1">
-                        <span class="ms-1" style="font-size: xx-small;">{{ _h.formatDate(i['inicio'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
-                    </ng-container>
-                </div>
-            </div>
-        </mat-list-option>
-    </mat-selection-list> -->
-
-    <div class="d-block" *ngIf="_api.isLoading | async"><mat-progress-bar mode="buffer"></mat-progress-bar></div>
 </div>
 
 
-<div class="d-block text-end" [style.width.vw]="60">
+<div class="d-block text-end" [style.width.vw]="52">
     <!-- <button mat-raised-button class="ms-2" color="primary" (click)="reactivate( items.selectedOptions.selected )" [disabled]=" (_api.isLoading | async) || items.selectedOptions.selected.length == 0 ">Reactivar</button> -->
-    <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]=" _api.isLoading | async">Cerrar</button>
+    <button mat-raised-button class="ms-2" (click)="onNoClick( chgMade )" [disabled]=" _api.isLoading | async">Cerrar</button>
 </div>

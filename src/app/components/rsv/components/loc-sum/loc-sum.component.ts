@@ -26,6 +26,8 @@ export class LocSumComponent implements OnInit {
 
   ccFlag = false
 
+  showMore = false
+  
   constructor(
     public _init: InitService,
     public _h: HelpersService,
@@ -143,6 +145,7 @@ export class LocSumComponent implements OnInit {
       });
     }
 
+    
   // **************************** DIALOGS FIN ****************************
 
 }

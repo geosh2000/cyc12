@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService, InitService } from 'src/app/services/service.index';
 import { MergeUsersComponent } from '../../../shared/merge-users/merge-users.component';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-validate-ticket',
@@ -28,7 +29,8 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private _api: ApiService,
-    private _init: InitService
+    private _init: InitService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -379,12 +381,18 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
                   .subscribe( res => {
   
                     Swal.close()
-  
-                    // FOR EXTERNAL ANGULAR INSTANCE
-                    window.open("https://cyc-oasishoteles.com/#/rsv2/" + l)
-  
-                    // FOR THIS ANGULAR INSTANCE
-                    // this.router.navigate(['/rsv2',v]);
+
+                    let ver = this._init.currentUser.hcInfo['rsvVer'] ?? 1
+
+                    if( ver == 1 ){
+                      // FOR EXTERNAL ANGULAR INSTANCE
+                      window.open("https://cyc-oasishoteles.com/#/rsv2/" + l)
+                      return true
+                    }
+
+                    window.open("https://cyc-oasishoteles.com/#/rsv/" + l)
+                    return true
+
   
                   }, err => {
   

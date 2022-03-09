@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
@@ -12,7 +13,7 @@ export class GoToLocComponent implements OnInit {
   loading   = {}
   searchVal = ''
 
-  constructor( private _api: ApiService, private _init: InitService) { }
+  constructor( private _api: ApiService, private _init: InitService, private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -26,11 +27,7 @@ export class GoToLocComponent implements OnInit {
 
                   this.loading['searchLoc'] = false;
 
-                  // FOR EXTERNAL ANGULAR INSTANCE
-                  window.open("https://cyc-oasishoteles.com/#/rsv2/" + v)
-
-                  // FOR THIS ANGULAR INSTANCE
-                  // this.router.navigate(['/rsv2',v]);
+                  this.locRoute( v )
                   
                   this.searchVal = ''
                   
@@ -87,6 +84,20 @@ export class GoToLocComponent implements OnInit {
       this.goTo( v.trim() )
     }
 
+  }
+
+  locRoute( v ){
+
+    let ver = this._init.currentUser.hcInfo['rsvVer'] ?? 1
+
+    if( ver == 1 ){
+      // FOR EXTERNAL ANGULAR INSTANCE
+      window.open("https://cyc-oasishoteles.com/#/rsv2/" + v)
+      return true
+    }
+
+    // FOR THIS ANGULAR INSTANCE
+    this.router.navigate(['/rsv/',v]);
   }
 
 }

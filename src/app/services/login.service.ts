@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { getMatIconFailedToSanitizeUrlError } from '@angular/material/icon';
+import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, filter, map, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 import { ApiService } from './api.service';
@@ -14,10 +15,8 @@ import { WebSocketService } from './web-socket.service';
 export class LoginService {
 
   co = new BehaviorSubject( null )
-
-  
-
-  constructor( private _api:ApiService, private _init:InitService, private ws: WebSocketService ) { 
+    
+  constructor( private _api:ApiService, private _init:InitService, private ws: WebSocketService, private router: Router ) { 
     this._api.tokenCheck.asObservable()
       .subscribe(r => {
         if( !r ){
@@ -53,6 +52,14 @@ export class LoginService {
         this._init.getPreferences()
         this._init.agentName = res['hcInfo']['Nombre_Corto']
         this._init.loadingRouteConfig = false
+
+        // OBSERVER LOGIN
+        this._api.newLogin.next(true);
+
+        if( this._api.lastUrl ){
+          this.router.navigate[ this._api.lastUrl ]
+        }
+
         return { status: true, msg: 'Logueo Correcto', err: 'NA', isAffiliate: res['credentials']['viewOnlyAffiliates'] == '1' ? true : false}
       }, err => {
 
@@ -106,6 +113,7 @@ export class LoginService {
   }
 
   logout(){
+
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     localStorage.removeItem('nombre');

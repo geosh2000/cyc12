@@ -21,6 +21,8 @@ export class ApiService {
   localIp = sessionStorage.getItem('LOCAL_IP');
 
   public isLoading:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public newLogin:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public lastUrl: any
 
   private ipRegex = new RegExp(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/);
 
@@ -147,7 +149,7 @@ export class ApiService {
            share(),
            map( res => res ),
            filter( res => {
-             if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
+             if( res['msg'] && res['msg']  == 'Token Expired' ){
                
                this.tokenCheck.next( false )
                return false
@@ -187,7 +189,7 @@ export class ApiService {
         .pipe(
            map( res => res ),
            filter( res => {
-            if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
+            if( res['msg'] && res['msg'] == 'Token Expired' ){
               
               this.tokenCheck.next( false )
               return false
@@ -265,7 +267,7 @@ export class ApiService {
         .pipe(
            map( res => res ),
            filter( res => {
-            if( (res['msg'] ?? 'undefined') == 'Token Expired' ){
+            if( res['msg'] && res['msg']  == 'Token Expired' ){
               
               this.tokenCheck.next( false )
               return false

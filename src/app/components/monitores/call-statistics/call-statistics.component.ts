@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService, InitService } from 'src/app/services/service.index';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -34,7 +34,7 @@ export const MY_FORMATS = {
     {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
   ]
 })
-export class CallStatisticsComponent implements OnInit {
+export class CallStatisticsComponent implements OnInit, OnDestroy {
 
   options: any;
   loading = {}
@@ -54,6 +54,10 @@ export class CallStatisticsComponent implements OnInit {
   ngOnInit(): void {
     clearTimeout(this.timeout)
     this.getCalls()
+  }
+
+  ngOnDestroy(): void {
+      clearTimeout(this.timeout)
   }
 
   getCalls( i = moment(), f = moment() ){

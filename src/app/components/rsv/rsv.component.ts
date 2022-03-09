@@ -49,7 +49,7 @@ export class RsvComponent implements OnInit, AfterViewInit {
     this.loading['loc'] = true
     this.mlExist = true
     this.data = {}
-    this.rsvHistory = []
+    this.data['rsvHistory'] = []
 
     // switch( s ){
     //   case 'links':
@@ -109,6 +109,9 @@ export class RsvComponent implements OnInit, AfterViewInit {
                     this.zdClientId = data['master']['zdUserId']
                     this.rsvTypeCheck()
 
+                    this.data['rsvHistory'] = []
+                    this.getRsvHistory()
+
                     // if( !data['master']['idioma'] ){
                     //   this._updU.open( data['master'] )
                     // }
@@ -153,6 +156,28 @@ export class RsvComponent implements OnInit, AfterViewInit {
 
                 });
 
+  }
+
+  getRsvHistory( zdClientId = this.zdClientId ){
+
+    this.data['rsvHistory']['loading'] = true
+
+    this._api.restfulGet( zdClientId, 'Rsv/getRsvHistory' )
+                .subscribe( res => {
+
+                  this.data['rsvHistory']['loading'] = false;
+                  let rh = []
+
+                  this.data['rsvHistory'] = res['data']
+
+                }, err => {
+                  this.data['rsvHistory']['loading'] = false;
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
   rsvTypeCheck(){

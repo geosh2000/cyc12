@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ApiService, InitService } from 'src/app/services/service.index';
+import { ApiService, InitService, LoginService } from 'src/app/services/service.index';
 
 import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -56,6 +56,8 @@ export class AccountConfigComponent implements OnInit {
     validators: this.samePass('new_password', 'repeat_password')
   })
 
+  systemPar:any
+
   loading = {}
   display = 'personales'
 
@@ -64,13 +66,20 @@ export class AccountConfigComponent implements OnInit {
     private fb: FormBuilder,
     private _api: ApiService,
     public _init: InitService,
+    public _login: LoginService,
     @Inject(MAT_DIALOG_DATA) public data
   ) { 
     moment.locale('es-mx');
+
+    this.getPersonales()
+
+    this.systemPar = this.fb.group({
+      rsv_ver:          [ this._init.currentUser['hcInfo']['rsvVer'], Validators.required ]
+    })
   }
 
   ngOnInit(): void {
-    this.getPersonales()
+    
   }
 
   onNoClick(): void {
@@ -178,6 +187,9 @@ export class AccountConfigComponent implements OnInit {
       case 'password':
         this.changePassword()
         break;
+      case 'system':
+        this.changeSystem()
+        break;
     }
   }
   
@@ -187,6 +199,8 @@ export class AccountConfigComponent implements OnInit {
         return this.personales.valid 
       case 'password':
         return this.password.valid
+      case 'system':
+        return this.systemPar.valid
     }
   }
 
@@ -240,6 +254,36 @@ export class AccountConfigComponent implements OnInit {
           this.personales.reset()
           Swal.close()
           Swal.fire('Cambios realizados', 'Tu información se ha actualizado correctamente', 'success')
+          this.onNoClick()
+
+        }, err => {
+
+          const error = err.error;
+
+          Swal.close()
+          Swal.fire('Error', error.msg, 'error')
+          console.error(err.statusText, error.msg);
+
+        })
+  }
+
+  changeSystem(){
+
+    Swal.fire({
+      title: 'Cambiando Preferencias del Sistema',
+      showCancelButton: false,
+      showConfirmButton: false,
+    })
+
+    Swal.showLoading()
+
+    this._api.restfulPut( this.systemPar.value, 'Asesores/editSystemParams' )
+        .subscribe( res => {
+          
+          this.systemPar.reset()
+          Swal.close()
+          Swal.fire('Cambios realizados', 'Tu información se ha actualizado correctamente', 'success')
+          this._login.logout()
           this.onNoClick()
 
         }, err => {

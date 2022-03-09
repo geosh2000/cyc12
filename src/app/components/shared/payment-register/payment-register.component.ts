@@ -168,8 +168,13 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
 
                   if( parseInt(data) == 0 ){
                     this.loading['saving'] = false;
-                    this.build('Voucher '+ this.newPayment.controls['operacion'].value, this.newPayment.controls['operacion'].value, 'voucher_'+this.newPayment.controls['operacion'].value)
-                    this.submit()
+
+                    if( this.newPayment.controls['proveedor'].value != 'CXC' ){
+                      this.build('Voucher '+ this.newPayment.controls['operacion'].value, this.newPayment.controls['operacion'].value, 'voucher_'+this.newPayment.controls['operacion'].value)
+                      this.submit()
+                    }else{
+                      this.sendPayment()
+                    }
                   }else{
                     this._init.snackbar( 'error', 'La operación ingresada ya existe con otro registro. Valida si la tu registro fue hecho con anterioridad o corrige el número de operación', 'Operación duplicada')
                     this.loading['saving'] = false;

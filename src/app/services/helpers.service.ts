@@ -39,4 +39,13 @@ export class HelpersService {
 
     return false
   }
+
+  moneyCents( a ){
+    let v = parseFloat(a) * 100
+    return  Math.round(v)
+  }
+
+  moneyInts( a ){
+    return a / 100 
+  }
 }

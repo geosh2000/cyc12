@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationStart, ResolveEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { ApiService, InitService, WebSocketService } from 'src/app/services/service.index';
 
 @Component({
@@ -19,6 +20,15 @@ export class MainViewComponent implements OnInit, OnDestroy {
     private _ws: WebSocketService,
     private router: Router,) { 
       this._ws.cargarStorage()
+
+      this.router.events
+      .pipe(
+        filter((event: any) => event instanceof NavigationEnd)
+      )
+      .subscribe(event => {          
+        this._api.lastUrl = event.url   
+        // console.log('this is what your looking for ', event.url);         
+      })
     }
 
   ngOnInit(): void {

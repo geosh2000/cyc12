@@ -1,0 +1,13 @@
+<div class="d-flex justify-content-start align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
+    <span class="me-0" [style.width.px]="76">{{ i['itemLocatorId'] }}</span>
+    <div class="d-flex align-items-center">
+        <mat-icon>{{ i['icon'] }}</mat-icon>
+        <div class="ms-2">
+            <span style="font-size: 13px;">{{ i['tipoServicio'] }}</span>
+            <ng-container *ngIf="i['itemType'] == 1">
+                <br>
+                <span style="font-size: xx-small;">{{ _h.formatDate(i['llegada'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>

@@ -11,17 +11,7 @@
                     
                     <!-- LOCALIZADOR, ICONO Y DESCRIPCION -->
                     <div class="col-4 d-flex justify-content-start align-items-center flex-wrap text-mat-primary text-s" [matTooltip]="i['tipoServicio']" matTooltipPosition="above" [style.fontWeight]="500">
-                        <span class="me-2" [style.width.px]="76">{{ i['itemLocatorId'] }}</span>
-                            <div class="d-flex align-items-center">
-                                <mat-icon>{{ i['icon'] }}</mat-icon>
-                                <div class="ms-2">
-                                    <span style="font-size: 13px;">{{ i['tipoServicio'] }}</span>
-                                    <ng-container *ngIf="i['itemType'] == 1">
-                                        <br>
-                                        <span style="font-size: xx-small;">{{ _h.formatDate(i['inicio'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
-                                    </ng-container>
-                                </div>
-                            </div>
+                        <item-sum [i]="i"></item-sum>
                     </div>
 
                     <!-- CONFIRMACION, STATUS DE RSVA Y PAGO SI NO ESTA CANCELADO -->
@@ -116,24 +106,31 @@
                 <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">
                     <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas Sugeridas: </span><span class="clientInfo">{{ i['notasSugeridas'] }}</span></div>
                 </div>
+                <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">
+                    <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas: </span><span class="clientInfo">{{ i['notas'] }}</span></div>
+                </div>
             </ng-container>
 
             <!-- NOTAS Y ACCIONES CUALQUIER ITEM -->
             <div class="container d-flex flex-wrap justify-content-end">
 
                 <!-- NOTAS -->
-                <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas: </span><span class="clientInfo">{{ i['notas'] }}</span></div>
+                <div class="me-auto">
+                    <span class="productConceptXL" [style.width.px]="390">ItemId: </span><span class="clientInfo">{{ i['itemId'] }}</span>
+                </div>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="_cp.viewPricesLoad(i)"
-                    *ngIf="i['itemType'] == 1 && i['isCancel'] == 0 && i['isOpen'] == 0">
+                    *ngIf="i['itemType'] == 1 && i['isCancel'] == 0 && i['isOpen'] == 0"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>request_quote</mat-icon>
                     &nbsp;Ver Precios
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="openOD(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isQuote'] == 0 && i['isCancel'] == 0  && i['itemType'] == 1">
+                    *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isQuote'] == 0 && i['isCancel'] == 0  && i['itemType'] == 1"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>meeting_room</mat-icon>
                     &nbsp;Fechas Abiertas
                 </button>
@@ -141,7 +138,7 @@
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="openODSet(i)"
                     *ngIf="_init.checkSingleCredential('rsv_open_dates') && i['isOpen'] == 1 && i['isCancel'] == 0 && i['isQuote'] == 0"
-                    [disabled]="loading['setNR']">
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>beach_access</mat-icon>
                     &nbsp;Establecer Fechas
                 </button>
@@ -149,49 +146,63 @@
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="setNR(i, false)"
                     *ngIf="_init.checkSingleCredential('rsv_changes') && i['isCancel'] == 0 && i['itemType'] == 1 && i['isNR'] == 1"
-                    [disabled]="loading['setNR']">
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>payment</mat-icon>
                     &nbsp;Set Flexible
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
                     (click)="setNR(i, true)"
-                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isCancel'] == 0 && i['itemType'] == 1 && i['isNR'] == 0">
+                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isCancel'] == 0 && i['itemType'] == 1 && i['isNR'] == 0"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>credit_card_off</mat-icon>
                     &nbsp;Set NR
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
                     (click)="cancelItem(i)"
-                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && i['isCancel'] == 0">
+                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && i['isCancel'] == 0"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>remove_circle</mat-icon>
                     &nbsp;Cancelar
                 </button>
                 
-                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="alert"
-                    (click)="changeItem(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_changes') && i['isOpen'] == 0  && i['isCancel'] == 0  && i['itemType'] == '1'">
-                    <mat-icon>swap_horizontal_circle</mat-icon>
-                    &nbsp;Modificar
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
+                    (click)="setPH(i)"
+                    *ngIf="_init.checkSingleCredential('rsv_set_ph') && i['isQuote']==1 && i['montoPagado'] == 0 && i['montoEnValidacion'] == 0"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>payments</mat-icon>
+                    &nbsp;Set PH
+                </button>
+                
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
+                    (click)="manualInsEmit(i['itemLocatorId'])"
+                    *ngIf="_init.checkSingleCredential('allmighty') && i['isQuote']==0 && i['confirmOK'] == null && i['itemType']==10"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>rocket_launch</mat-icon>
+                    &nbsp;Emitir
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="success"
                     (click)="validateCert(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_validateCert') && i['grupo']=='CORT' && i['isQuote']==1">
+                    *ngIf="_init.checkSingleCredential('rsv_validateCert') && i['grupo']=='CORT' && i['isQuote']==1"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>done_outline</mat-icon>
                     &nbsp;Validar Certificado
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="confirmItem(i)"
-                    *ngIf="(i['isQuote'] == 0 || i['isConfirmable'] == 1) && i['confirmOK'] == null && i['isCancel'] == 0">
+                    *ngIf="(i['isQuote'] == 0 || i['isConfirmable'] == 1) && i['confirmOK'] == null && i['isCancel'] == 0"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>done_outline</mat-icon>
                     &nbsp;Confirmar
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="resetConfirm(false,i)"
-                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['isQuote'] == 0 && i['isCancel'] == 0 && i['confirmOK'] != null  && i['itemType'] != '10' && i['itemType'] != '11'">
+                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['isQuote'] == 0 && i['isCancel'] == 0 && i['confirmOK'] != null  && i['itemType'] != '10' && i['itemType'] != '11'"
+                    [disabled]=" _api.isLoading | async">
                     <mat-icon>delete_forever</mat-icon>
                     &nbsp;Reset Confirmación
                 </button>

@@ -10,6 +10,7 @@
                 <div class="locFrame pt-3 mb-3 me-5">
                     <b>{{ data['master']['masterlocatorid'] }}</b><br>
                     <button mat-button style="zoom: 0.8" color="primary" (click)="reload.emit( data['master']['masterlocatorid'] )" [disabled]=" _api.isLoading | async" ><mat-icon>refresh</mat-icon> Volver a cargar</button>
+                    <a style="zoom: 0.8" class="ms-2" mat-icon-button color="primary" target="_blank" [href]=" domSanitizer.bypassSecurityTrustResourceUrl( 'https://cyc-oasishoteles.com/#/rsv2/' + data['master']['masterlocatorid'] )"><mat-icon>open_in_new</mat-icon> Rsv v1</a>
                 </div>
     
                 <!-- CREADOR Y FECHA DE CREACION -->
@@ -28,6 +29,7 @@
                         <mat-chip [color]="data['rsvType'] == 'Cotizacion' ? 'alert' : data['rsvType'] == 'Reserva' ? 'primary' : 'danger'" selected>{{ data['rsvType'] }}</mat-chip>
                     </mat-chip-list>
                     <button mat-button style="zoom: 0.8" color="warn" (click)="addBlacklist()" [disabled]="loading['loc']" *ngIf="data['master']['blacklisted'] == 0 && _init.checkSingleCredential('rsv_blacklistAdd')"><mat-icon>warning</mat-icon> Agregar a Blacklist</button>
+                    
                 </div>
             </div>
         </div>
@@ -69,6 +71,21 @@
                         <div class="d-flex flex-wrap justify-content-end p-1" *ngIf="_init.checkSingleCredential('app_cotizador')">
                             <button mat-button class="me-auto" style="zoom: 0.8" color="primary" (click)="addCourtesyTransfer()" [disabled]="loading['cTransfer']" *ngIf="data['master']['hasTransfer'] == 0"><mat-icon>airport_shuttle</mat-icon> Traslado Cortesía</button>
                             
+                            <button mat-button style="zoom: 0.8" color="primary"
+                                (click)="saldarDialog( data )">
+                                <mat-icon>payment</mat-icon> Saldar
+                            </button>
+                            <button mat-button style="zoom: 0.8" color="primary"
+                                (click)="actionsBar = !actionsBar">
+                                <mat-icon *ngIf="!actionsBar">more_vert</mat-icon>
+                                <mat-icon *ngIf="actionsBar">expand_less</mat-icon>
+                                &nbsp;Acciones
+                            </button>
+
+                        </div>
+
+                        <!-- SUBACTIONS BAR -->
+                        <div class="d-flex flex-wrap justify-content-end p-1" @expand *ngIf="actionsBar">
                             <button mat-button style="zoom: 0.8" color="primary" 
                                 (click)="reactivateDialog(data)"
                                 *ngIf="_init.checkSingleCredential('rsv_reactivate')">
@@ -87,9 +104,12 @@
                                 <mat-icon>production_quantity_limits</mat-icon> Editar Montos
                             </button>
                             
-                            <button mat-button style="zoom: 0.8" color="primary">
-                                <mat-icon>payment</mat-icon> Saldar
+                            <button mat-button style="zoom: 0.8" color="primary" 
+                                (click)="modifyHotelDialog( data )"
+                                *ngIf="_init.checkSingleCredential('rsv_changes')">
+                                <mat-icon>swap_horizontal_circle</mat-icon> Modificar
                             </button>
+
                         </div>
                         
                         <!-- CUADRO DE ITEMS  -->

@@ -1,0 +1,137 @@
+<div  mat-dialog-title>
+    <h1>Saldar items...</h1>
+    <hr>
+</div>
+
+<div class="d-block" class="my-2" style="max-height: 75vh; overflow-y: auto;">
+
+
+    <mat-horizontal-stepper [linear]="true" #stepper>
+        <mat-step [stepControl]="selectAccount">
+            <ng-template matStepLabel>Selecciona una cuenta</ng-template>
+            
+            <div class="col d-flex justify-content-center flex-wrap">
+                <div class="p-1 text-center">
+                    <mat-form-field>
+                        <input matInput class="text-center" placeholder="Referencia / Autorizacion / Operacion" name="operacion" [value]="data['master']['masterlocatorid']" (keyup.enter)="search(operacion.value)" #operacion [readonly]="_api.isLoading | async">
+                    </mat-form-field>
+                    <button class="ms-5" mat-raised-button color="primary" (click)="search(operacion.value)" [disabled]=" (_api.isLoading | async) || operacion.value == '' || !operacion">Buscar</button>
+                </div>
+            </div>
+
+            <!-- LISTA DE PAGOS -->
+            <div class="d-flex justify-content-between" *ngIf="opsRes.length > 0" [style.max-height.vh]="55" style="overflow-y: auto">
+                <mat-list class="container">
+                    <ng-container *ngFor="let item of opsRes; index as i">
+                        <div class="container d-flex justify-content-between">
+                            <mat-chip-list class="m-1 typeWidth">
+                                <mat-chip [color]="item['tipo'] == 'PayPal' ? 'primary' :( item['tipo'] == 'pagoLiga' || item['tipo'] == 'cobroCentral' ) ? 'santander' : item['tipo'] == 'Tpv' ? 'success' : 'info'" selected>{{ item['tipo'] }}</mat-chip>
+                            </mat-chip-list>
+                            <mat-form-field class="m-1" [style.width.px]="130" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">numbers</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Operacion" [value]="item['operacion']" readonly>
+                            </mat-form-field>
+                            <mat-form-field class="m-1" [style.width.px]="80" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">corporate_fare</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Complejo" [value]="item['complejo']" readonly>
+                            </mat-form-field>
+                            <mat-form-field class="m-1" [style.width.px]="180" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">manage_search</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Referencia" [value]="item['referencia']" readonly>
+                            </mat-form-field>
+                            <mat-form-field class="m-1" [style.width.px]="130" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">paid</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Monto" [value]="(item['monto'] | currency:'MXN':'symbol-narrow':'.2-2') + ' ' + item['moneda'] " readonly>
+                            </mat-form-field>
+                            <mat-form-field class="m-1" [style.width.px]="150" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">today</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Fecha" [value]="item['dtCreated']" readonly>
+                            </mat-form-field>
+                            <mat-form-field class="m-1" [style.width.px]="130" style="font-size: smaller !important">
+                                <span matPrefix><mat-icon class="me-2">credit_score</mat-icon></span>
+                                <input class="ml-2" type="text" matInput placeholder="Saldo" [value]="(item['montoSaldo'] | currency:'MXN':'symbol-narrow':'.2-2') + ' ' + item['moneda'] " readonly>
+                            </mat-form-field>
+                            <div class="p-2">
+                                <button mat-mini-fab color="primary" (click)="select(item)" [disabled]="loading['select'] || item['montoSaldo'] <= 0">
+                                    <mat-icon>done_outline</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                    </ng-container>
+                    <mat-divider></mat-divider>
+                </mat-list>
+            
+            </div>
+        </mat-step>
+        <mat-step [stepControl]="selectItems">
+            <ng-template matStepLabel>
+                Elige lo items<br>
+                <small>Cuenta en {{ selectAccount.get('selectedAccount').value['moneda'] }}</small>
+            </ng-template>
+            
+            <div class="align-items-center d-block" *ngIf="(saldables[selectAccount.get('selectedAccount').value['moneda']] ?? []).length>0">
+                <div class="container row rowItemNoBorder">
+                    <div class="col-3"></div>
+                    <div class="col-2 text-end"><b>Total</b></div>
+
+                    <div class="col-2 text-end text-success"><small>Saldo Prepago</small></div>
+                    <div class="col-2 text-end">Saldo Total</div>
+
+                    <div class="col-2 text-end"><b>A Pagar</b></div>
+                    <div class="col-1 text-center"></div>
+                </div>
+                <mat-list class="ps-5 pe-3 container" #shoes>
+                    <ng-container *ngFor="let i of (saldables[selectAccount.get('selectedAccount').value['moneda']] ?? [])">
+                        <div class="container p-0 row align-items-center">
+                            <div class="col-3">
+                                <div class="d-flex text-mat-primary  justify-content-start align-items-center" [style.width.px]="225">
+                                    <item-sum [i]="i"></item-sum>
+                                </div>
+                            </div>
+                            <div class="col-2 mt-auto mb-auto text-end">{{ i['monto'] | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+
+                            <div class="col-2 text-end" [ngClass]="{'text-danger': (i['montoParcial'] - i['montoAllPaid']) > 0, 'text-success': (i['montoParcial'] - i['montoAllPaid']) <= 0}">
+                                <p><small>{{ (i['toPay'] ?? 0) | currency:'MXN':'symbol-narrow':'.2-2' }}</small></p>
+                                <p><small [ngClass]="{'text-success': i['montoParcial'] - i['montoAllPaid'] - (i['toPay'] ?? 0) <= 0}">saldo: ({{ ((i['montoParcial'] - i['montoAllPaid'] - (i['toPay'] ?? 0)) < 0 ? 0 : (i['montoParcial'] - (i['montoAllPaid']) - (i['toPay'] ?? 0))) | currency:'MXN':'symbol-narrow':'.2-2' }})</small></p>
+                            </div>
+                            <div class="col-2 text-end" [ngClass]="{'text-danger': (i['monto'] - i['montoAllPaid']) > 0, 'text-success': (i['monto'] - i['montoAllPaid']) <= 0}">
+                                <b>{{ (i['montoSaldoTotal']) | currency:'MXN':'symbol-narrow':'.2-2' }}</b>
+                                <p><small [ngClass]="{'text-success': i['monto'] - i['montoAllPaid'] - (i['toPay'] ?? 0) <= 0}">saldo: ({{ (i['montoSaldoTotal'] - (i['toPay'] ?? 0)) | currency:'MXN':'symbol-narrow':'.2-2' }})</small></p>
+                            </div>
+
+                            <div class="col-2 mt-auto mb-auto text-end">
+                                <mat-form-field class="example-full-width" [style.width.px]="130">
+                                    <!-- <input type="number" [max]="(i['monto'] - i['montoAllPaid'])" (change)="changeAmmount($event.target.value, i)" [(ngModel)]="i['toPay']" min="0" style="font-size: 11px" matInput placeholder="Monto a Pagar" [name]="i['itemId']" [readonly]="!i['selected']"> -->
+                                    <input type="number" [max]="(i['monto'] - i['montoAllPaid'])"  (change)="changeAmmount($event.target.value, i)" [(ngModel)]="i['toPay']" min="0" style="font-size: 11px" matInput placeholder="Monto a Pagar" [name]="i['itemId']" [readonly]="!i['selected']">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-1">
+                                <mat-checkbox [disabled]="sumRemain() <= 0 && !i['selected']" class="example-margin" (change)="onSelect($event,i['itemId'], i)" [(ngModel)]="i['selected']"></mat-checkbox>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                    </ng-container>
+                </mat-list>
+            </div>
+            <div class='container ms-auto text-end p-3'>
+                <h3>
+                    Monto Disponible: 
+                    <span [ngClass]="{'text-success': sumRemain() > 0, 'text-danger': sumRemain() <= 0}">
+                        {{ sumRemain() | currency:'MXN':'symbol-narrow':'.2-2' }}
+                    </span> {{ selectAccount.get('selectedAccount').value['moneda'] }}
+                </h3>
+            </div>
+
+        </mat-step>
+    </mat-horizontal-stepper>
+    <div class="d-block" *ngIf="_api.isLoading | async"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
+    
+</div>
+
+
+<div class="d-block text-end" [style.width.vw]="65">
+    <button mat-raised-button (click)="stepper.previous()" *ngIf="stepper.selectedIndex > 0">Back</button>
+    <button mat-raised-button class="ms-2" color="primary" (click)="saldar()" [disabled]=" _api.isLoading | async" *ngIf="stepper.selectedIndex > 0">Saldar</button>
+    <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]=" _api.isLoading | async">Cerrar</button>
+</div>

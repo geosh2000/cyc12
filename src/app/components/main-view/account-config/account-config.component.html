@@ -11,6 +11,9 @@
                 <mat-list-option value="password" (click)="display = 'password'">
                     Contraseña
                 </mat-list-option>
+                <mat-list-option value="system" (click)="display = 'system'">
+                    Sistema
+                </mat-list-option>
             </mat-selection-list>
         </div>
     </mat-drawer>
@@ -69,6 +72,23 @@
                                 <mat-label>Repetir Contraseña</mat-label>                         
                                 <input matInput type="password" autocomplete="off" formControlName="repeat_password" autocomplete="off" name="repeat_password">
                                 <mat-error *ngIf="password.get('repeat_password').invalid">{{ getErrorMessage('repeat_password', password) }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SYSTEM -->
+            <div class="d-block text-center py-2" style="overflow: auto" *ngIf="display == 'system'">
+                <form [formGroup]="systemPar">
+                    <div class="row d-block" [style.width.%]="90">
+                        <div class="col-12">
+                            <mat-form-field class="mx-1" appearance="outline" [style.width.%]="80">
+                                <mat-label>Version de RSV</mat-label>
+                                <mat-select formControlName="rsv_ver" fname="rsv_ver">
+                                    <mat-option value="1">Version 1 (CYC Azul)</mat-option>
+                                    <mat-option value="12">Version 12 (CYC Morado)</mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </div>
                     </div>
