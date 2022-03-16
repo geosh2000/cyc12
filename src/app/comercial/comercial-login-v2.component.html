@@ -1,0 +1,45 @@
+<h1 mat-dialog-title>Login Comercial</h1>
+<div mat-dialog-content class="py-2">
+    <form [formGroup]="log">
+        <!-- <div class="d-flex justify-content-center m-4"> -->
+            <mat-card >
+                <mat-card-content class="mx-auto" [style.width.%]="80">
+                    <!-- USERNAME -->
+                    <mat-form-field class="d-block mx-auto my-0" appearance="outline">
+                        <mat-label>Usuario</mat-label>
+                        <input matInput class="text-center" type="text" formControlName="username">
+                        <mat-icon matSuffix>person</mat-icon>
+                        <mat-error *ngIf="log.controls['username'].invalid">{{ getErrorMessage('username') }}</mat-error>
+                    </mat-form-field>
+                    <!-- PASSWORD -->
+                    <mat-form-field class="d-block mx-auto my-0" appearance="outline">
+                        <mat-label>Contraseña</mat-label>
+                        <input matInput class="text-center" type="password" formControlName="password">
+                        <mat-icon matSuffix>password</mat-icon>
+                        <mat-error *ngIf="log.controls['password'].invalid">{{ getErrorMessage('password') }}</mat-error>
+                    </mat-form-field>
+
+                    <div class="d-block text-start">
+
+                            <mat-checkbox  formControlName="remember">Mantener sesión abierta</mat-checkbox>
+                            <mat-checkbox  formControlName="saveLocal">Recordar Usuario</mat-checkbox>
+                    </div>
+
+                </mat-card-content>
+                <mat-card-actions>
+                    <div class="d-flex justify-content-end flex-wrap">
+                        
+                    </div>
+                </mat-card-actions>
+                <mat-card-footer>
+                    <mat-progress-bar mode="indeterminate" *ngIf="loading['login']"></mat-progress-bar>
+                </mat-card-footer>
+            </mat-card>
+        <!-- </div> -->
+    </form>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-end flex-wrap">
+    <button mat-button color="warn" (click)="onNoClick()" aria-label="Close" >Cancelar</button>
+    <button mat-button color="primary" (click)="logIn()"  [disabled]="loading['login'] || log.invalid">Login</button>
+</div>
+ 

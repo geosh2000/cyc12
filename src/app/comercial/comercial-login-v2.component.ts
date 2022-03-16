@@ -1,109 +1,15 @@
-import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-
-import Swal from 'sweetalert2'
-
-import { InitService, LoginService } from 'src/app/services/service.index';
-import { AccountConfigComponent } from '../account-config/account-config.component';
-declare var jQuery:any
+import Swal from 'sweetalert2';
+import { ApiService, InitService, LoginService } from '../services/service.index';
 
 @Component({
-  selector: 'main-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  selector: 'comercial-login',
+  templateUrl: 'comercial-login-v2.component.html',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
-
-  token = false
-  tokenCheck$
-
-  @Output() menuChange = new EventEmitter<any>()
-  @Output() _login = new EventEmitter<any>()
-
-  constructor( 
-    public _init: InitService,
-    public dialog: MatDialog, 
-    private _li: LoginService) { 
-    
-  }
-
-  async ngOnInit(){
-
-    await this._li.reloadTokenCheck()
-    
-    this.token = this._init.token.value
-    
-    this.tokenCheck$ = this._init.token.subscribe( t => {
-      
-      this.token = t
-      
-      if( !t ){
-        if( this._init.app == '' ){
-          this.loginDialog()
-        }
-      }
-    })
-
-  }
-
-  ngOnDestroy(): void {
-    this.tokenCheck$.unsubscribe()
-    this.dialog.closeAll()
-  }
-
-  menuClick(){
-    this.menuChange.emit( true )
-  }
-
-  login(){
-    // jQuery('#loginModal').show()
-    this.loginDialog()
-  }
-  
-  logout(){
-      this._li.logout()
-  }
-
-  loginDialog(): void {
-    
-    if(this.dialog.openDialogs.length==0){
-      const dialogRef = this.dialog.open(LoginDialog, { disableClose: true });
-      
-      dialogRef.afterClosed().subscribe(result => {
-        // console.log('The dialog was closed', result);
-  
-        // if( typeof result == 'undefined' ){
-        //   this.extraInfo['grupo']['insuranceIncluded'] = true;
-        // }else{
-        //   this.extraInfo['grupo']['insuranceIncluded'] = result;
-        // }
-      });
-    }
-
-  }
-
-  configDialog( d:any = null ): void {
-    const dialogRef = this.dialog.open(AccountConfigComponent, {
-      // width: '250px',
-      data: d,
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      // console.log('The dialog was closed', result);
-    });
-  }
-
-  
-}
-
-@Component({
-  selector: 'main-login',
-  templateUrl: 'login-v2.component.html',
-})
-export class LoginDialog {
+export class ComercialLoginDialog {
 
   log: FormGroup
 
@@ -115,7 +21,7 @@ export class LoginDialog {
 
   constructor(
     private _login:LoginService, private _route:Router, private _init:InitService,
-    public dialogRef: MatDialogRef<LoginDialog>,
+    public dialogRef: MatDialogRef<ComercialLoginDialog>,
     @Inject(MAT_DIALOG_DATA) public data) {
       this.createForm()
     }
@@ -136,7 +42,8 @@ export class LoginDialog {
       ['username']:   new FormControl({ value: localStorage.getItem('username') || '',  disabled: false }, [ Validators.required ]),
       ['password']:   new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
       ['remember']:   new FormControl({ value: (localStorage.getItem('username') || '0') == '1',  disabled: false }, [ Validators.required ]),
-      ['saveLocal']:  new FormControl({ value: localStorage.getItem('username') ? true : false,  disabled: false }, [ Validators.required ])
+      ['saveLocal']:  new FormControl({ value: localStorage.getItem('username') ? true : false,  disabled: false }, [ Validators.required ]),
+      ['mainapp']:    new FormControl({ value: false,  disabled: false }, [ Validators.required ]),
     })
 
   }
@@ -157,15 +64,17 @@ export class LoginDialog {
     let login = {
       usn: this.log.controls['username'].value,
       usp: this.log.controls['password'].value,
-      remember: this.log.controls['remember'].value
+      remember: this.log.controls['remember'].value,
+      mainapp: this.log.controls['mainapp'].value,
     }
 
     // console.log(login)
     // console.log(this.log.value)
     // console.log(this.log.controls['username'].value)
 
-    // console.log(this.login)
-    this._login.loginCyC( login )
+    console.log( 'Login to comercial' )
+    let app = 'comercial-'
+    this._login.loginCyC( login, 'comercial-' )
       .subscribe( res =>{
 
           this.loading['login'] = false
@@ -178,12 +87,12 @@ export class LoginDialog {
             this.loginMsg='';
 
             if( this.log.get('saveLocal').value ){
-              localStorage.setItem('username', this.log.get('username').value )
+              localStorage.setItem(app + 'username', this.log.get('username').value )
             }else{
-              localStorage.removeItem('username')
+              localStorage.removeItem(app + 'username')
             }
             
-            localStorage.setItem('remember', this.log.get('remember').value ? '1' : '0' )
+            localStorage.setItem(app + 'remember', this.log.get('remember').value ? '1' : '0' )
             
             this.onNoClick()
 
@@ -193,7 +102,7 @@ export class LoginDialog {
               this._route.navigateByUrl('/home')
               this._route.navigateByUrl(sourceUrl)
             }
-            this._init.getPreferences()
+            this._init.getPreferences( 'comercial-' )
 
         }
       }, err => {

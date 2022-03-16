@@ -42,6 +42,10 @@ import { ValidateTicketComponent } from './modals/validate-ticket/validate-ticke
 import { TourCheckoutComponent } from './modals/tour-checkout/tour-checkout.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ComponentsSharedModule } from '../shared/components-shared.module';
+import { CotizaDaypassComponent } from './daypass/daypass.component';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
 
 
 
@@ -53,6 +57,7 @@ import { ComponentsSharedModule } from '../shared/components-shared.module';
     CotizaToursComponent,
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
+    CotizaDaypassComponent,
     RsvCreateDialog,
     HotelCheckoutComponent,
     XferCheckoutComponent,
@@ -67,6 +72,7 @@ import { ComponentsSharedModule } from '../shared/components-shared.module';
     CotizaToursComponent,
     CotizaTrasladosComponent,
     CotizaConciertosComponent,
+    CotizaDaypassComponent, 
     RsvCreateDialog,
     HotelCheckoutComponent,
     XferCheckoutComponent,
@@ -104,6 +110,10 @@ import { ComponentsSharedModule } from '../shared/components-shared.module';
     MatMenuModule,
     MatStepperModule,
     MatTooltipModule,
+
+    InputNumberModule,
+    MenuModule,
+    ButtonModule,
     
   ]
 })

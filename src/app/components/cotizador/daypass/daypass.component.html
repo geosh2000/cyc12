@@ -1,0 +1,73 @@
+<div class="container">
+
+    <!-- FILTERS -->
+    <mat-card>
+
+        <!-- FORM -->
+        <form [formGroup]="daypassSearch">
+            <mat-card-content>
+                <div class="container-fluid d-flex justify-content-between flex-wrap align-items-center">
+
+                    <div>
+                        <!-- FECHA -->
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="160">
+                            <mat-label>Fecha</mat-label>
+                            <input matInput readonly [matDatepicker]="dpDt" formControlName="fecha" [min]="minDate" [max]="maxDate"  autocomplete="off">
+                            <mat-datepicker-toggle matSuffix [for]="dpDt"></mat-datepicker-toggle>
+                            <mat-datepicker #dpDt disabled="false"></mat-datepicker>
+                            <mat-hint>Fecha del Daypass</mat-hint>
+                            <mat-error *ngIf="daypassSearch.controls['fecha'].invalid">{{ getErrorMessage('fecha') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- PAX -->
+                    <div class="d-flex justify-content-center flex-wrap">
+                        <div class="m-2 paxInput">
+                            <label for="vertical" class="text-center" style="display: block">Adultos</label>
+                            <p-inputNumber formControlName="adults" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10" (onInput)="chgOcc('adults',$event)"
+                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+                            </p-inputNumber>
+                        </div>
+                        <div class="m-2 paxInput">
+                            <label for="vertical" class="text-center" style="display: block">Juniors</label>
+                            <p-inputNumber formControlName="juniors" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10"
+                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+                            </p-inputNumber>
+                        </div>
+                        <div class="m-2 paxInput">
+                            <label for="vertical" class="text-center" style="display: block">Menores</label>
+                            <p-inputNumber formControlName="childs" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10"
+                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+                            </p-inputNumber>
+                        </div>
+                    </div>
+
+                    <!-- Switches -->
+                    <div class="ms-auto d-flex flex-wrap justify-content-end">
+                        <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
+                        <mat-slide-toggle class="mx-1 mb-2" formControlName="isLocal">Locales</mat-slide-toggle>
+                        <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="daypassSearch.invalid || loading['cotizar']">Cotizar</button>
+                    </div>
+
+                    
+
+                </div> 
+
+            </mat-card-content>
+        </form>
+
+        <!-- LOADER -->
+        <mat-card-footer>
+            <mat-progress-bar mode="indeterminate" *ngIf="loading['cotizar']"></mat-progress-bar>
+        </mat-card-footer>
+    </mat-card>
+
+    <mat-card>
+        HOLA
+        <pre> {{ daypassSearch.value | json }}
+        </pre><br>
+        <pre> {{ summarySearch | json }}
+        </pre>
+    </mat-card>
+
+</div>

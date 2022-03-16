@@ -1,0 +1,16 @@
+.matNavbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding-top: 10px!important;
+}
+
+.main-container {
+    width: 100%;
+    top: 64px;
+    position: fixed;
+    height: calc(100% - 64px);
+    overflow: auto;
+}

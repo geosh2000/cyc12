@@ -20,6 +20,7 @@ export class InitService {
   hideMenu = new BehaviorSubject( false )
 
   loadingRouteConfig = false
+  app = ''
 
   constructor( private _route:Router, private _api:ApiService, private _zh:ZonaHorariaService ) {
     this.getPreferences()
@@ -38,9 +39,12 @@ export class InitService {
     d.remove()
   }
 
-  getPreferences(){
-    if( localStorage.getItem('currentUser') ){
-      this.currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  getPreferences( app = '' ){
+
+    this._api.app = app
+
+    if( localStorage.getItem(app + 'currentUser') ){
+      this.currentUser = JSON.parse(localStorage.getItem(app + 'currentUser'))
       this._api.restfulGet( '', 'Preferences/userPreferences' )
           .subscribe( res => {
             this.preferences = res['data']
@@ -54,8 +58,8 @@ export class InitService {
     }
   }
 
-  getUserInfo(){
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  getUserInfo( app = ''){
+    let currentUser = JSON.parse(localStorage.getItem(app + 'currentUser'));
     this.currentUser = currentUser
     if( currentUser ){
       this.isLogin = true
@@ -65,8 +69,8 @@ export class InitService {
     return currentUser
   }
 
-  checkCredential( credential, main:boolean=false, test:boolean = false ){
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  checkCredential( credential, main:boolean=false, test:boolean = false, app = '' ){
+    let currentUser = JSON.parse(localStorage.getItem(app + 'currentUser'));
     if( currentUser == null){
 
       this.showLoginModal( )
@@ -99,11 +103,11 @@ export class InitService {
     }
   }
 
-  checkSingleCredential( credential, main:boolean=false, test:boolean = false ){
+  checkSingleCredential( credential, main:boolean=false, test:boolean = false, app = '' ){
 
     
     
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let currentUser = JSON.parse(localStorage.getItem(app + 'currentUser'));
     if( currentUser == null){
       return false
     }

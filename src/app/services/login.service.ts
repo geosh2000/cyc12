@@ -15,9 +15,10 @@ import { WebSocketService } from './web-socket.service';
 export class LoginService {
 
   co = new BehaviorSubject( null )
+  tokSubs$
     
   constructor( private _api:ApiService, private _init:InitService, private ws: WebSocketService, private router: Router ) { 
-    this._api.tokenCheck.asObservable()
+    this.tokSubs$ = this._api.tokenCheck.asObservable()
       .subscribe(r => {
         if( !r ){
           console.error('Token Expired, please login again')
@@ -27,14 +28,34 @@ export class LoginService {
       })
   }
 
-  loginCyC( logInfo ){
+  reloadTokenCheck( app = '' ){
+
+    return new Promise ( resolve => {
+      this.tokSubs$.unsubscribe()
+
+      this.tokSubs$ = this._api.tokenCheck.asObservable()
+        .subscribe(r => {
+          if( !r ){
+            console.error('Token Expired, please login again')
+            this.logout( app )
+            Swal.fire('Token Expired','Tu sesión ha expirado, por favor ingresa nuevamente', 'error')
+          }
+        })
+
+        this._init.getPreferences( app )
+        resolve ( true )
+      })
+
+  }
+
+  loginCyC( logInfo, app = '' ){
 
     // console.log(logInfo)
     return this._api.restfulPut( logInfo, 'Login/login', false ).pipe(
       
       map( res => {
         localStorage.setItem(
-          'currentUser',
+          app + 'currentUser',
           JSON.stringify({
                           token: res['token'],
                           tokenExpire: res['tokenExpire'],
@@ -44,12 +65,12 @@ export class LoginService {
                           credentials: res['credentials']
                         })
         );
-        localStorage.setItem('token', res['token'])
-        localStorage.setItem('nombre', res['hcInfo']['Nombre_Corto'])
+        localStorage.setItem(app + 'token', res['token'])
+        localStorage.setItem(app + 'nombre', res['hcInfo']['Nombre_Corto'])
         console.log('run socket')
         this.ws.cargarStorage()
         console.log('end run socket')
-        this._init.getPreferences()
+        this._init.getPreferences( app )
         this._init.agentName = res['hcInfo']['Nombre_Corto']
         this._init.loadingRouteConfig = false
 
@@ -76,18 +97,18 @@ export class LoginService {
 
   }
 
-  validateToken( cred: string = '' ){
+  validateToken( cred: string = '', app = '' ){
 
-    const token = localStorage.getItem('token')
-    const remember = localStorage.getItem('remember')
+    const token = localStorage.getItem(app + 'token')
+    const remember = localStorage.getItem(app + 'remember')
 
     return this._api.restfulPut( {token, remember}, 'Login/tokenRenew', false)
       .pipe(
         tap( (resp: any) => {
           if( resp.token['token'] ){
-            localStorage.setItem('token', resp.token['token'] )
+            localStorage.setItem(app + 'token', resp.token['token'] )
           }else{
-            this.logout()
+            this.logout( app )
           }
         }),
         map( respo => {
@@ -112,11 +133,11 @@ export class LoginService {
 
   }
 
-  logout(){
+  logout( app = '' ){
 
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('token');
-    localStorage.removeItem('nombre');
+    localStorage.removeItem(app + 'currentUser');
+    localStorage.removeItem(app + 'token');
+    localStorage.removeItem(app + 'nombre');
     this._init.currentUser = null
     this._init.preferences = {}
     this._init.isLogin = false

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ComercialRoutingModule } from './comercial/comercial.routing';
 
 import { MainRoutingModule } from './components/main-view/main-view.routing';
 
@@ -20,7 +21,8 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {useHash: true, scrollPositionRestoration: 'enabled'}),
     
     MainRoutingModule, 
-    PublicRoutingModule
+    PublicRoutingModule,
+    ComercialRoutingModule,
 
   ],
   exports: [RouterModule]

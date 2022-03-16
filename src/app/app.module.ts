@@ -15,6 +15,7 @@ import { MainViewModule } from './components/main-view/main-view.module';
 import { PublicModule } from './public/public.module';
 import { NoDobuleClickDirective } from './directives/no-dobule-click.directive';
 import { InterceptorService } from './services/interceptor.service';
+import { ComercialModule } from './comercial/comercial.module';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { InterceptorService } from './services/interceptor.service';
     AppRoutingModule,
 
     MainViewModule,
-    PublicModule
+    PublicModule,
+    ComercialModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }
