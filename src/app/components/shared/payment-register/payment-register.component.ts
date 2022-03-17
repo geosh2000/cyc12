@@ -128,6 +128,13 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
         ['tipoTarjeta']: new FormControl('VIRTUAL', [ Validators.required ]),
         ['paymentNotes']: new FormControl('_')
       })
+
+      this.newPayment.get('proveedor').valueChanges.subscribe( x => { 
+        if( x != 'Roiback' && x != 'Central' ){
+          this.newPayment.get('tipoTarketa').setValue('VIRTUAL')
+        }
+        
+      })
     }
 
     buildImageForm(){
@@ -154,6 +161,9 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
         break
       case 'proveedor':
         this.newPayment.controls['tipo'].setValue(e.value)
+        break
+      case 'tipoTarjeta':
+        this.newPayment.controls['tipoTarjeta'].setValue(e.value)
         break
     }
   }

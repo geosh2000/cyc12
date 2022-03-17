@@ -1,7 +1,7 @@
     <!-- PASO 1 DETALLES -->
     <form [formGroup]="newPayment">
             <ng-container *ngIf="!loading['saving']">
-                <section class="d-flex justify-content-center">
+                <section class="d-flex justify-content-center flex-wrap">
                     <mat-radio-group #tipopagoselect class="p-3 m-1 mat-elevation-z3" aria-label="Select an option" formControlName="proveedor" (change)="chg('proveedor', $event)">
                         <mat-radio-button value="Deposito" *ngIf="_init.checkSingleCredential('payment_dep')">Depósito</mat-radio-button>
                         <mat-radio-button value="Roiback" *ngIf="_init.checkSingleCredential('payment_tpv')">RB</mat-radio-button>
@@ -15,6 +15,12 @@
                         <mat-radio-button value="Smart">Smart</mat-radio-button>
                         <mat-radio-button value="Vcm">VCM</mat-radio-button>
                     </mat-radio-group>
+                    <section class="d-flex justify-content-center">
+                        <mat-radio-group class="p-3 m-1 mat-elevation-z3" aria-label="Select an option" formControlName="tipoTarjeta" (change)="chg('tipoTarjeta', $event)" *ngIf="newPayment.get('proveedor').value == 'Roiback' || newPayment.get('proveedor').value == 'Central'">
+                            <mat-radio-button value="AMEX">Amex</mat-radio-button>
+                            <mat-radio-button value="Visa/MC">Visa / MC</mat-radio-button>
+                        </mat-radio-group>
+                    </section>
                 </section>
                 <section class="d-flex justify-content-center mt-2">
                     <mat-form-field [style.width.px]="250">
