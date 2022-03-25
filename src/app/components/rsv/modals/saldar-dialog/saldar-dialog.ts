@@ -113,18 +113,66 @@ export class SaldarDialog implements OnInit {
                 });
   }
 
-  select( i ){
+  async select( i ){
+
+    let tc
 
     if( this.saldables[i['moneda']].length == 0 ){
-      Swal.fire(`Sin Reservas en ${ i['moneda']}`, 'No hay reservas en esta moneda, o las existentes no cuentan con saldo pendiente. Elige un pago con moneda distinta', 'warning')
-      return true
+      
+      let acMon = i['moneda']
+      let monAp =  i['moneda'].toLowerCase() == 'usd' ? 'MXN' : 'USD'
+
+      if( tc = await this.difCurrency( i ) ){
+        i['monedaAplicada'] = monAp
+        i['tc'] = tc
+      }else{
+        return true
+      }
+    }else{
+      i['monedaAplicada'] = i['moneda']
+      i['tc'] = 1
     }
 
+    console.log( i )
     this.selectAccount.get('selectedAccount').setValue( i )
     this.accSaldo = this._h.moneyInts( this._h.moneyCents(i['montoSaldo']) )
     this.remaining = this._h.moneyInts( this._h.moneyCents( i['montoSaldo'] ) )
     this._stp.next()
 
+  }
+
+  async difCurrency( i ){
+
+    return new Promise ( async resolve => {
+    
+      const inputValue = 20
+
+      const { value: tc } = await Swal.fire({
+        icon: 'warning',
+        title: 'No hay reservas en esta moneda, o las existentes no cuentan con saldo pendiente. Elige un pago con moneda distinta o introduce un tipo de cambio a aplicar',
+        input: 'text',
+        inputLabel: 'Tipo de Cambio',
+        inputValue: inputValue,
+        showCancelButton: true,
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Debes introducir un tipo de cambio'
+          }
+
+          if ( this._h.moneyInts( this._h.moneyCents( value ) ) <= 18 ){
+            return 'El valor del tipo de cambio es muy bajo'
+          }
+        }
+      })
+
+      if (tc) {
+
+        let tcOK = i['moneda'].toLowerCase() == 'usd' ? this._h.moneyInts( this._h.moneyCents( tc ) ) : ( 1 / this._h.moneyInts( this._h.moneyCents( tc ) ) )
+        resolve ( tcOK )
+      }else{
+        resolve ( false )
+      }
+    })
   }
 
   getTotals(total,i){
@@ -146,9 +194,9 @@ export class SaldarDialog implements OnInit {
   }
 
   sumRemain(){
-    let saldo = this._h.moneyCents(this.selectAccount.get('selectedAccount').value['montoSaldo'] ?? 0)
+    let saldo = this._h.moneyCents((this.selectAccount.get('selectedAccount').value['montoSaldo'] ?? 0) * this._h.moneyInts(this._h.moneyCents(this.selectAccount.get('selectedAccount').value['tc']))) 
     let pago = 0
-    for( let i of (this.saldables[this.selectAccount.get('selectedAccount').value['moneda']] ?? []) ){
+    for( let i of (this.saldables[this.selectAccount.get('selectedAccount').value['monedaAplicada']] ?? []) ){
       pago += this._h.moneyCents(i['toPay'] ?? 0)
     }
 
@@ -157,7 +205,7 @@ export class SaldarDialog implements OnInit {
 
   onSelect( e, i, el ){
 
-    let sel = JSON.parse(JSON.stringify(this.saldables[this.selectAccount.get('selectedAccount').value['moneda']] ?? []))
+    let sel = JSON.parse(JSON.stringify(this.saldables[this.selectAccount.get('selectedAccount').value['monedaAplicada']] ?? []))
     let remaining = this.sumRemain()
 
     if( !e.checked ){
@@ -178,7 +226,7 @@ export class SaldarDialog implements OnInit {
     this.selectItems.get('selectedItems').setValue(JSON.stringify(sel))
 
     let x = 0;
-    let itms = (this.saldables[this.selectAccount.get('selectedAccount').value['moneda']] ?? [])
+    let itms = (this.saldables[this.selectAccount.get('selectedAccount').value['monedaAplicada']] ?? [])
     
     for( let it of  itms){
       if( i == it['itemId'] ){
@@ -254,7 +302,7 @@ export class SaldarDialog implements OnInit {
         master: this.data['master']['masterlocatorid']
       }
 
-      let itms = JSON.parse(JSON.stringify(this.saldables[this.selectAccount.get('selectedAccount').value['moneda']] ?? []))
+      let itms = JSON.parse(JSON.stringify(this.saldables[this.selectAccount.get('selectedAccount').value['monedaAplicada']] ?? []))
       for( let i of itms ){
         if( this._h.moneyCents(i['toPay']) > 0 ){
           let paid = this._h.moneyCents(i['montoPagado']) + this._h.moneyCents(i['montoEnValidacion']) + this._h.moneyCents(i['toPay'])
@@ -274,7 +322,9 @@ export class SaldarDialog implements OnInit {
           i['montoEnValidacion'] = this._h.moneyInts( this._h.moneyCents(i['montoEnValidacion']) )
           i['monto'] = this._h.moneyInts( this._h.moneyCents(i['monto']) )
           i['toPay'] = this._h.moneyInts( this._h.moneyCents(i['toPay']) )
+          i['tc'] = this.selectAccount.get('selectedAccount').value['tc']
           i['montoParcial'] = this._h.moneyInts( this._h.moneyCents(i['montoParcial']) )
+          i['monedaAplicada'] = this.selectAccount.get('selectedAccount').value['monedaAplicada']
           i['account'] = this.selectAccount.controls['selectedAccount'].value['operacion']
           totals.items.push(i)
         }

@@ -67,10 +67,10 @@
         <mat-step [stepControl]="selectItems">
             <ng-template matStepLabel>
                 Elige lo items<br>
-                <small>Cuenta en {{ selectAccount.get('selectedAccount').value['moneda'] }}</small>
+                <small>Cuenta en {{ selectAccount.get('selectedAccount').value['monedaAplicada'] }}</small>
             </ng-template>
             
-            <div class="align-items-center d-block" *ngIf="(saldables[selectAccount.get('selectedAccount').value['moneda']] ?? []).length>0">
+            <div class="align-items-center d-block" *ngIf="(saldables[selectAccount.get('selectedAccount').value['monedaAplicada']] ?? []).length>0">
                 <div class="container row rowItemNoBorder">
                     <div class="col-3"></div>
                     <div class="col-2 text-end"><b>Total</b></div>
@@ -82,7 +82,7 @@
                     <div class="col-1 text-center"></div>
                 </div>
                 <mat-list class="ps-5 pe-3 container" #shoes>
-                    <ng-container *ngFor="let i of (saldables[selectAccount.get('selectedAccount').value['moneda']] ?? [])">
+                    <ng-container *ngFor="let i of (saldables[selectAccount.get('selectedAccount').value['monedaAplicada']] ?? [])">
                         <div class="container p-0 row align-items-center">
                             <div class="col-3">
                                 <div class="d-flex text-mat-primary  justify-content-start align-items-center" [style.width.px]="225">
@@ -119,7 +119,7 @@
                     Monto Disponible: 
                     <span [ngClass]="{'text-success': sumRemain() > 0, 'text-danger': sumRemain() <= 0}">
                         {{ sumRemain() | currency:'MXN':'symbol-narrow':'.2-2' }}
-                    </span> {{ selectAccount.get('selectedAccount').value['moneda'] }}
+                    </span> {{ selectAccount.get('selectedAccount').value['monedaAplicada'] }}
                 </h3>
             </div>
 
