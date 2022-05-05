@@ -20,6 +20,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PagosRegistroComponent } from './pagos-registro/pagos-registro.component';
 import { ComponentsSharedModule } from '../shared/components-shared.module';
+import { AplicacionPagosCieloComponent } from './aplicacion-pagos-cielo/aplicacion-pagos-cielo.component';
 
 
 @NgModule({ 
@@ -28,12 +29,14 @@ import { ComponentsSharedModule } from '../shared/components-shared.module';
     LinkGeneratorComponent,
     LinkReportComponent,
     PagosRegistroComponent,
+    AplicacionPagosCieloComponent,
   ],
   exports: [
     PagosComponent,
     LinkGeneratorComponent,
     LinkReportComponent,
     PagosRegistroComponent,
+    AplicacionPagosCieloComponent,
   ],
   imports: [    
 

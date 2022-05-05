@@ -9,6 +9,7 @@ import { UploadLoyaltyComponent } from './upload-loyalty/upload-loyalty.componen
 import Swal from 'sweetalert2';
 import { UploadComplementosComponent } from './upload-complementos/upload-complementos.component';
 import { UploadDesplazosComponent } from './upload-desplazos/upload-desplazos.component';
+import { UploadRoibackComponent } from './upload-roiback/upload-roiback.component';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class UploadsComponent implements OnInit {
   @ViewChild( UploadLoyaltyComponent ) private _loyalty: UploadLoyaltyComponent
   @ViewChild( UploadComplementosComponent ) private _complementos: UploadComplementosComponent
   @ViewChild( UploadDesplazosComponent ) private _desplazos: UploadDesplazosComponent
+  @ViewChild( UploadRoibackComponent ) private _rb: UploadRoibackComponent
 
   upList = []
   selectedType:any
@@ -125,6 +127,8 @@ export class UploadsComponent implements OnInit {
             let xlsJson = jsonFile
             let flag:any
 
+            console.log(jsonFile)
+
             switch( type ){
               case 'cieloLlegadas':
                 flag = await this._cielo.buildVouchers(jsonFile)
@@ -140,6 +144,10 @@ export class UploadsComponent implements OnInit {
                 break;
               case 'desplazos':
                 flag = await this._desplazos.buildVouchers(jsonFile)
+                Swal.close()
+                break;
+              case 'rsvasRb':
+                flag = await this._rb.buildVouchers(workbook)
                 Swal.close()
                 break;
               default:

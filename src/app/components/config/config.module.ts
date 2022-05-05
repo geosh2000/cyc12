@@ -10,6 +10,7 @@ import { UploadLoyaltyComponent } from './uploads/upload-loyalty/upload-loyalty.
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { UploadComplementosComponent } from './uploads/upload-complementos/upload-complementos.component';
 import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desplazos.component';
+import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.component';
 
 
 
@@ -20,6 +21,7 @@ import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desp
     UploadLoyaltyComponent,
     UploadComplementosComponent,
     UploadDesplazosComponent,
+    UploadRoibackComponent,
   ],
   exports: [
     UploadsComponent,
@@ -27,6 +29,7 @@ import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desp
     UploadLoyaltyComponent,
     UploadComplementosComponent,
     UploadDesplazosComponent,
+    UploadRoibackComponent,
   ],
   imports: [
     CommonModule,

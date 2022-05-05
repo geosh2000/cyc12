@@ -73,6 +73,10 @@ import { ApiService, InitService } from 'src/app/services/service.index';
   
                   });
     }
+
+    isNeg( m ){
+      return m.substring(0,1) == '-'
+    }
       
   
 }

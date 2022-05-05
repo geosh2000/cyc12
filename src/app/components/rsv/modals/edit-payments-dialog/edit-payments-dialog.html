@@ -91,7 +91,7 @@
                                             <span class="ms-1 text-primary text-end" style="font-size: 13px;" *ngIf="!items[x]['editTotalFlag']">{{ _h.moneyInts( _h.moneyCents(items[x]['monto']) ) | currency:'MXN':'symbol-narrow':'.2-2' }} {{ i['moneda'].substr(0,2) }}</span>
                                         </div>
                                         <div class="col-2 ps-0 d-flex justify-content-start">
-                                            <button style="zoom: 0.7;" mat-icon-button (click)="editTotal( x )" *ngIf="!items[x]['editTotalFlag']"><mat-icon>edit</mat-icon></button>
+                                            <button style="zoom: 0.7;" mat-icon-button (click)="editTotal( x )" *ngIf="!items[x]['editTotalFlag']" [disabled]="i['totalAmmountEditable'] != 1"><mat-icon>edit</mat-icon></button>
                                             <button class="ms-2" style="zoom: 0.5;" color="danger" mat-icon-button (click)="items[x]['editTotalFlag'] = false" *ngIf="items[x]['editTotalFlag']"><mat-icon>close</mat-icon></button>
                                             <button class="ms-2" style="zoom: 0.5;" color="success" mat-icon-button (click)="editTotalMonto( items[x], x )" [disabled]="(_api.isLoading | async) || items[x]['editTotalComments'] == ''" *ngIf="items[x]['editTotalFlag']"><mat-icon>done</mat-icon></button>
                                         </div>

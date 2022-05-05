@@ -13,6 +13,7 @@
                         <mat-option value="complementos">Complementos Cielo</mat-option>
                         <mat-option value="desplazos">Desplazos Cielo</mat-option>
                         <mat-option value="loyaltyRB">Loyalty ORewards</mat-option>
+                        <mat-option value="rsvasRb">Rsvas Roiback</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <div class="mx-2">
@@ -27,5 +28,7 @@
         <app-upload-loyalty *ngIf="selectedType=='loyaltyRB'"></app-upload-loyalty>
         <app-upload-complementos *ngIf="selectedType=='complementos'"></app-upload-complementos>
         <app-upload-desplazos *ngIf="selectedType=='desplazos'"></app-upload-desplazos>
+        <app-upload-roiback *ngIf="selectedType=='rsvasRb'"></app-upload-roiback>
     </div>
 </div>
+ 

@@ -1,17 +1,19 @@
-<h1 mat-dialog-title>Tabla de pagos...</h1>
+<h1 mat-dialog-title>Tabla de pagos item {{ data['itemLocatorId'] }}</h1>
 
 <div class="d-block mb-3" style="overflow-y: auto; max-height: 75vh">
+
+    <!-- <pre>{{ pagos | json }}</pre> -->
 
     <!-- LOADER -->
     <ng-container *ngIf="loading['pagos'] || loading['apply']">
         <div class="d-flex justify-content-center">
-            Cargando pagos de loc {{ data }}...
+            Cargando pagos de loc {{ data['itemLocatorId'] }}...
         </div>
         <mat-progress-bar mode="buffer"></mat-progress-bar>
     </ng-container>
 
     <!-- TABLA DE PAGOS -->
-    <ng-container *ngIf="!(loading['pagos'] || loading['apply'])">
+    <ng-container *ngIf="!loading['pagos']">
         <div class="alert alert-warning" role="alert" *ngIf="pagos.length == 0">
             No se encontraron pagos relacionados a esta reserva
         </div>
@@ -19,20 +21,19 @@
             <thead>
                 <tr>
                     <th class="text-center" *ngFor="let t of pagos[0] | keys">{{ t }}</th>
-                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr style="vertical-align: middle;" *ngFor="let p of pagos" [ngClass]="{'text-danger': isNeg(p['monto'])}">
-                    <td *ngFor="let c of p | keys">
-                        {{ p[c] }}
-                    </td>
-                    <td class='text-center'>
-                        <button mat-button color="primary" [disabled]="_api.isLoading | async" 
-                            (click)="applyPayments( p['itemId'] )"
-                            *ngIf="_init.checkSingleCredential('allmighty') && p['txCielo'] == null && p['cashTxId'] != null && p['complejo'].toLowerCase() != 'vcm'">
-                            Aplicar
-                        </button>
+                <tr  style="vertical-align: middle;" *ngFor="let p of pagos" [ngClass]="{'text-danger': p['monto'] < 0}">
+
+                    <td class="text-center" *ngFor="let c of p | keys">
+                        <span *ngIf="c != 'link'">{{ p[c] }}</span>
+                        <!-- <pre *ngIf="c == 'link'">{{ p[c] | json }}</pre> -->
+                        <span *ngIf="c == 'link'">
+                            <ng-container *ngFor="let l of p[c]; index as in">
+                                <a target="_blank" [href]="l['link']">[{{ in + 1 }}]</a>&nbsp;
+                            </ng-container>
+                        </span>
                     </td>
                 </tr>
             </tbody>

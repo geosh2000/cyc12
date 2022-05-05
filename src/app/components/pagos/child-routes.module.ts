@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
+import { AplicacionPagosCieloComponent } from './aplicacion-pagos-cielo/aplicacion-pagos-cielo.component';
 
 import { LinkGeneratorComponent } from './link-generator/link-generator.component';
 import { LinkReportComponent } from './link-report/link-report.component';
@@ -24,6 +25,12 @@ const childRoutes: Routes = [
     component: PagosRegistroComponent, 
     canActivate: [ AuthGuard ],
     data: { title: 'Registro de pagos no automaticos', role: 'rsv_paymentReg' }
+  },
+  { 
+    path: 'pagosCielo', 
+    component: AplicacionPagosCieloComponent, 
+    canActivate: [ AuthGuard ],
+    data: { title: 'Aplicación de Pagos en CIELO', role: 'rsv_paymentCieloApply' }
   },
 ]
 

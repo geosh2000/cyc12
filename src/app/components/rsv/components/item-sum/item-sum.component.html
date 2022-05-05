@@ -112,11 +112,17 @@
             </ng-container>
 
             <!-- NOTAS Y ACCIONES CUALQUIER ITEM -->
-            <div class="container d-flex flex-wrap justify-content-end">
+            <div class="container d-flex flex-wrap justify-content-end align-items-end">
 
                 <!-- NOTAS -->
                 <div class="me-auto">
-                    <span class="productConceptXL" [style.width.px]="390">ItemId: </span><span class="clientInfo">{{ i['itemId'] }}</span>
+                    <span class="productConceptXL" [style.width.px]="390">ItemId: </span><span class="clientInfo">{{ i['itemId'] }}</span><br>
+                    <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
+                        (click)="showItemPayments(i)"
+                        [disabled]=" _api.isLoading | async">
+                        <mat-icon>payments</mat-icon>
+                        &nbsp;Ver Pagos
+                    </button>
                 </div>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
@@ -201,7 +207,7 @@
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="resetConfirm(false,i)"
-                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['isQuote'] == 0 && i['isCancel'] == 0 && i['confirmOK'] != null  && i['itemType'] != '10' && i['itemType'] != '11'"
+                    *ngIf="_init.checkSingleCredential('rsv_reset_confirm') && i['confirmOK'] != null  && i['itemType'] != '10' && i['itemType'] != '11'"
                     [disabled]=" _api.isLoading | async">
                     <mat-icon>delete_forever</mat-icon>
                     &nbsp;Reset Confirmación

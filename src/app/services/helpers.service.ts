@@ -48,4 +48,33 @@ export class HelpersService {
   moneyInts( a ){
     return a / 100 
   }
+
+  excelDate( excelDate, dt = false ) {
+    
+    if( excelDate == null ){
+      return null
+    }
+
+    let intDate = parseInt(excelDate)
+    let xlsDate = new Date((intDate  - 25568 ) * 86400000).toLocaleDateString('en-US');
+
+    let date = moment( xlsDate, 'MM/DD/YYYY');
+    let daytime = ''
+
+    if( dt ){
+
+      let day_time = excelDate % 1
+      // let meridiem = "AMPM"
+      let hour = Math.floor(day_time * 24)
+      let minute = Math.floor(Math.abs(day_time * 24 * 60) % 60)
+      let second = Math.floor(Math.abs(day_time * 24 * 60 * 60) % 60)
+      // hour >= 12 ? meridiem = meridiem.slice(2, 4) : meridiem = meridiem.slice(0, 2)
+      // hour > 12 ? hour = hour - 12 : hour = hour
+
+      daytime = " " + ( hour < 10 ? "0" + hour : hour ) + ":" + ( minute < 10 ? "0" + minute : minute ) + ":" + ( second < 10 ? "0" + second : second )
+
+    }
+
+    return date.format('YYYY-MM-DD') + daytime;
+  }
 }

@@ -24,6 +24,8 @@ export class SaldarDialog implements OnInit {
     MXN: []
   }
 
+  tc = 20
+
   opsRes = []
   remaining = 0
 
@@ -55,6 +57,10 @@ export class SaldarDialog implements OnInit {
   async ngOnInit(){
     await this.filterExp()
     this.search( this.data['master']['masterlocatorid'] )
+
+    await this.getTc()
+
+    console.log(this.tc)
   }
 
   onNoClick(): void {
@@ -66,6 +72,12 @@ export class SaldarDialog implements OnInit {
     let saldableMXN = []
 
     for( let i of this.data['items'] ){
+
+      console.log(i['itemLocatorId'], this._h.isVigente(i['vigencia']))
+      console.log(i['itemLocatorId'], i['isCancel'], i['isCancel'] == 0)
+      console.log(i['itemLocatorId'], i['montoSaldoTotal'], i['montoSaldoTotal'] > 0)
+      console.log(i['itemLocatorId'], i['grupo'], i['grupo'] != 'ohr')
+
       if( this._h.isVigente(i['vigencia']) && i['isCancel'] == 0 && i['montoSaldoTotal'] > 0 && i['grupo'] != 'ohr' ){
 
         i['montoAllPaid'] = this._h.moneyInts( this._h.moneyCents(i['montoPagado']) + this._h.moneyCents(i['montoEnValidacion']) )
@@ -83,6 +95,8 @@ export class SaldarDialog implements OnInit {
       USD: saldableUSD,
       MXN: saldableMXN
     }
+
+    console.log(this.saldables)
   }
 
   search( f ){
@@ -116,11 +130,12 @@ export class SaldarDialog implements OnInit {
   async select( i ){
 
     let tc
+    let pagoMoneda = i['moneda'].toLowerCase().toUpperCase()
 
-    if( this.saldables[i['moneda']].length == 0 ){
+    if( this.saldables[pagoMoneda].length == 0 ){
       
-      let acMon = i['moneda']
-      let monAp =  i['moneda'].toLowerCase() == 'usd' ? 'MXN' : 'USD'
+      let acMon = pagoMoneda
+      let monAp =  pagoMoneda == 'USD' ? 'MXN' : 'USD'
 
       if( tc = await this.difCurrency( i ) ){
         i['monedaAplicada'] = monAp
@@ -129,7 +144,7 @@ export class SaldarDialog implements OnInit {
         return true
       }
     }else{
-      i['monedaAplicada'] = i['moneda']
+      i['monedaAplicada'] = pagoMoneda
       i['tc'] = 1
     }
 
@@ -141,11 +156,40 @@ export class SaldarDialog implements OnInit {
 
   }
 
+  getTc(){
+
+    return new Promise ( async resolve => {
+
+      this.loading['tc'] = true
+
+      this._api.restfulGet( moment().format('YYYY-MM-DD'), 'Rsv/getTc' )
+                  .subscribe( res => {
+
+                    this.loading['tc'] = false;
+                    let result = res['data']
+                    this.tc = result['dato']
+                    resolve( true )
+                    
+                  }, err => {
+                    this.loading['tc'] = false;
+                    
+                    const error = err.error;
+                    this._init.snackbar('error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+                    this.tc = 20
+                    resolve( false )
+
+                  });
+
+    })
+
+  }
+
   async difCurrency( i ){
 
     return new Promise ( async resolve => {
     
-      const inputValue = 20
+      const inputValue = this.tc
 
       const { value: tc } = await Swal.fire({
         icon: 'warning',
@@ -194,7 +238,9 @@ export class SaldarDialog implements OnInit {
   }
 
   sumRemain(){
-    let saldo = this._h.moneyCents((this.selectAccount.get('selectedAccount').value['montoSaldo'] ?? 0) * this._h.moneyInts(this._h.moneyCents(this.selectAccount.get('selectedAccount').value['tc']))) 
+
+
+    let saldo = this._h.moneyCents((this.selectAccount.get('selectedAccount').value['montoSaldo'] ?? 0) * this.selectAccount.get('selectedAccount').value['tc']) 
     let pago = 0
     for( let i of (this.saldables[this.selectAccount.get('selectedAccount').value['monedaAplicada']] ?? []) ){
       pago += this._h.moneyCents(i['toPay'] ?? 0)

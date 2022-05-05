@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment-timezone';
 import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
+import { ShowItemPaymentsDialog } from '../../modals/show-item-payments-dialog/show-item-payments-dialog';
 
 @Component({
   selector: 'app-item-sum',
@@ -35,7 +36,7 @@ export class ItemSumComponent implements OnInit {
   // **************************** VALIDADORES FIN ****************************
 
 
-  // **************************** APIS FIN ****************************
+  // **************************** APIS INICIO ****************************
   
     manualInsEmit( i ){
       this.loading['manualEmit'] = true
@@ -360,6 +361,19 @@ export class ItemSumComponent implements OnInit {
 
 
   // **************************** DIALOGS INICIO ****************************
+
+    showItemPayments( d:any = null ): void {
+      const dialogRef = this.dialog.open(ShowItemPaymentsDialog, {
+        data: d,
+        disableClose: false
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        // if( result == true ){
+        //   this.reload.emit( this.data['master']['masterlocatorid'] )
+        // }
+      });
+    }
 
      
 

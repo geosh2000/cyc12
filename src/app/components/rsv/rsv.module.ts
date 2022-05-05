@@ -40,6 +40,7 @@ import { PaymentRegDialog } from './modals/payment-reg-dialog/payment-reg-dialog
 import { ReactivateDialog } from './modals/reactivate-dialog/reactivate-dialog';
 import { SaldarDialog } from './modals/saldar-dialog/saldar-dialog';
 import { ModifyHotelDialog } from './modals/modify-hotel/modify-hotel.dialog';
+import { ShowItemPaymentsDialog } from './modals/show-item-payments-dialog/show-item-payments-dialog';
 
 import { RsvComponent } from './rsv.component';
 import { ItemSumComponent } from './components/item-sum/item-sum.component';
@@ -71,6 +72,7 @@ import { ItemBlockSumComponent } from './components/item-block-sum/item-block-su
     EditPaymentDialog,
     SaldarDialog,
     ModifyHotelDialog,
+    ShowItemPaymentsDialog,
   ],
   exports: [
     RsvComponent,
@@ -91,6 +93,7 @@ import { ItemBlockSumComponent } from './components/item-block-sum/item-block-su
     EditPaymentDialog,
     SaldarDialog,
     ModifyHotelDialog,
+    ShowItemPaymentsDialog,
   ],
   imports: [
     OrderModule,
