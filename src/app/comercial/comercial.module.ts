@@ -10,7 +10,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ComercialComponent } from './comercial.component';
-import { CotizadorComercialComponent } from './cotizador-comercial/cotizador-comercial.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ComercialLoginDialog } from './comercial-login-v2.component';
@@ -33,17 +32,21 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { CotizadorComercialComponent } from './cotizador-comercial/cotizador-comercial.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     ComercialComponent,
     CotizadorComercialComponent,
     ComercialLoginDialog,
+    HomeComponent,
   ],
   exports: [
     ComercialComponent,
     CotizadorComercialComponent,
     ComercialLoginDialog,
+    HomeComponent,
   ],
   imports: [
     CommonModule,

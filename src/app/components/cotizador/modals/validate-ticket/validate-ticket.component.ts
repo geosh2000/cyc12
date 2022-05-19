@@ -20,6 +20,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
   @Input() rsvForm = this.fb.group({})
   @Output() rsvFormChange = new EventEmitter()
+  @Output() setTicket = new EventEmitter()
 
   @Output() done = new EventEmitter()
 
@@ -186,8 +187,27 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Omitir Ticket',
-        cancelButtonText: 'Regresar'
+        cancelButtonText: 'Regresar',
+        showDenyButton: true,
+        denyButtonText: 'AskSuite',
+        denyButtonColor: '#ff5622'
       }).then( async result => {
+          if ( result.isDismissed ){
+            return false
+          }
+          if ( result.isDenied ){
+            console.log( 'run asksuite process' )
+            let newTicket
+            if( newTicket = await this.newAsksuite() ){
+              this.zdTicket.get('ticket').setValue( newTicket )
+              // Swal.close()
+              window.open('https://oasishoteles.zendesk.com/agent/tickets/' + newTicket, '_blank');
+              this.validateTicket()
+              return true
+            }
+
+            Swal.fire('Error!','No fue posible crear ticket de AskSuite','error')
+          }
           if (result.isConfirmed) {
             if( await this.omiteTicket() ){
               this.submitRsv()
@@ -209,6 +229,38 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
         Swal.fire('Denegado', 'No tienes los accesos necesarios para omitir el ticket en tu reservación', 'error')
         resolve(false)
       }
+    })
+  }
+
+  newAsksuite(){
+
+    Swal.fire({
+      title: `<strong>Creando Ticket de AskSuite</strong>`,
+      focusConfirm: false,
+      showCancelButton: false,
+    })
+
+    Swal.showLoading()
+
+    return new Promise ( resolve => {
+      
+      this._api.restfulPut( {requester: this.rsvForm.get('masterdata').value['zdUserId']}, 'Zendesk/newAskSuiteTicket' )
+                .subscribe( res => {
+
+                  let id = res['data']
+                  resolve ( id )
+
+                }, err => {
+
+                  Swal.close()
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                  resolve ( false )
+
+                });
+      
     })
   }
 

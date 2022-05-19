@@ -263,11 +263,18 @@ export class AplicacionPagosCieloComponent implements OnInit {
                     l.loading = false;
                     this._init.snackbar( 'success', 'Aplicadas', res['msg'] );
                     l.cieloTxId = 'Aplicado'
+                    l['applied'] = true
   
                   }, err => {
                     l.loading = false;
   
                     const error = err.error;
+
+                    if( error['error'] && error['error']['txErrores'] ){
+                      let cieloErr = JSON.parse( error['error']['txErrores'][0]['error'] )
+                      l.cieloTxId = cieloErr[0]['error']
+                    }
+
                     this._init.snackbar( 'error', error.msg, err.status );
                     console.error(err.statusText, error.msg);
   

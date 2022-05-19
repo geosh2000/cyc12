@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { ApiService, InitService } from 'src/app/services/service.index';
+import { ApiService, ComercialService, InitService } from 'src/app/services/service.index';
 
 import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -12,6 +12,9 @@ import 'moment/locale/es-mx';
 import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 export const MY_FORMATS = {
   parse: {
@@ -41,7 +44,7 @@ declare var jQuery: any;
     {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
   ]
 })
-export class CotizadorComercialComponent implements OnInit {
+export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   @Output() rsv = new EventEmitter<any>()
   @Input() data: any;
@@ -67,9 +70,13 @@ export class CotizadorComercialComponent implements OnInit {
   extraInfo = {}
   selectedLevel = 1
 
+  cotizadorType = 'comercial'
+  comercial$: Subscription
+  
   constructor( 
           private _api: ApiService, 
           public _init: InitService, 
+          public _com: ComercialService,
           public dialog: MatDialog,
           private fb: FormBuilder,
           private sanitization:DomSanitizer,
@@ -77,6 +84,10 @@ export class CotizadorComercialComponent implements OnInit {
       moment.locale('es-mx');
 
       this.createForm()
+
+      this.comercial$ = this._com.quoteType.subscribe( t => {
+        this.cotizadorType = t
+      })
     }
 
   ngOnInit(): void {
@@ -90,8 +101,15 @@ export class CotizadorComercialComponent implements OnInit {
     this.getCodes()
 
     this.summarySearch = this.hotelSearch.value
+
+
     
   }
+
+  ngOnDestroy(): void {
+    this.comercial$.unsubscribe()
+  }
+
 
   dateFilter = (d: moment.Moment | null): boolean => {
     const day = (d || moment());
