@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { Moment } from 'moment-timezone';
 
 export const MY_FORMATS = {
   parse: {
@@ -52,6 +53,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   loading = {}
 
   hotelSearch: FormGroup
+  
   summarySearch = {}
 
   minDate = moment(moment().format('YYYY-MM-DD'))
@@ -65,8 +67,11 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   filterExpanded  = true
   showUsd         = false
   noResults       = false
+  isComercial     = false
+  filtersReady    = true
 
   cotizacion = []
+  selectedOp = {}
   extraInfo = {}
   selectedLevel = 1
 
@@ -74,16 +79,19 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   comercial$: Subscription
   
   constructor( 
-          private _api: ApiService, 
+          public _api: ApiService, 
           public _init: InitService, 
           public _com: ComercialService,
           public dialog: MatDialog,
           private fb: FormBuilder,
           private sanitization:DomSanitizer,
+          private router:Router,
           private order: OrderPipe ) { 
       moment.locale('es-mx');
 
       this.createForm()
+
+      
 
       this.comercial$ = this._com.quoteType.subscribe( t => {
         this.cotizadorType = t
@@ -92,13 +100,40 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    this.cotizadorType = this._com.lastQuoteType
+
+    // Redirect if not from menu
+    if( this.cotizadorType == '' && this._init.previousUrl != '/comercial' ){
+      this.router.navigate(['/comercial']);
+    }
+
     // No Restrict Dates for Supervisors
     if( this._init.checkSingleCredential('app_cotizador_noRestrict') ){
       // this.minDate = moment().subtract(2,'years')
       // this.maxDate = moment().add(2,'years')
     }
 
-    this.getCodes()
+    switch( this.cotizadorType ){
+      case 'otlc':
+        let otlc = {
+          gpoTitle: "OTLC",
+          grupo: "OTLC",
+          hasInsurance: "1",
+          hasPaq: "1",
+          mainCampaign: "1",
+        }
+
+        this.grupos = [otlc]
+        this.hotelSearch.get('grupo').setValue( otlc )
+        break
+      case 'comercial':
+        this.filtersReady = false
+        this.isComercial = true
+        break
+      case 'publico':
+        this.getCodes()
+        break
+    } 
 
     this.summarySearch = this.hotelSearch.value
 
@@ -142,6 +177,8 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     this.createForm()
   }
 
+  
+  
   createForm(){
     this.hotelSearch =  this.fb.group({
       inicio:       [{ value: '',  disabled: false }, [ Validators.required ] ],
@@ -227,6 +264,8 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
 
   }
+
+
 
   getCodes() {
 
@@ -377,6 +416,9 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
                 });
 
   }
+
+ 
+  
 
   getInsurancesQuote( f = this.hotelSearch ){
 
@@ -794,6 +836,10 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     let flag = this.extraInfo['grupo'][ (curr ? 'usd' : 'mxn') + 'Active' ] == 1
 
     return flag
+  }
+
+  setComercialDate( e ){
+    console.log(e)
   }
   
 

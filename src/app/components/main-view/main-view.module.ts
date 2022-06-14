@@ -29,7 +29,7 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 
 import { BlankComponent } from './blank/blank.component';
 import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
-import { AccountConfigComponent } from './account-config/account-config.component';
+// import { AccountConfigComponent } from '../../shared/account-config/account-config.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -47,7 +47,7 @@ import { MatSelectModule } from '@angular/material/select';
   declarations: [
     MainViewComponent,
     NavbarComponent, LoginDialog,
-    AccountConfigComponent,
+    // AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
     BlankComponent,
@@ -57,7 +57,7 @@ import { MatSelectModule } from '@angular/material/select';
   exports: [
     MainViewComponent,
     NavbarComponent, LoginDialog,
-    AccountConfigComponent,
+    // AccountConfigComponent,
     MenuComponent,
     BreadcrumbsComponent,
     BlankComponent,

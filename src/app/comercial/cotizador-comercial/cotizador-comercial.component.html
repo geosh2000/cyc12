@@ -3,139 +3,149 @@
         <mat-card-header class="text-end">
             <mat-card-title>Cotizador {{ cotizadorType }}</mat-card-title>
         </mat-card-header>
-        <form [formGroup]="hotelSearch">
+        
         <mat-card-content>
-            <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
 
-                <!-- HABITACIONES -->
-                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
-                    <mat-label>Habitaciones</mat-label>
-                    <input matInput class="text-center" type="number" formControlName="habs" min=1 max=10 autocomplete="off">
-                    <mat-error *ngIf="hotelSearch.controls['habs'].invalid">{{ getErrorMessage('habs') }}</mat-error>
-                </mat-form-field>
-                
-                <!-- FECHA -->
-                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
-                    <mat-label>Fecha</mat-label>
-                    <mat-date-range-input [rangePicker]="picker">
-                        <input matStartDate readonly autocomplete="off" [min]="minDate" [max]="maxDate" formControlName="inicio" placeholder="Inicio">
-                        <input matEndDate   readonly autocomplete="off" [max]="maxDate" formControlName="fin" placeholder="Fin">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
-                    <mat-error *ngIf="hotelSearch.controls['inicio'].invalid">{{ getErrorMessage('inicio') }}</mat-error>
-                    <mat-error *ngIf="hotelSearch.controls['fin'].invalid">{{ getErrorMessage('fin') }}</mat-error>
-                </mat-form-field>
+            <oportunidades-search  *ngIf="isComercial"></oportunidades-search>
 
-                <!-- GRUPO -->
-                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170">
-                    <mat-label>Grupo</mat-label>
-                    <mat-select formControlName="grupo" fname="grupo">
-                        <mat-option>Selecciona</mat-option>
-                        <ng-container *ngFor="let g of grupos">
-                            <mat-option [value]="g" *ngIf="g['mainCampaign'] == '1'">
-                                {{ g['grupo'] }}
-                            </mat-option>
-                        </ng-container>
-                    </mat-select>
-                    <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
-                    <mat-error *ngIf="hotelSearch.controls['grupo'].invalid">{{ getErrorMessage('grupo') }}</mat-error>
-                </mat-form-field>
+            <ng-container *ngIf="filtersReady">
+                <form [formGroup]="hotelSearch">
+                    <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
 
-
-                <!-- Switches -->
-                <div class="ms-auto d-flex flex-wrap justify-content-end">
-                    <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
-                    <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="hotelSearch.invalid || loading['cotizar']">Cotizar</button>
-                </div>
-
-                
-
-            </div>  
-            <mat-accordion >
-                <mat-expansion-panel [expanded]="filterExpanded">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            Pax por habitación
-                        </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <!-- <mat-panel-description> -->
-                        <div class="container" formGroupName="habitaciones">
-            
-                            <!-- PAX -->
-                            <div class="pt-3  mx-3 d-flex justify-content-start flex-wrap align-items-center" [formGroupName]="'hab' + (i+1)" *ngFor="let h of hotelSearch.controls.habitaciones.value | keys, index as i">
-                                <h3>Hab. {{ i + 1 }}</h3>
-                                <mat-form-field class="ms-3 me-1 mb-2" appearance="outline" [style.width.px]="100">
-                                    <mat-label>Adultos</mat-label>
-                                    <input matInput class="text-center" type="number" formControlName="adultos" min=1 max=4 autocomplete="off">
-                                    <mat-hint>> de 12 años</mat-hint>
-                                    <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.adultos').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.adultos') }}</mat-error>
-                                </mat-form-field>
-                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
-                                    <mat-label>Menores</mat-label>
-                                    <input matInput class="text-center" type="number" formControlName="menores" min=0 max=3 autocomplete="off">
-                                    <mat-hint>0 a 12 años</mat-hint>
-                                    <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
-                                </mat-form-field>
-                                <ng-container formGroupName="edades">
-                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
-                                        <mat-label>Edad 1</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=12 autocomplete="off">
-                                        <mat-hint>0 a 12 años</mat-hint>
-                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
-                                    </mat-form-field>
-                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
-                                        <mat-label>Edad 2</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=12 autocomplete="off">
-                                        <mat-hint>0 a 12 años</mat-hint>
-                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
-                                    </mat-form-field>
-                                    <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
-                                        <mat-label>Edad 3</mat-label>
-                                        <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=12 autocomplete="off">
-                                        <mat-hint>0 a 12 años</mat-hint>
-                                        <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
-                                    </mat-form-field>
+                        <!-- HABITACIONES -->
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
+                            <mat-label>Habitaciones</mat-label>
+                            <input matInput class="text-center" type="number" formControlName="habs" min=1 max=10 autocomplete="off">
+                            <mat-error *ngIf="hotelSearch.controls['habs'].invalid">{{ getErrorMessage('habs') }}</mat-error>
+                        </mat-form-field>
+                        
+                        <!-- FECHA -->
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
+                            <mat-label>Fecha</mat-label>
+                            <mat-date-range-input [rangePicker]="picker">
+                                <input matStartDate readonly autocomplete="off" [min]="minDate" [max]="maxDate" formControlName="inicio" placeholder="Inicio">
+                                <input matEndDate   readonly autocomplete="off" [max]="maxDate" formControlName="fin" placeholder="Fin">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                            <mat-error *ngIf="hotelSearch.controls['inicio'].invalid">{{ getErrorMessage('inicio') }}</mat-error>
+                            <mat-error *ngIf="hotelSearch.controls['fin'].invalid">{{ getErrorMessage('fin') }}</mat-error>
+                        </mat-form-field>
+        
+                        <!-- GRUPO -->
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170">
+                            <mat-label>Grupo</mat-label>
+                            <mat-select formControlName="grupo" fname="grupo">
+                                <mat-option>Selecciona</mat-option>
+                                <ng-container *ngFor="let g of grupos">
+                                    <mat-option [value]="g" *ngIf="g['mainCampaign'] == '1'">
+                                        {{ g['grupo'] }}
+                                    </mat-option>
                                 </ng-container>
-                                <!-- <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
-                                    <mat-label>Adultos</mat-label>
-                                    <input matInput class="text-center" type="number" formControlName="adultos" min=0 autocomplete="off">
-                                    <mat-hint>> 12 años</mat-hint>
-                                    <mat-error *ngIf="xferSearch.controls['adultos'].invalid">{{ getErrorMessage('adultos') }}</mat-error>
-                                </mat-form-field>
-                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
-                                    <mat-label>Niños</mat-label>
-                                    <input matInput class="text-center" type="number" formControlName="children" min=0 autocomplete="off">
-                                    <mat-hint>1 a 12 años</mat-hint>
-                                    <mat-error *ngIf="xferSearch.controls['children'].invalid">{{ getErrorMesssage('children') }}</mat-error>
-                                </mat-form-field>
-                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
-                                    <mat-label>Bebés</mat-label>
-                                    <input matInput class="text-center" type="number" formControlName="babies" min=0 autocomplete="off">
-                                    <mat-hint>hasta 11 meses</mat-hint>
-                                    <mat-error *ngIf="xferSearch.controls['babies'].invalid">{{ getErrorMessage('babies') }}</mat-error>
-                                </mat-form-field> -->
-                            </div>
-            
+                            </mat-select>
+                            <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
+                            <mat-error *ngIf="hotelSearch.controls['grupo'].invalid">{{ getErrorMessage('grupo') }}</mat-error>
+                        </mat-form-field>
+        
+        
+                        <!-- Switches -->
+                        <div class="ms-auto d-flex flex-wrap justify-content-end">
+                            <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
+                            <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="hotelSearch.invalid || loading['cotizar']">Cotizar</button>
                         </div>
-                    <!-- </mat-panel-description> -->
-                </mat-expansion-panel>
-            </mat-accordion>
+        
+                        
+        
+                    </div>  
+                    <mat-accordion >
+                        <mat-expansion-panel [expanded]="filterExpanded">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Pax por habitación
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <!-- <mat-panel-description> -->
+                                <div class="container" formGroupName="habitaciones">
+                    
+                                    <!-- PAX -->
+                                    <div class="pt-3  mx-3 d-flex justify-content-start flex-wrap align-items-center" [formGroupName]="'hab' + (i+1)" *ngFor="let h of hotelSearch.controls.habitaciones.value | keys, index as i">
+                                        <h3>Hab. {{ i + 1 }}</h3>
+                                        <mat-form-field class="ms-3 me-1 mb-2" appearance="outline" [style.width.px]="100">
+                                            <mat-label>Adultos</mat-label>
+                                            <input matInput class="text-center" type="number" formControlName="adultos" min=1 max=4 autocomplete="off">
+                                            <mat-hint>> de 12 años</mat-hint>
+                                            <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.adultos').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.adultos') }}</mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
+                                            <mat-label>Menores</mat-label>
+                                            <input matInput class="text-center" type="number" formControlName="menores" min=0 max=3 autocomplete="off">
+                                            <mat-hint>0 a 12 años</mat-hint>
+                                            <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
+                                        </mat-form-field>
+                                        <ng-container formGroupName="edades">
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
+                                                <mat-label>Edad 1</mat-label>
+                                                <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=12 autocomplete="off">
+                                                <mat-hint>0 a 12 años</mat-hint>
+                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
+                                                <mat-label>Edad 2</mat-label>
+                                                <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=12 autocomplete="off">
+                                                <mat-hint>0 a 12 años</mat-hint>
+                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
+                                                <mat-label>Edad 3</mat-label>
+                                                <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=12 autocomplete="off">
+                                                <mat-hint>0 a 12 años</mat-hint>
+                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                            </mat-form-field>
+                                        </ng-container>
+                                        <!-- <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                            <mat-label>Adultos</mat-label>
+                                            <input matInput class="text-center" type="number" formControlName="adultos" min=0 autocomplete="off">
+                                            <mat-hint>> 12 años</mat-hint>
+                                            <mat-error *ngIf="xferSearch.controls['adultos'].invalid">{{ getErrorMessage('adultos') }}</mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                            <mat-label>Niños</mat-label>
+                                            <input matInput class="text-center" type="number" formControlName="children" min=0 autocomplete="off">
+                                            <mat-hint>1 a 12 años</mat-hint>
+                                            <mat-error *ngIf="xferSearch.controls['children'].invalid">{{ getErrorMesssage('children') }}</mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
+                                            <mat-label>Bebés</mat-label>
+                                            <input matInput class="text-center" type="number" formControlName="babies" min=0 autocomplete="off">
+                                            <mat-hint>hasta 11 meses</mat-hint>
+                                            <mat-error *ngIf="xferSearch.controls['babies'].invalid">{{ getErrorMessage('babies') }}</mat-error>
+                                        </mat-form-field> -->
+                                    </div>
+                    
+                                </div>
+                            <!-- </mat-panel-description> -->
+                        </mat-expansion-panel>
+                    </mat-accordion>
+        
+                </form>
+            </ng-container>
+        </mat-card-content>
 
-            </mat-card-content>
-            <mat-card-actions>
-                <div class="container-fluid d-flex justify-content-end mt-0 pt-0 flex-wrap">
-                    <div>
-                        <!-- <button mat-raised-button class="me-2" color="warn" (click)="resetValues()">Reset</button> -->
-                    </div>
-                    <div>
-                        <!-- <button mat-raised-button color="primary" (click)="cotizar()" [disabled]="noDispo || noTours || tourSearch.invalid">Cotizar</button> -->
-                    </div>
+        <mat-card-actions>
+            <div class="container-fluid d-flex justify-content-end mt-0 pt-0 flex-wrap">
+                <div>
+                    <!-- <button mat-raised-button class="me-2" color="warn" (click)="resetValues()">Reset</button> -->
                 </div>
-            </mat-card-actions>
-        </form>
+                <div>
+                    <!-- <button mat-raised-button color="primary" (click)="cotizar()" [disabled]="noDispo || noTours || tourSearch.invalid">Cotizar</button> -->
+                </div>
+            </div>
+        </mat-card-actions>
+            
+            
+        
         <mat-card-footer>
-            <mat-progress-bar mode="indeterminate" *ngIf="loading['cotizar']"></mat-progress-bar>
+                <mat-progress-bar mode="indeterminate" *ngIf="(_api.isLoading | async) || loading['cotizar'] || loading['searchop']"></mat-progress-bar>
         </mat-card-footer>
     </mat-card>
 
@@ -228,7 +238,7 @@
                                                     <div class="col-2 col-lg-2 text-center text-success">
                                                         <b>
                                                         <span class="">{{ c['habs']['total']['monto']['n2']['relativeDisc'] | percent:'.0-0' }}</span><br>
-                                                        ORewards</b>
+                                                        {{ cotizadorType == 'publico' ? 'ORewards' : (cotizadorType == 'otlc' ? 'OTLC' : '') }}</b>
                                                     </div>
                                                     <div class="col-10 col-lg-4">
                                                         <mat-chip-list class="mat-chip-list-stacked">

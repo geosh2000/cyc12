@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2'
 
 import { InitService, LoginService } from 'src/app/services/service.index';
-import { AccountConfigComponent } from '../account-config/account-config.component';
+import { AccountConfigComponent } from '../../../shared/account-config/account-config.component';
 declare var jQuery:any
 
 @Component({

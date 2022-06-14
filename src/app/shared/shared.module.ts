@@ -24,6 +24,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FlightSearchComponent } from './flight-search/flight-search.component';
+import { AccountConfigComponent } from './account-config/account-config.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 
 @NgModule({
@@ -34,6 +37,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
     KeysPipe,
 
     FlightSearchComponent,
+    AccountConfigComponent,
 
   ],
   exports: [
@@ -47,6 +51,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
     KeysPipe,
 
     FlightSearchComponent,
+    AccountConfigComponent,
 
   ],
   imports: [
@@ -68,7 +73,9 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
     MatIconModule,
     MatTooltipModule,
     MatSelectModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSidenavModule,
+    MatListModule
   ]
 })
 export class SharedModule { }

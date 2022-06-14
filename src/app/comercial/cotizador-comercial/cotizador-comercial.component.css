@@ -41,7 +41,11 @@
   background-position: center;
 }
 
-.mat-paquete {
+:host ::ng-deep .mat-paquete {
   background-color: #15ab13;
   color: #fff;
+}
+
+:host ::ng-deep .swal2-radio {
+    display: grid !important;
 }

@@ -257,7 +257,7 @@ export class AplicacionPagosCieloComponent implements OnInit {
   apply( l ){
     l.loading = true
   
-      this._api.restfulPut( { itemId: l.itemId }, 'Rsv/applyPaymentsCielo' )
+      this._api.restfulPut( { txId: l.cashTransactionId }, 'Rsv/applyPaymentsCielo' )
                   .subscribe( res => {
   
                     l.loading = false;

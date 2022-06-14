@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ZonaHorariaService } from './zona-horaria.service';
 declare var jQuery:any;
@@ -22,6 +23,9 @@ export class InitService {
   loadingRouteConfig = false
   app = ''
 
+  currentUrl: string = ''
+  previousUrl: string = ''
+
   constructor( private _route:Router, private _api:ApiService, private _zh:ZonaHorariaService ) {
     this.getPreferences()
 
@@ -29,6 +33,14 @@ export class InitService {
       jQuery('.modal').modal('hide')
       this.hideMenu.next( true )
     })
+
+    this._route.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.previousUrl = this.currentUrl;
+        this.currentUrl = event.url;
+
+      });
 
     this.agentName = localStorage.getItem('nombre')
   }

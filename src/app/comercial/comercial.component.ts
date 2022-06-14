@@ -3,7 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { ApiService, InitService, LoginService } from '../services/service.index';
+import { ApiService, ComercialService, InitService, LoginService } from '../services/service.index';
+import { AccountConfigComponent } from '../shared/account-config/account-config.component';
 import { ComercialLoginDialog } from './comercial-login-v2.component';
 
 @Component({
@@ -19,13 +20,12 @@ export class ComercialComponent implements OnInit, OnDestroy {
   constructor( public _api: ApiService,
                 public _init: InitService,
                 public dialog: MatDialog, 
+                private _com: ComercialService,
                 private _li: LoginService ) { }
 
   async ngOnInit(){
 
     await this._li.reloadTokenCheck( 'comercial-' )
-
-    console.log('comercial')
 
     this.token = this._init.token.value
 
@@ -65,6 +65,18 @@ export class ComercialComponent implements OnInit, OnDestroy {
       });
     }
 
+  }
+
+  configDialog( d:any = null ): void {
+    const dialogRef = this.dialog.open(AccountConfigComponent, {
+      // width: '250px',
+      data: d,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed', result);
+    });
   }
 
 

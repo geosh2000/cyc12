@@ -34,6 +34,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CotizadorComercialComponent } from './cotizador-comercial/cotizador-comercial.component';
 import { HomeComponent } from './home/home.component';
+import { OportunidadesSearchComponent } from './cotizador-comercial/oportunidades-search/oportunidades-search.component';
+import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-search/oportunidades-create/oportunidades-create.dialog';
 
 @NgModule({
   declarations: [
@@ -41,12 +43,16 @@ import { HomeComponent } from './home/home.component';
     CotizadorComercialComponent,
     ComercialLoginDialog,
     HomeComponent,
+    OportunidadesSearchComponent,
+    OportunidadesCreateDialog,
   ],
   exports: [
     ComercialComponent,
     CotizadorComercialComponent,
     ComercialLoginDialog,
     HomeComponent,
+    OportunidadesSearchComponent,
+    OportunidadesCreateDialog,
   ],
   imports: [
     CommonModule,

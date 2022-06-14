@@ -8,14 +8,16 @@ import { filter } from 'rxjs/operators';
 })
 export class ComercialService {
 
-  public quoteType:BehaviorSubject<string> = new BehaviorSubject<string>('comercial');
+  public quoteType:BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public lastQuoteType = '';
 
   constructor( private _router: Router ) { 
     this._router.events
         .pipe(filter(e => e instanceof NavigationStart))
         .subscribe((e: NavigationStart) => {
           const navigation  = this._router.getCurrentNavigation();
-          this.quoteType.next( navigation.extras.state ? navigation.extras.state.type : 'comercial' );
+          this.lastQuoteType = navigation.extras.state ? navigation.extras.state.type : '' ;
+          this.quoteType.next( navigation.extras.state ? navigation.extras.state.type : '' );
       });
   }
 }
