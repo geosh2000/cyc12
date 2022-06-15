@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ApiService, InitService } from 'src/app/services/service.index';
 import { MergeUsersComponent } from '../../../shared/merge-users/merge-users.component';
 import Swal from 'sweetalert2';
@@ -14,7 +14,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
   @ViewChild( MergeUsersComponent ) _merge:MergeUsersComponent
 
-  @Input() item: FormGroup
+  @Input() item: UntypedFormGroup
 
   @Input() user
 
@@ -24,11 +24,11 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
   @Output() done = new EventEmitter()
 
-  zdTicket: FormGroup = this.fb.group({ ticket: [''] })
+  zdTicket: UntypedFormGroup = this.fb.group({ ticket: [''] })
   zdTicketName = ''
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private _api: ApiService,
     private _init: InitService,
     private router: Router
@@ -265,7 +265,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
   }
 
   nacionalidadCongruente(){
-    return ( formGroup: FormGroup ) => {
+    return ( formGroup: UntypedFormGroup ) => {
 
       const isIns = formGroup.get('hasInsurance')
       const uNac = formGroup.get('nacionalidad')

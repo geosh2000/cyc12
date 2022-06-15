@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, FormBuilder } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { NavigationEnd, Router } from '@angular/router';
@@ -19,8 +19,8 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
   errors:Object = {}
 
   // FORMS
-  newPayment:FormGroup
-  imageForm: FormGroup
+  newPayment:UntypedFormGroup
+  imageForm: UntypedFormGroup
 
   // IMGS
   type = 'img'
@@ -114,19 +114,19 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
   // *************** FORM BUILDERS START ***************
 
     buildNewPayment(){
-      this.newPayment =  new FormGroup({
-        ['complejo']:    new FormControl('', [ Validators.required ]),
-        ['proveedor']:   new FormControl('', [ Validators.required ]),
-        ['referencia']:  new FormControl('', [ Validators.required ]),
-        ['operacion']:   new FormControl('', [ Validators.required ]),
-        ['aut']:         new FormControl('', [ Validators.required ]),
-        ['monto']:       new FormControl('', [ Validators.required ]),
-        ['moneda']:      new FormControl('', [ Validators.required ]),
-        ['tipo']:        new FormControl('', [ Validators.required ]),
-        ['afiliacion']:  new FormControl('', [ Validators.required ]),
-        ['tarjeta']:     new FormControl('Virtual', [ Validators.required ]),
-        ['tipoTarjeta']: new FormControl('VIRTUAL', [ Validators.required ]),
-        ['paymentNotes']: new FormControl('_')
+      this.newPayment =  new UntypedFormGroup({
+        ['complejo']:    new UntypedFormControl('', [ Validators.required ]),
+        ['proveedor']:   new UntypedFormControl('', [ Validators.required ]),
+        ['referencia']:  new UntypedFormControl('', [ Validators.required ]),
+        ['operacion']:   new UntypedFormControl('', [ Validators.required ]),
+        ['aut']:         new UntypedFormControl('', [ Validators.required ]),
+        ['monto']:       new UntypedFormControl('', [ Validators.required ]),
+        ['moneda']:      new UntypedFormControl('', [ Validators.required ]),
+        ['tipo']:        new UntypedFormControl('', [ Validators.required ]),
+        ['afiliacion']:  new UntypedFormControl('', [ Validators.required ]),
+        ['tarjeta']:     new UntypedFormControl('Virtual', [ Validators.required ]),
+        ['tipoTarjeta']: new UntypedFormControl('VIRTUAL', [ Validators.required ]),
+        ['paymentNotes']: new UntypedFormControl('_')
       })
 
       this.newPayment.get('proveedor').valueChanges.subscribe( x => { 
@@ -138,10 +138,10 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
     }
 
     buildImageForm(){
-      this.imageForm = new FormGroup({
-        fname:              new FormControl('', [ Validators.required,  ] ),
-        dir:                new FormControl('', [ Validators.required,  ] ),
-        imageFile:          new FormControl('', [ Validators.required,  ] )
+      this.imageForm = new UntypedFormGroup({
+        fname:              new UntypedFormControl('', [ Validators.required,  ] ),
+        dir:                new UntypedFormControl('', [ Validators.required,  ] ),
+        imageFile:          new UntypedFormControl('', [ Validators.required,  ] )
       })
     }
 

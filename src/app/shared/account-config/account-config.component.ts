@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService, InitService, LoginService } from 'src/app/services/service.index';
 
@@ -63,7 +63,7 @@ export class AccountConfigComponent implements OnInit {
 
   constructor(
     public configDialog: MatDialogRef<AccountConfigComponent>,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private _api: ApiService,
     public _init: InitService,
     public _login: LoginService,
@@ -87,7 +87,7 @@ export class AccountConfigComponent implements OnInit {
   }
 
   samePass(a, b){
-    return ( formGroup: FormGroup ) => {
+    return ( formGroup: UntypedFormGroup ) => {
 
       const nwp = formGroup.get(a)
       const rpt = formGroup.get(b)

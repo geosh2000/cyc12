@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { MatStep, MatStepper, StepperOrientation } from '@angular/material/stepper';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -43,7 +43,7 @@ export class ZdUserSearchComponent implements OnInit {
   });
 
   constructor(
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private _api: ApiService,
     private _init: InitService,
     breakpointObserver: BreakpointObserver
@@ -167,7 +167,7 @@ export class ZdUserSearchComponent implements OnInit {
                 });
   }
   
-  getErrorMessage( ctrl, form: FormGroup ) {
+  getErrorMessage( ctrl, form: UntypedFormGroup ) {
 
     if ( this.loading[ctrl] ){
       return 'Cargando ' + ctrl + '...'

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
@@ -21,7 +21,7 @@ export class LinkGeneratorComponent implements OnInit {
   groups = []
 
   // Form
-  linkForm: FormGroup
+  linkForm: UntypedFormGroup
 
   // Results
   linkData = {}
@@ -29,7 +29,7 @@ export class LinkGeneratorComponent implements OnInit {
   constructor( 
       private _api: ApiService, 
       public _init: InitService,
-      private fb: FormBuilder
+      private fb: UntypedFormBuilder
       ) { 
       this.createForm()
     }
@@ -57,7 +57,7 @@ export class LinkGeneratorComponent implements OnInit {
     // this.hotelSearch.controls['habs'].setValue(1)
   }
 
-  referenceExists( control: FormControl ): Promise<any>| Observable<any>{
+  referenceExists( control: UntypedFormControl ): Promise<any>| Observable<any>{
 
     let thisData:any = this
 

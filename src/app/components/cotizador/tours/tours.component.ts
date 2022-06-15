@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -56,7 +56,7 @@ export class CotizaToursComponent implements OnInit {
 
   loading = {}
 
-  tourSearch: FormGroup
+  tourSearch: UntypedFormGroup
 
   minDate = moment().add(2, 'days')
   maxDate = moment(`${moment().add(1, 'years').format('YYYY')}-12-19`)
@@ -97,20 +97,20 @@ export class CotizaToursComponent implements OnInit {
   }
 
   createForm(){
-    this.tourSearch =  new FormGroup({
-      ['fecha']:        new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['proveedor']:    new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['entrada']:      new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['horario']:      new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['show']:         new FormControl({ value: '',  disabled: false }, [] ),
-      ['place']:        new FormControl({ value: '',  disabled: true }, [ Validators.required ] ),
-      ['adultos']:      new FormControl({ value: 1,   disabled: false }, [] ),
-      ['adultosReales']:new FormControl({ value: 1,   disabled: false }, [] ),
-      ['children']:     new FormControl({ value: 0,   disabled: false }, [] ),
-      ['childrenReales']:new FormControl({ value: 0,  disabled: false }, [] ),
-      ['babiesReales']: new FormControl({ value: 0,   disabled: false }, [] ),
-      ['transporte']:   new FormControl({ value: false,   disabled: false }, [] ),
-      ['muelle']:       new FormControl({ value: false,   disabled: false }, [] ),
+    this.tourSearch =  new UntypedFormGroup({
+      ['fecha']:        new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
+      ['proveedor']:    new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
+      ['entrada']:      new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['horario']:      new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['show']:         new UntypedFormControl({ value: '',  disabled: false }, [] ),
+      ['place']:        new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ] ),
+      ['adultos']:      new UntypedFormControl({ value: 1,   disabled: false }, [] ),
+      ['adultosReales']:new UntypedFormControl({ value: 1,   disabled: false }, [] ),
+      ['children']:     new UntypedFormControl({ value: 0,   disabled: false }, [] ),
+      ['childrenReales']:new UntypedFormControl({ value: 0,  disabled: false }, [] ),
+      ['babiesReales']: new UntypedFormControl({ value: 0,   disabled: false }, [] ),
+      ['transporte']:   new UntypedFormControl({ value: false,   disabled: false }, [] ),
+      ['muelle']:       new UntypedFormControl({ value: false,   disabled: false }, [] ),
     })
 
     this.tourSearch.controls['fecha'].valueChanges.subscribe( x => { 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
@@ -44,7 +44,7 @@ export class CotizaDaypassComponent implements OnInit {
 
   loading = {}
 
-  daypassSearch: FormGroup
+  daypassSearch: UntypedFormGroup
   summarySearch = {}
 
   minDate = moment( moment().format('YYYY-MM-DD'))
@@ -54,7 +54,7 @@ export class CotizaDaypassComponent implements OnInit {
     private _api: ApiService, 
     public _init: InitService, 
     public dialog: MatDialog,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private sanitization:DomSanitizer,
     private order: OrderPipe ) { 
       moment.locale('es-mx');

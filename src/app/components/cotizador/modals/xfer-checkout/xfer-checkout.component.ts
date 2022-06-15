@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { ValidateTicketComponent } from 'src/app/components/cotizador/modals/validate-ticket/validate-ticket.component';
 import { ApiService, InitService } from 'src/app/services/service.index';
@@ -18,13 +18,13 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
   @Output() done = new EventEmitter
   @Input() rsvData = {}
 
-  rsvForm: FormGroup = this.fb.group({ isUsd: [''] })
-  namesForm: FormGroup = this.fb.group({ pax1: ['', Validators.required ] })
+  rsvForm: UntypedFormGroup = this.fb.group({ isUsd: [''] })
+  namesForm: UntypedFormGroup = this.fb.group({ pax1: ['', Validators.required ] })
 
   namePattern = "^[A-Za-záéíóúÁÉÍÓÚ]+([\\s]{1}[A-Za-záéíóúÁÉÍÓÚ]+)*$"
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private _api: ApiService,
     private _init: InitService,
   ) { 
@@ -88,7 +88,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
       console.log(jsobj)
     }
 
-    (this.rsvForm.get('data') as FormGroup).addControl('xfer', this.fb.group({
+    (this.rsvForm.get('data') as UntypedFormGroup).addControl('xfer', this.fb.group({
         xfer:       this.fb.group({
           xfr_id:               [ { value: '', disabled: true }, Validators.required ],
           itemId:               [ { value: '', disabled: true }, Validators.required ],
@@ -151,7 +151,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     )
 
     if( sum['grupo'] == 'Cortesia' ){
-      (this.rsvForm.get('data.xfer.item') as FormGroup).addControl('showMontoInConfirm', new FormControl(0, [Validators.required]))
+      (this.rsvForm.get('data.xfer.item') as UntypedFormGroup).addControl('showMontoInConfirm', new UntypedFormControl(0, [Validators.required]))
     }
 
     this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
@@ -173,7 +173,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
     for( let i = 1; i <= p; i++){
       let dflt = i == 1 ? this.rsvData['formRsv']['zdUser']['name'] : ''
-      this.namesForm.addControl(`pasajero_${i}`, new FormControl(dflt, [Validators.required, Validators.minLength(5)]))
+      this.namesForm.addControl(`pasajero_${i}`, new UntypedFormControl(dflt, [Validators.required, Validators.minLength(5)]))
     }
 
     this.buildComments()

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, pairwise, startWith } from 'rxjs/operators';
 
@@ -50,7 +50,7 @@ export class CotizaTrasladosComponent implements OnInit {
 
   loading = {}
 
-  xferSearch: FormGroup
+  xferSearch: UntypedFormGroup
   summarySearch = {}
 
   minDate = moment().add(1, 'days')
@@ -110,29 +110,29 @@ export class CotizaTrasladosComponent implements OnInit {
   }
 
   createForm(){
-    this.xferSearch =  new FormGroup({
-      ['grupo']:          new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['destino']:        new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['origen']:         new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['servicio']:       new FormControl({ value: 'Traslado',  disabled: false }, [ Validators.required ]),
-      ['tipo']:           new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['ruta']:           new FormControl({ value: '',  disabled: true }, [ Validators.required ]),
-      ['adultos']:        new FormControl({ value: 1,   disabled: false }, [ Validators.required ]),
-      ['children']:       new FormControl({ value: 0,   disabled: false }, [ Validators.required ]),
-      ['babies']:         new FormControl({ value: 0,   disabled: false }, [ Validators.required ]),
-      ['llegada']:        new FormGroup({
-                                ['fecha']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
-                                ['vuelo']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
-                                ['hora']:     new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),     
-                                ['forced']:   new FormControl( { value: false, disabled: true } )     
+    this.xferSearch =  new UntypedFormGroup({
+      ['grupo']:          new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
+      ['destino']:        new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['origen']:         new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['servicio']:       new UntypedFormControl({ value: 'Traslado',  disabled: false }, [ Validators.required ]),
+      ['tipo']:           new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['ruta']:           new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),
+      ['adultos']:        new UntypedFormControl({ value: 1,   disabled: false }, [ Validators.required ]),
+      ['children']:       new UntypedFormControl({ value: 0,   disabled: false }, [ Validators.required ]),
+      ['babies']:         new UntypedFormControl({ value: 0,   disabled: false }, [ Validators.required ]),
+      ['llegada']:        new UntypedFormGroup({
+                                ['fecha']:    new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),          
+                                ['vuelo']:    new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),          
+                                ['hora']:     new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),     
+                                ['forced']:   new UntypedFormControl( { value: false, disabled: true } )     
       }),
-      ['salida']:        new FormGroup({
-                                ['fecha']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
-                                ['vuelo']:    new FormControl({ value: '',  disabled: true }, [ Validators.required ]),          
-                                ['hora']:     new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),          
-                                ['horaAbierto']:    new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),
-                                ['pickup']:   new FormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),    
-                                ['forced']:   new FormControl( { value: false, disabled: true } )      
+      ['salida']:        new UntypedFormGroup({
+                                ['fecha']:    new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),          
+                                ['vuelo']:    new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required ]),          
+                                ['hora']:     new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),          
+                                ['horaAbierto']:    new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),
+                                ['pickup']:   new UntypedFormControl({ value: '',  disabled: true }, [ Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$") ]),    
+                                ['forced']:   new UntypedFormControl( { value: false, disabled: true } )      
                               }),
     })
 

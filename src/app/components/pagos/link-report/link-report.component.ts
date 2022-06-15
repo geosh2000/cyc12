@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
@@ -52,7 +52,7 @@ export class LinkReportComponent implements OnInit {
   creators = []
 
   // Form
-  filterForm: FormGroup
+  filterForm: UntypedFormGroup
 
   // Rules
   minDate = moment(moment('2021-09-30').format('YYYY-MM-DD'))
@@ -68,7 +68,7 @@ export class LinkReportComponent implements OnInit {
   constructor( 
     private _api: ApiService, 
     public _init: InitService,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
     ) { 
 
       // TABLE COLUMNS
@@ -150,7 +150,7 @@ export class LinkReportComponent implements OnInit {
   }
 
   dateValidation( a: string, b: string ){
-    return ( formGroup: FormGroup ) => {
+    return ( formGroup: UntypedFormGroup ) => {
 
       const inicio = formGroup.get(a)
       const fin = formGroup.get(b)

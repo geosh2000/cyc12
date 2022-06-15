@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { OrderPipe } from 'ngx-order-pipe';
 import Swal from 'sweetalert2';
 import { MatStepper } from '@angular/material/stepper';
@@ -29,8 +29,8 @@ export class SaldarDialog implements OnInit {
   opsRes = []
   remaining = 0
 
-  selectAccount:FormGroup
-  selectItems:FormGroup
+  selectAccount:UntypedFormGroup
+  selectItems:UntypedFormGroup
 
   accSaldo = 0
   items = []
@@ -40,7 +40,7 @@ export class SaldarDialog implements OnInit {
     public _api: ApiService,
     public _h: HelpersService,
     private _init: InitService,
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private orderPipe: OrderPipe,
     @Inject(MAT_DIALOG_DATA) public data) {
 

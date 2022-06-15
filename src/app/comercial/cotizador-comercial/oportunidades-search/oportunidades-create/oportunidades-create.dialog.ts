@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Inject, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { ApiService, HelpersService, InitService } from 'src/app/services/service.index';
 
@@ -39,7 +39,7 @@ export class OportunidadesCreateDialog implements OnChanges, AfterViewInit {
   
 
   constructor(
-            private fb: FormBuilder,
+            private fb: UntypedFormBuilder,
             private _api: ApiService,
             public _init: InitService,
             public _h: HelpersService,
@@ -116,7 +116,7 @@ export class OportunidadesCreateDialog implements OnChanges, AfterViewInit {
 
       if( !this.rsvForm.get('data.hab' + i) ){
         
-        (this.rsvForm.get('data') as FormGroup).addControl('hab' + i, this.fb.group({
+        (this.rsvForm.get('data') as UntypedFormGroup).addControl('hab' + i, this.fb.group({
           hotel:        this.fb.group({
             item:       this.fb.group({
               itemType:     [{ value: 1,  disabled: false }, [ Validators.required ] ],
@@ -149,13 +149,13 @@ export class OportunidadesCreateDialog implements OnChanges, AfterViewInit {
         }))
 
         if( curr['habSelected']['summarySearch']['isPaq'] ){
-          (this.rsvForm.get('data.hab' + i + '.hotel.item') as FormGroup).addControl('isPaq', new FormControl(1, Validators.required ));
+          (this.rsvForm.get('data.hab' + i + '.hotel.item') as UntypedFormGroup).addControl('isPaq', new UntypedFormControl(1, Validators.required ));
         }
 
         
         for( let x = 2; x <= pax; x++ ){
-          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_nombre_' + x, new FormControl('', Validators.pattern(this.namePattern)));
-          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as FormGroup).addControl('htl_apellido_' + x, new FormControl('', Validators.pattern(this.namePattern)));
+          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_nombre_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
+          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_apellido_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
         }
       }
 
@@ -206,10 +206,10 @@ export class OportunidadesCreateDialog implements OnChanges, AfterViewInit {
       let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
       if( this.rsvForm.get('data.hab' + i + '.hotel.monto') ){
-        (this.rsvForm.get('data.hab' + i + '.hotel') as  FormGroup).removeControl('monto')
+        (this.rsvForm.get('data.hab' + i + '.hotel') as  UntypedFormGroup).removeControl('monto')
       }
   
-      (this.rsvForm.get('data.hab' + i + '.hotel') as FormGroup).addControl('monto', this.fb.group({
+      (this.rsvForm.get('data.hab' + i + '.hotel') as UntypedFormGroup).addControl('monto', this.fb.group({
         monto:          [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
         montoOriginal:  [{ value: +(habMonto.total.neta.monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
         montoParcial:   [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
@@ -248,10 +248,10 @@ export class OportunidadesCreateDialog implements OnChanges, AfterViewInit {
         let sg_monto = seguro.publico_ci * (usd ? 1 : seguro.tipoCambio );
 
         if( this.rsvForm.get('data.hab' + i + '.insurance') ){
-          (this.rsvForm.get('data.hab' + i) as  FormGroup).removeControl('insurance')
+          (this.rsvForm.get('data.hab' + i) as  UntypedFormGroup).removeControl('insurance')
         }
 
-        (this.rsvForm.get('data.hab' + i) as FormGroup).addControl('insurance', this.fb.group({
+        (this.rsvForm.get('data.hab' + i) as UntypedFormGroup).addControl('insurance', this.fb.group({
           item:       this.fb.group({
             itemType:     [{ value: 10,  disabled: false }, [ Validators.required ] ],
             isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],

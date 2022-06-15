@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ApiService, InitService } from 'src/app/services/service.index';
@@ -59,7 +59,7 @@ export class ZdUserEditComponent implements OnInit, AfterViewInit {
   
 
   constructor(
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private _api: ApiService,
     private _init: InitService
   ) { 
@@ -316,7 +316,7 @@ export class ZdUserEditComponent implements OnInit, AfterViewInit {
     this.back.emit([true,this.prevStep])
   }
 
-  getErrorMessage( ctrl, form: FormGroup ) {
+  getErrorMessage( ctrl, form: UntypedFormGroup ) {
 
     if ( this.loading[ctrl] ){
       return 'Cargando ' + ctrl + '...'

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService, InitService } from 'src/app/services/service.index';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -41,9 +41,9 @@ export class CallStatisticsComponent implements OnInit, OnDestroy {
 
   timeout: any;
 
-  filterSearch =  new FormGroup({
-    ['inicio']:        new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-    ['fin']:        new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
+  filterSearch =  new UntypedFormGroup({
+    ['inicio']:        new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
+    ['fin']:        new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
   })
 
   constructor( private _api: ApiService, private _init: InitService ) {

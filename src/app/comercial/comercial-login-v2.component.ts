@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -11,7 +11,7 @@ import { ApiService, InitService, LoginService } from '../services/service.index
 })
 export class ComercialLoginDialog {
 
-  log: FormGroup
+  log: UntypedFormGroup
 
   loading = {}
 
@@ -38,12 +38,12 @@ export class ComercialLoginDialog {
 
   createForm(){
 
-    this.log =  new FormGroup({
-      ['username']:   new FormControl({ value: localStorage.getItem('username') || '',  disabled: false }, [ Validators.required ]),
-      ['password']:   new FormControl({ value: '',  disabled: false }, [ Validators.required ]),
-      ['remember']:   new FormControl({ value: (localStorage.getItem('username') || '0') == '1',  disabled: false }, [ Validators.required ]),
-      ['saveLocal']:  new FormControl({ value: localStorage.getItem('username') ? true : false,  disabled: false }, [ Validators.required ]),
-      ['mainapp']:    new FormControl({ value: false,  disabled: false }, [ Validators.required ]),
+    this.log =  new UntypedFormGroup({
+      ['username']:   new UntypedFormControl({ value: localStorage.getItem('username') || '',  disabled: false }, [ Validators.required ]),
+      ['password']:   new UntypedFormControl({ value: '',  disabled: false }, [ Validators.required ]),
+      ['remember']:   new UntypedFormControl({ value: (localStorage.getItem('username') || '0') == '1',  disabled: false }, [ Validators.required ]),
+      ['saveLocal']:  new UntypedFormControl({ value: localStorage.getItem('username') ? true : false,  disabled: false }, [ Validators.required ]),
+      ['mainapp']:    new UntypedFormControl({ value: false,  disabled: false }, [ Validators.required ]),
     })
 
   }

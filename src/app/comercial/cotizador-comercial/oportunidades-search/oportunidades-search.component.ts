@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, ComercialService, HelpersService, InitService } from 'src/app/services/service.index';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -44,13 +44,13 @@ declare var jQuery: any;
 })
 export class OportunidadesSearchComponent implements OnInit {
 
-  opportunitySearch: FormGroup
-  opportunityForm: FormGroup
+  opportunitySearch: UntypedFormGroup
+  opportunityForm: UntypedFormGroup
 
   opCtrlProps = {
     "TipoRegistroNombre":    {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'TipoDeOportunidad',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TipoDeOportunidad',  default: ''  },
           type: 'select',     
           displayText:'Tipo de Registro',             
           listName: 'sf_tipoReg' 
@@ -63,7 +63,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "TipoDeCuenta":          {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'TipoDeCuenta',  default: 'Grupos'  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TipoDeCuenta',  default: 'Grupos'  },
           type: 'text',       
           displayText:'Tipo de Cuenta',               
         },
@@ -75,7 +75,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "SocioComercialId":      {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'SocioComercialId',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'SocioComercialId',  default: ''  },
           type: 'text',       
           displayText:'SocioComercialId',             
         },
@@ -93,39 +93,39 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "Mercado":               {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Mercado', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Mercado', default: ''  },
           type: 'select',     
           displayText:'Mercado',                      
           listName: 'sf_mercado' 
         },
     "HotelEvento":           {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'HotelEvento', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'HotelEvento', default: ''  },
           type: 'select',     
           displayText:'Hotel del evento',             
           listName: 'sf_hoteles' 
         },
     "OrigenProspecto":       {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
-          create:            { shown: false,  bodas: true,  grupos: true,     map: 'OrigenProspecto', default: 'Cotizador'  },
+          create:            { active: true, shown: false,  bodas: true,  grupos: true,    map: 'OrigenProspecto', default: 'Cotizador'  },
           type: 'text',       
           displayText:'Origen del Prospecto',         
         },
     "Observaciones":         {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Observaciones', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Observaciones', default: ''  },
           type: 'text',       
           displayText:'Observaciones',                
         },
     "NoPax":                 {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'NoPax', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NoPax', default: ''  },
           type: 'number',     
           displayText:'No. Pax',                      
         },
     "Nombre":                {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Nombre',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Nombre',  default: ''  },
           type: 'text',       
           displayText:'Nombre',                       
         },
@@ -137,26 +137,26 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "Idioma":                {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Idioma',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Idioma',  default: ''  },
           type: 'select',     
           displayText:'Idioma',                       
           listName: 'sf_idioma' 
         },
     "FechaCierre":           {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
-          create:            { shown: true,   bodas: true,  grupos: true,    map: 'FechaCierre', default: ''  },
+          create:            { active: true, shown: true,   bodas: true,  grupos: true,    map: 'FechaCierre', default: ''  },
           type: 'date',       
           displayText:'Fecha de Cierre',              
         },
     "Etapa":                 {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Etapa', default: 'Inicio'  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Etapa', default: 'Inicio'  },
           type: 'text',       
           displayText:'Etapa',                        
         },
     "Divisa":                {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'Divisa',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Divisa',  default: ''  },
           type: 'select',     
           displayText:'Divisa',                       
           listName: 'sf_currency' 
@@ -169,7 +169,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "contactId":             {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'contactoId', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'contactoId', default: ''  },
           type: 'text',       
           displayText:'contactId',                    
         },
@@ -181,62 +181,62 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "FechaBoda":             {
           get:               { shown: true, bodas: true,  grupos: false,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: false,     map: 'FechaBoda', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: false,     map: 'FechaBoda', default: ''  },
           type: 'date',       
           displayText:'Fecha de Boda',                
         },
     "FechaInicioEstancia":   {
           get:               { shown: true, bodas: false,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: false,  grupos: true,     map: 'FechaInicioEstancia', default: ''  },
+          create:            { active: true, shown: true, bodas: false,  grupos: true,     map: 'FechaInicioEstancia', default: ''  },
           type: 'date',       
           displayText:'Fecha de Inicio',              
         },
     "FechaFinEstancia":      {
           get:               { shown: true, bodas: false,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: false,  grupos: true,     map: 'FechaFinEstancia',  default: ''  },
+          create:            { active: true, shown: true, bodas: false,  grupos: true,     map: 'FechaFinEstancia',  default: ''  },
           type: 'date',       
           displayText:'Fecha de Fin',                 
         },
     "NombreAccount":         {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'NombreAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NombreAccount', default: ''  },
           type: 'text',       
           displayText:'Nombre de Cuenta',             
         },
     "TelefonoAccount":       {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'TelefonoAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TelefonoAccount', default: ''  },
           type: 'text',       
           displayText:'Telefono de Cuenta',           
         },
     "EmailAccount":          {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'EmailAccount',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EmailAccount',  default: ''  },
           type: 'text',       
           displayText:'Email de Cuenta',              
         },
     "NacionalidadAccount":   {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'NacionalidadAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NacionalidadAccount', default: ''  },
           type: 'select',     
           displayText:'Nacionalidad de Cuenta',       
           listName: 'sf_nacionalidad' 
         },
     "CalleAccount":          {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'CalleAccount',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CalleAccount',  default: ''  },
           type: 'text',       
           displayText:'Calle de Cuenta',              
         },
     "CodigoPostalAccount":   {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'CodigoPostalAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CodigoPostalAccount', default: ''  },
           type: 'text',       
           displayText:'Codigo Postal de Cuenta',      
         },
     "CiudadAccount":         {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'CiudadAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CiudadAccount', default: ''  },
           type: 'text',       
           displayText:'Ciudad de Cuenta',             
         },
@@ -282,7 +282,7 @@ export class OportunidadesSearchComponent implements OnInit {
           create:            { shown: true, bodas: true,  grupos: true,     map: 'NacionalidadContact', default: ''  },
           type: 'select',     
           displayText:'Nacionalidad del Contacto',    
-          listName: 'sf_nacionalidad' 
+          listName: 'sf_pais' 
         },
     "cargoContact":          {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
@@ -302,7 +302,7 @@ export class OportunidadesSearchComponent implements OnInit {
           public _com: ComercialService,
           public _h: HelpersService,
           public dialog: MatDialog,
-          private fb: FormBuilder,
+          private fb: UntypedFormBuilder,
   ) { 
     this.opportunityForm =  this.fb.group({
       TipoRegistroNombre    : [{ value: '',     disabled: false}, [ Validators.required ], [{ metadata: true }] ]
@@ -406,6 +406,57 @@ export class OportunidadesSearchComponent implements OnInit {
                 });
   }
 
+  updateOp(){
+
+    Swal.fire({
+      title: 'Guardando cambios...',
+      showCancelButton: false,
+      showConfirmButton: false,
+    })
+    Swal.showLoading()
+
+    this.opportunities = []
+    this.loading['updateOp'] = true;
+
+    let params = this.opportunityForm.value
+    if( params['FechaCierre'] ){
+      params['FechaCierre'] = this.opportunityForm.get('FechaCierre').value.format('YYYY/MM/DD')
+    }
+    if( params['FechaBoda'] ){
+      params['FechaBoda'] = this.opportunityForm.get('FechaBoda').value.format('YYYY/MM/DD')
+    }
+    if( params['FechaInicioEstancia'] ){
+      params['FechaInicioEstancia'] = this.opportunityForm.get('FechaInicioEstancia').value.format('YYYY/MM/DD')
+    }
+    if( params['FechaFinEstancia'] ){
+      params['FechaFinEstancia'] = this.opportunityForm.get('FechaFinEstancia').value.format('YYYY/MM/DD')
+    }
+
+    this._api.restfulPost( params, 'Sf/updateOportunity' )
+                .subscribe( res => {
+
+                  this.loading['updateOp'] = false;
+
+                  console.log( res )
+
+                  if( res['data']['updatedOpportunity'] ){
+                    Swal.fire('Guardado', res['msg'], 'success')
+                    this._init.snackbar('success', res['msg'], 'Cerrar')
+                  }else{
+                    Swal.fire('Error', 'No se actualizó el registro', 'error')
+                  }
+
+
+                }, err => {
+                  this.loading['updateOp'] = false;
+
+                  const error = err.error;
+                  Swal.fire('Error', error.msg, 'error')
+                  console.error(err.statusText, error.msg);
+
+                });
+  }
+
   async askForType(){
 
     return new Promise( async ( val ) => {
@@ -467,9 +518,9 @@ export class OportunidadesSearchComponent implements OnInit {
 
         if( this.opCtrlProps[ctrl][t][o['TipoRegistroNombre'].toLowerCase()] ){
           if( this.opCtrlProps[ctrl]['type'] == 'date' ){
-            this.opportunityForm.addControl( map, new FormControl({ value: o[ctrl] ? moment(o[ctrl], 'YYYY-M-DD') : null,     disabled: false }, val ))
+            this.opportunityForm.addControl( map, new UntypedFormControl({ value: o[ctrl] ? moment(o[ctrl], 'YYYY-M-DD').tz('Americas/Bogota') : null,     disabled: false }, val ))
           }else{
-            this.opportunityForm.addControl( map, new FormControl({ value: o[ctrl] ?? null,     disabled: false }, val ))
+            this.opportunityForm.addControl( map, new UntypedFormControl({ value: o[ctrl] ?? null,     disabled: false }, val ))
           }
         }
 

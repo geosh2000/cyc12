@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 
 import * as moment from 'moment-timezone';
@@ -59,7 +59,7 @@ export class SendQuoteComponent implements OnInit {
     public quoteDialog: MatDialogRef<SendQuoteComponent>,
     @Inject(MAT_DIALOG_DATA) public data,
     breakpointObserver: BreakpointObserver,
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private _api: ApiService
   ) { 
 

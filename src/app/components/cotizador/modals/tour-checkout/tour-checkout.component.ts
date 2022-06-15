@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { ValidateTicketComponent } from '../validate-ticket/validate-ticket.component';
 import { ApiService, InitService } from 'src/app/services/service.index';
@@ -19,10 +19,10 @@ export class TourCheckoutComponent implements OnInit, OnChanges {
 
   @Input() rsvData = {}
 
-  rsvForm: FormGroup = this.fb.group({ isUsd: [''] })
+  rsvForm: UntypedFormGroup = this.fb.group({ isUsd: [''] })
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private _api: ApiService,
     private _init: InitService,
   ) { }

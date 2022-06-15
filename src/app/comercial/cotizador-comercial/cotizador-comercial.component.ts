@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { ApiService, ComercialService, InitService } from 'src/app/services/service.index';
 
@@ -52,7 +52,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   loading = {}
 
-  hotelSearch: FormGroup
+  hotelSearch: UntypedFormGroup
   
   summarySearch = {}
 
@@ -83,7 +83,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
           public _init: InitService, 
           public _com: ComercialService,
           public dialog: MatDialog,
-          private fb: FormBuilder,
+          private fb: UntypedFormBuilder,
           private sanitization:DomSanitizer,
           private router:Router,
           private order: OrderPipe ) { 
@@ -155,7 +155,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   }
 
   dateValidation( a: string, b: string ){
-    return ( formGroup: FormGroup ) => {
+    return ( formGroup: UntypedFormGroup ) => {
 
       const inicio = formGroup.get(a)
       const fin = formGroup.get(b)
@@ -228,17 +228,17 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     for( let i = 1; i <= 10; i++ ){
       if( i > x ){
         if( this.hotelSearch.get('habitaciones.hab' + i) ){
-          (this.hotelSearch.get('habitaciones') as FormGroup).removeControl('hab' + i)
+          (this.hotelSearch.get('habitaciones') as UntypedFormGroup).removeControl('hab' + i)
         }
       }else{
         if( !this.hotelSearch.get('habitaciones.hab' + i) ){
-          (this.hotelSearch.get('habitaciones') as FormGroup).addControl('hab' + i, new FormGroup({
-            ['adultos']:    new FormControl({ value: 2, disabled: false }, [ Validators.required ]),
-            ['menores']:    new FormControl({ value: 0, disabled: false }, [ Validators.required ]),
-            ['edades']:     new FormGroup({
-                              ['menor_1']:    new FormControl({ value: 0, disabled: true }, [ Validators.required ]),
-                              ['menor_2']:    new FormControl({ value: 0, disabled: true }, [ Validators.required ]),
-                              ['menor_3']:    new FormControl({ value: 0, disabled: true }, [ Validators.required ])
+          (this.hotelSearch.get('habitaciones') as UntypedFormGroup).addControl('hab' + i, new UntypedFormGroup({
+            ['adultos']:    new UntypedFormControl({ value: 2, disabled: false }, [ Validators.required ]),
+            ['menores']:    new UntypedFormControl({ value: 0, disabled: false }, [ Validators.required ]),
+            ['edades']:     new UntypedFormGroup({
+                              ['menor_1']:    new UntypedFormControl({ value: 0, disabled: true }, [ Validators.required ]),
+                              ['menor_2']:    new UntypedFormControl({ value: 0, disabled: true }, [ Validators.required ]),
+                              ['menor_3']:    new UntypedFormControl({ value: 0, disabled: true }, [ Validators.required ])
                           })
                     }))
 

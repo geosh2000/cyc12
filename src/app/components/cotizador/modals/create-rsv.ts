@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -57,7 +57,7 @@ import { ZdUserEditComponent } from '../../shared/zd-user-edit/zd-user-edit.comp
       private _api: ApiService,
       private _init: InitService,
       breakpointObserver: BreakpointObserver,
-      private _formBuilder: FormBuilder,
+      private _formBuilder: UntypedFormBuilder,
       @Inject(MAT_DIALOG_DATA) public data) {
 
         if( data.type == 'xfer' ){
