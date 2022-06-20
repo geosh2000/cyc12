@@ -45,3 +45,15 @@
   background-color: #15ab13;
   color: #fff;
 }
+
+.package-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 7px 0;
+  align-items: flex-start;
+  font-size: x-small;
+}
+
+.package-radio-button {
+  margin: 0px;
+}

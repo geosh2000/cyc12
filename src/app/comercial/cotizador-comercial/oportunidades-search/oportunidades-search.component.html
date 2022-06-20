@@ -68,7 +68,7 @@
                             <ng-container *ngSwitchCase="'select'">
                                 <mat-form-field appearance="outline">
                                     <mat-label>{{ opCtrlProps[c]['displayText'] }}</mat-label>
-                                    <mat-select [formControlName]="c" [disabled]="opCtrlProps[c]['readonly']">
+                                    <mat-select [formControlName]="c" [disabled]="opCtrlProps[c]['get']['readonly']">
                                         <mat-option [value]="o['value']" *ngFor="let o of collections[opCtrlProps[c]['listName']]">{{ o['label'] }}</mat-option>
                                     </mat-select>
                                     <mat-error *ngIf="opportunityForm.controls[c].invalid">Errores en este campo</mat-error>

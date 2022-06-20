@@ -207,7 +207,8 @@
                                                     <div class="hotelImageResponsive d-inline d-sm-none" [style.background-image]="c['hotelUrl']"></div>
                                                     <div class="ms-4">
                                                         <p class="m-0"><b><span class="d-none d-sm-inline">{{ c['hotel'] }}</span> {{ c['habName'] }}</b></p>
-                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
+                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ hotelVal( c['habs']['total']['monto']['neta'], c['tipoCambio'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
+                                                        <!-- <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p> -->
                                                     </div>
                                                 </mat-panel-title>
                                             </mat-expansion-panel-header>
@@ -220,7 +221,8 @@
                                                         </div>
                                                         <div mat-line class="col-6">
                                                             {{ c['tarifas'][ summarySearch['inicio'].format('YYYY-MM-DD') ]['n' + selectedLevel ]['name'] }}: 
-                                                            <b>{{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel]['monto'] + ((extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                            <b>{{ ( hotelVal( c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                            <!-- <b>{{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel]['monto'] + ((extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }}  -->
                                                                 <span class="d-none d-sm-inline">
                                                                     {{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}
                                                                 </span>
@@ -249,7 +251,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" [matTooltip]="(totalPN(c,1)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="warn" value="1" [disabled]="!c['habs']['total']['levels']['n1']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n1'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -263,7 +265,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="primary" selected [matTooltip]="(totalPN(c,2)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="2" [disabled]="!c['habs']['total']['levels']['n2']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n2'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -279,7 +281,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="accent" selected [matTooltip]="(totalPN(c,3)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="primary" value="3" [disabled]="!c['habs']['total']['levels']['n3']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n3']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n3'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -293,7 +295,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="warn" selected [matTooltip]="(totalPN(c,4)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="4" [disabled]="!c['habs']['total']['levels']['n4']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n4']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n4'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -400,6 +402,9 @@
                                         <div>
                                             <button mat-raised-button type="button" (click)="rsvPaq(c)" color="paquete">Reservar Paquete ( {{ paqAmmount(c, 'total') | currency:'USD':'symbol-narrow':'.2-2' }} )</button>
                                         </div>
+
+                                        <!-- INFO ORIGINAL -->
+
                                         <div class="m-0 p-0 text-center">
                                             <small class="text-success">
                                                 Valor real de extras: {{ ((extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1) ? (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) : 0) + (( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} 
@@ -412,13 +417,37 @@
                                             <small style="font-size: xx-small;">
                                                 *Incluye seguro 
                                                     <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1">, traslado</span>
-                                                <!-- <br>** Pago inicial <b class="text-danger">no reembolsable</b> -->
                                                 <br>** Pago minimo inicial {{ paqAmmount(c, 'min') | currency:'USD':'symbol-narrow':'.2-2' }}
                                             </small>
                                         </div>
+
+                                        <!-- INFO NUEVOS PAQUETES -->
+                                        <!-- <div class="m-0 p-0">
+                                            <mat-radio-group class="package-radio-group" [(ngModel)]="c['selectedPackage']">
+                                                <mat-radio-button class="package-radio-button" value="x" *ngIf="paqAmmount(c, 'flag', 'x')">
+                                                    <div class="d-flex justify-content-between" [style.width.px]="160">
+                                                        <span>Transfer</span>
+                                                        <span>{{ paqAmmount(c, 'total', 'x') | currency:'USD':'symbol-narrow':'.2-2' }} </span>
+                                                    </div>
+                                                </mat-radio-button>
+                                                <mat-radio-button class="package-radio-button" value="i" *ngIf="paqAmmount(c, 'flag', 'i')">
+                                                    <div class="d-flex justify-content-between" [style.width.px]="160">
+                                                        <span>Seguro</span>
+                                                        <span>{{ paqAmmount(c, 'total', 'i') | currency:'USD':'symbol-narrow':'.2-2' }} </span>
+                                                    </div>
+                                                </mat-radio-button>
+                                                <mat-radio-button class="package-radio-button" value="xi" *ngIf="paqAmmount(c, 'flag', 'xi')">
+                                                    <div class="d-flex justify-content-between" [style.width.px]="160">
+                                                        <span>Transfer + Seguro</span>
+                                                        <span>{{ paqAmmount(c, 'total', 'xi') | currency:'USD':'symbol-narrow':'.2-2' }} </span>
+                                                    </div>
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
+                            <!-- <div><pre>{{ paqAmmount(c, 'all', 'xi') ?? [] | json }}</pre></div> -->
                         </mat-card-footer>
                     </mat-card>
                 </div>

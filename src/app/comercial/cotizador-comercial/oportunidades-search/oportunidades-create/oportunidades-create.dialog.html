@@ -7,14 +7,14 @@
         <div class="container d-flex flex-wrap justify-content-between" [style.width.%]="80">
         
                 <ng-container *ngFor="let c of data.form.controls | keys"> 
-                    <ng-container *ngIf=" data.params[c] && data.params[c]['shown'] ">
+                    <!-- <ng-container *ngIf=" data.params[c] && data.params[c]['create']['shown'] "> -->
                         <div class="m-2" [ngSwitch]="data.params[c]['type']">
                             
                             <!-- INPUT TEXT -->
                             <ng-container *ngSwitchCase="'text'">
                                 <mat-form-field appearance="outline"> 
                                     <mat-label>{{ data.params[c]['displayText'] }}</mat-label>
-                                    <input matInput [formControlName]="c" [readonly]="data.params[c]['readonly']" autocomplete="off">
+                                    <input matInput [formControlName]="c" autocomplete="off">
                                     <mat-error *ngIf="data.form.controls[c].invalid">Errores en este campo</mat-error>
                                 </mat-form-field>
                             </ng-container>
@@ -23,7 +23,7 @@
                             <ng-container *ngSwitchCase="'number'">
                                 <mat-form-field appearance="outline">
                                     <mat-label>{{ data.params[c]['displayText'] }}</mat-label>
-                                    <input matInput type="number" [formControlName]="c" [readonly]="data.params[c]['readonly']" autocomplete="off">
+                                    <input matInput type="number" [formControlName]="c" autocomplete="off">
                                     <mat-error *ngIf="data.form.controls[c].invalid">Errores en este campo</mat-error>
                                 </mat-form-field>
                             </ng-container>
@@ -32,7 +32,7 @@
                             <ng-container *ngSwitchCase="'select'">
                                 <mat-form-field appearance="outline">
                                     <mat-label>{{ data.params[c]['displayText'] }}</mat-label>
-                                    <mat-select [formControlName]="c" [disabled]="data.params[c]['readonly']">
+                                    <mat-select [formControlName]="c">
                                         <mat-option [value]="o['value']" *ngFor="let o of data['collections'][data.params[c]['listName']]">{{ o['label'] }}</mat-option>
                                     </mat-select>
                                     <mat-error *ngIf="data.form.controls[c].invalid">Errores en este campo</mat-error>
@@ -41,7 +41,7 @@
         
                             <!-- INPUT DATE -->
                             <ng-container *ngSwitchCase="'date'">
-                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="160">
+                                <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="200">
                                     <mat-label>{{ data.params[c]['displayText'] }}</mat-label>
                                     <input matInput [formControlName]="c" readonly [matDatepicker]="dtf" autocomplete="off">
                                     <mat-datepicker-toggle matSuffix [for]="dtf"></mat-datepicker-toggle>
@@ -52,13 +52,20 @@
         
         
                         </div>
-                    </ng-container>
+                    <!-- </ng-container> -->
                 </ng-container>
         
-                <div style="margin-top: 17px">
-                    <!-- <button mat-raised-button class="ms-3" color="paquete" (click)="searchOp()" [disabled]="data.form.invalid || loading['searchop']" *ngIf="data.form.dirty">Guardar Cambios</button> -->
+                
+            </div>
+            <div class="d-flex flex-wrap justify-content-end">
+                <div class="mx-2" >
+                    <button mat-raised-button class="ms-3" (click)="onNoClick()">Cancelar</button>
+                </div>
+                <div class="mx-2" >
+                    <button mat-raised-button class="ms-3" color="paquete" (click)="save()" [disabled]="data.form.invalid">Guardar Cambios</button>
                 </div>
         
+
             </div>       
             
         </mat-card-content>

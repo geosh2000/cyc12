@@ -90,6 +90,7 @@ export class CotizaHotelComponent implements OnInit {
     this.getCodes()
 
     this.summarySearch = this.hotelSearch.value
+    // this.testCot()
     
   }
 
@@ -359,6 +360,67 @@ export class CotizaHotelComponent implements OnInit {
 
   }
 
+  testCot(){
+    let data = this.testData();
+    this.extraInfo['seguros'] = data['ins']
+
+    this.summarySearch = data['f']
+    this.summarySearch['cobertura'] = 'normal'
+
+    this.extraInfo['grupo'] = data['hot']['extra']['grupo']
+    this.extraInfo['grupo']['insuranceIncluded'] = data['hot']['extra']['grupo']['insuranceAtFirst'] == '1' && this.summarySearch['nacionalidad'] == 'internacional' && this.extraInfo['grupo']['hasPaq'] == 0
+
+    this.selectedLevel = parseInt(data['hot']['extra']['grupo']['defaultLevel'])
+    let result = data['hot']['data']
+    let habDet = this.buildOcc(data['f'])
+
+    for( let i of result ){
+      i['tarifas'] = JSON.parse(i['jsonData']) 
+      i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, this.hotelSearch, true)
+      i['hotelUrl'] = ''
+      // i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
+    }
+
+
+    // console.log(result)
+    // console.log(this.extraInfo)
+    this.cotizacion = result
+
+  }
+
+  getGenericXfer( f = this.hotelSearch ){
+    this.loading['cotizar'] = true
+
+    let params = {
+      inicio: f.get('inicio').value.format('YYYY-MM-DD'),
+      fin: f.get('fin').value.format('YYYY-MM-DD'),
+      habitaciones: f.get('habitaciones').value
+    }
+
+    this._api.restfulPut( params, 'Cmaya/genericXferQuote' )
+                .subscribe( res => {
+
+                  this.extraInfo['xfer'] = res['data']
+                  this.getHotelsQuote( f )
+
+                }, err => {
+                  this.loading['cotizar'] = false;
+
+                  this.filterExpanded = true
+                  this.cotizacion = []
+                  this.extraInfo = {
+                    'grupo': null,
+                    'seguros': null,
+                    'xfer': null
+                  }
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                });
+  }
+
   getInsurancesQuote( f = this.hotelSearch ){
 
     this.loading['cotizar'] = true
@@ -373,7 +435,7 @@ export class CotizaHotelComponent implements OnInit {
                 .subscribe( res => {
 
                   this.extraInfo['seguros'] = res['data']
-                  this.getHotelsQuote( f )
+                  this.getGenericXfer( f )
 
                 }, err => {
                   this.loading['cotizar'] = false;
@@ -382,6 +444,7 @@ export class CotizaHotelComponent implements OnInit {
                   this.cotizacion = []
                   this.extraInfo = {
                     'grupo': null,
+                    'xfer': null,
                     'seguros': null
                   }
 
@@ -393,7 +456,7 @@ export class CotizaHotelComponent implements OnInit {
 
   }
 
-  habPriceBuild( b, i, f ){
+  habPriceBuild( b, i, f, test = false ){
 
     let r = i['tarifas']
     let htl = i['hotel']
@@ -403,15 +466,16 @@ export class CotizaHotelComponent implements OnInit {
       for( let f in r ){
         
         let neta = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] )
+        let neta_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] )
         
         
         b['porHabitacion'][h]['fechas'][f] = {
           'neta': neta,
-          'n1': {'monto': (neta * (1-r[f]['n1']['descuento'])), 'descuento': r[f]['n1']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n1']['descuento'])) / neta) },
-          'n2': {'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n3': {'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n4': {'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n5': {'monto': (neta * (1-r[f]['n5']['descuento'])), 'descuento': r[f]['n5']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n5']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+          'n1': {'monto_m': (neta_m * (1-r[f]['n1']['descuento'])), 'monto': (neta * (1-r[f]['n1']['descuento'])), 'descuento': r[f]['n1']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n1']['descuento'])) / neta) },
+          'n2': {'monto_m': (neta_m * (1-r[f]['n2']['descuento'])), 'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+          'n3': {'monto_m': (neta_m * (1-r[f]['n3']['descuento'])), 'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+          'n4': {'monto_m': (neta_m * (1-r[f]['n4']['descuento'])), 'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+          'n5': {'monto_m': (neta_m * (1-r[f]['n5']['descuento'])), 'monto': (neta * (1-r[f]['n5']['descuento'])), 'descuento': r[f]['n5']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n5']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
           isClosed: r[f]['isClosed'] == 1
         }
         
@@ -442,6 +506,26 @@ export class CotizaHotelComponent implements OnInit {
         b['total']['monto']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
         b['total']['monto']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
         b['total']['monto']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
+        
+        // FIXED MXN START
+        // HAB TOTAL
+        b['porHabitacion'][h]['total']['neta']['monto_m'] += neta_m
+        b['porHabitacion'][h]['total']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
+        b['porHabitacion'][h]['total']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
+        b['porHabitacion'][h]['total']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
+        b['porHabitacion'][h]['total']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
+        b['porHabitacion'][h]['total']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
+        
+                                        
+        // TOTALES GENERALES
+        b['total']['monto']['neta']['monto_m'] += neta_m
+        b['total']['monto']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
+        b['total']['monto']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
+        b['total']['monto']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
+        b['total']['monto']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
+        b['total']['monto']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
+        
+        // FIXED MXN END
 
         b['total']['levels']['n1']['active'] = r[f]['n1']['active'] == 0 ? false : b['total']['levels']['n1']['active']
         b['total']['levels']['n2']['active'] = r[f]['n2']['active'] == 0 ? false : b['total']['levels']['n2']['active']
@@ -463,8 +547,7 @@ export class CotizaHotelComponent implements OnInit {
         b['hasTransfer'] = false
       }
 
-      
-      let errors = this.lookForErrors( i, b['porHabitacion'][h], f )
+      let errors = this.lookForErrors( i, b['porHabitacion'][h], f, test )
 
       b['porHabitacion'][h]['errors'] = errors
 
@@ -480,12 +563,16 @@ export class CotizaHotelComponent implements OnInit {
     return b
   }
 
-  lookForErrors( i, b, f ){
+  lookForErrors( i, b, f, test ){
 
     let errors = {
       flag: false,
       skippable: true,
       errors: {}
+    }
+
+    if( test ){
+      return errors
     }
 
     // Tarifas no cargadas
@@ -565,8 +652,9 @@ export class CotizaHotelComponent implements OnInit {
   }
 
 
-  getPrice( a, m, r ){
+  getPrice( a, m, r, mxn = false ){
 
+    let sfx = mxn ? '_m' : ''
     let m3 = 0 
 
     if( a == 1 && m >= 2 ){
@@ -575,10 +663,10 @@ export class CotizaHotelComponent implements OnInit {
     }
 
     if( m == 3 ){
-      m3 = r['paxMenor']
+      m3 = r['paxMenor' + sfx]
     }
 
-    return r['pax' + a] + m3
+    return r['pax' + a + sfx] + m3
   }
 
   buildOcc( f ){
@@ -588,12 +676,12 @@ export class CotizaHotelComponent implements OnInit {
       'porHabitacion' : {},
       'total': {
         monto: {
-          neta: {'monto': 0, 'relativeDisc': 0},
-          n1: {'monto': 0, 'relativeDisc': 0},
-          n2: {'monto': 0, 'relativeDisc': 0},
-          n3: {'monto': 0, 'relativeDisc': 0},
-          n4: {'monto': 0, 'relativeDisc': 0},
-          n5: {'monto': 0, 'relativeDisc': 0}
+          neta: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+          n1: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+          n2: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+          n3: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+          n4: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+          n5: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0}
         },
         levels: {
           n1: {'active': true, 'enabled': true},
@@ -616,12 +704,12 @@ export class CotizaHotelComponent implements OnInit {
                                     occ: f['habitaciones'][h],
                                     'fechas': {},
                                     'total': {
-                                      neta: {'monto': 0, 'relativeDisc': 0},
-                                      n1: {'monto': 0, 'relativeDisc': 0},
-                                      n2: {'monto': 0, 'relativeDisc': 0},
-                                      n3: {'monto': 0, 'relativeDisc': 0},
-                                      n4: {'monto': 0, 'relativeDisc': 0},
-                                      n5: {'monto': 0, 'relativeDisc': 0}
+                                      neta: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+                                      n1: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+                                      n2: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+                                      n3: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+                                      n4: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0},
+                                      n5: {'monto_m': 0, 'monto': 0, 'relativeDisc': 0}
                                     }
                                   }
 
@@ -735,7 +823,26 @@ export class CotizaHotelComponent implements OnInit {
     Swal.showLoading()
   }
 
-  paqAmmount( c, v ){
+  insVal(){
+    return (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (( this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][ this.summarySearch['nacionalidad']][ this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][ this.summarySearch['cobertura']]['publico_ci'])
+  }
+
+  hotelVal( m, t ){
+
+    // c['habs']['total']['monto'][l]['monto'] 
+
+    if( this.hotelSearch.get('isUSD').value ){
+      return m['monto']
+    }else{
+      if( this.extraInfo['grupo']['fixedMxn'] == '1' ){
+        return m['monto_m']
+      }else{
+        return t * m['monto']
+      }
+    }
+  }
+
+  paqAmmount( c, v, t = 'i' ){
 
     let paqLevels = JSON.parse( this.extraInfo['grupo']['paqLevel'] )
 
@@ -747,36 +854,104 @@ export class CotizaHotelComponent implements OnInit {
     let hotel_base = 0
     let hotel_ref = 0
     let seguro = 0
+    let xfer = 0
     let nights = 0
 
     let i = 1
 
+    let compare = []
+
+
     for( let pl of paqLevels ){
+
+
+
       hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + pl]['monto']
       hotel_base = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto']
       hotel_ref = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
       seguro = (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
       nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
 
-      if( ((hotel + seguro) > hotel_ref  &&  (hotel + seguro) <= hotel_base) || i == limit ){
+      if( xfer[0] == 0 && (t == 'x' || t == 'xi') ){
+        return 'N/A'
+      }
 
-        switch(v){
-          case 'total':
-              // console.log(c['hotel'], c['habName'], pl, hotel_ref, hotel_base, hotel + seguro, (hotel + seguro) - hotel_ref)
-              return hotel + seguro
-          case 'min':
-              return seguro + (hotel / nights)
-          case 'dif':
-              return (hotel + seguro) - hotel_ref
-          case 'level':
-              return pl
+      let x = 0
+      let xfInfo = {}
+      let z = 0
+
+      switch(t){
+        case 'i':
+            x = seguro
+            break
+        case 'x':
+        case 'xi':
+          if( this.extraInfo['xfer'].length == 0 ){
+            return 'N/a'
+          }
+          for( let xf of this.extraInfo['xfer'] ){
+            x = xf[this.hotelSearch.get('isUSD').value ? 'usd_rate' : 'mxn_rate']  + (t == 'xi' ? seguro : 0)
+            let dif = (hotel + x) - hotel_ref
+            if( dif > 0 ){
+              xfInfo = { 'name': xf['name'], 'rate':xf[this.hotelSearch.get('isUSD').value ? 'usd_rate' : 'mxn_rate'] }
+              break
+            }
+          }
+          break
+        default:
+          return 'N/A'
+      }
+
+
+      
+
+      if( ((hotel + x) > hotel_ref  &&  (hotel + x) <= hotel_base) ){
+      // if( ((hotel + x) > hotel_ref  &&  (hotel + x) <= hotel_base) || i == limit ){
+        // if( i == limit ){
+        //   return false
+        // }
+
+        // switch(v){
+        //   case 'flag':
+        //     return true
+        //   case 'total':
+        //       // console.log(c['hotel'], c['habName'], pl, hotel_ref, hotel_base, hotel + seguro, (hotel + seguro) - hotel_ref)
+        //       return hotel + x
+        //   case 'min':
+        //       return x + (hotel / nights)
+        //   case 'dif':
+        //       return (hotel + x) - hotel_ref
+        //   case 'level':
+        //       return pl
+        // }
+
+        let arr = {
+          flag:   true,
+          total:  hotel + x,  
+          min:    x + (hotel / nights),
+          dif:    (hotel + x) - hotel_ref,
+          level:  pl,  
         }
+
+        if( t == 'x' || t == 'xi'){
+          arr['xfer'] = xfInfo
+        }
+
+        compare.push( arr )
+
       }
 
       i++
 
     }
 
+    compare = this.order.transform(compare, 'total')
+
+    if( v == 'all' ){
+      return compare
+    }
+
+    return compare[0] ? compare[0][v] : false
 
   }
   
@@ -805,6 +980,699 @@ export class CotizaHotelComponent implements OnInit {
     return flag
   }
   
+
+  testData(){
+    return { 'f': {
+      "inicio": "2022-06-16T05:00:00.000Z",
+      "fin": "2022-06-18T05:00:00.000Z",
+      "habs": 1,
+      "grupo": {
+          "grupo": "3Day presummer_2022 (b)",
+          "gpoTitle": "3Day presummer_2022 (b)",
+          "hasPaq": "1",
+          "hasInsurance": "1",
+          "mainCampaign": "1"
+      },
+      "nacionalidad": "nacional",
+      "noRestrict": false,
+      "isUSD": false,
+      "habitaciones": {
+          "hab1": {
+              "adultos": 2,
+              "menores": 0
+          }
+      }
+  }, 'ins': {
+      "0": null,
+      "ERR": false,
+      "msg": "Seguros Obtenidos",
+      "data": {
+          "hab1": {
+              "nacional": {
+                  "normal": {
+                      "prod": "R7",
+                      "nombre": "Oasis H 2 PAX - NAC",
+                      "cod": "98801",
+                      "sufijo": "10A02",
+                      "neto_si": 21,
+                      "neto_ci": 24.36,
+                      "publico_ci": 34.8,
+                      "normal_ci": 120,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  }
+              },
+              "internacional": {
+                  "normal": {
+                      "prod": "6D",
+                      "nombre": "Oasis H 2 PAX - Int/Recep AC 100",
+                      "cod": "98831",
+                      "sufijo": "20A02",
+                      "neto_si": 28.2,
+                      "neto_ci": 32.71,
+                      "publico_ci": 48.72,
+                      "normal_ci": 216,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  },
+                  "extendida": {
+                      "prod": "6B",
+                      "nombre": "Oasis H 2 PAX - Int/Recep AC 250",
+                      "cod": "98861",
+                      "sufijo": "30A02",
+                      "neto_si": 33,
+                      "neto_ci": 38.28,
+                      "publico_ci": 55.68,
+                      "normal_ci": 300,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  }
+              }
+          },
+          "total": {
+              "nacional": {
+                  "normal": {
+                      "prod": "R7",
+                      "nombre": "Oasis H 2 PAX - NAC",
+                      "cod": "98801",
+                      "sufijo": "10A02",
+                      "neto_si": 21,
+                      "neto_ci": 24.36,
+                      "publico_ci": 34.8,
+                      "normal_ci": 120,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  }
+              },
+              "internacional": {
+                  "normal": {
+                      "prod": "6D",
+                      "nombre": "Oasis H 2 PAX - Int/Recep AC 100",
+                      "cod": "98831",
+                      "sufijo": "20A02",
+                      "neto_si": 28.2,
+                      "neto_ci": 32.71,
+                      "publico_ci": 48.72,
+                      "normal_ci": 216,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  },
+                  "extendida": {
+                      "prod": "6B",
+                      "nombre": "Oasis H 2 PAX - Int/Recep AC 250",
+                      "cod": "98861",
+                      "sufijo": "30A02",
+                      "neto_si": 33,
+                      "neto_ci": 38.28,
+                      "publico_ci": 55.68,
+                      "normal_ci": 300,
+                      "dias": 3,
+                      "tipoCambio": 21,
+                      "pax": 2
+                  }
+              }
+          }
+      }
+  },
+    
+    'hot': {
+        "ERR": false,
+        "msg": "Tarifaro Obtenido",
+        "data": [
+            {
+                "hotel": "GOC",
+                "hotelName": "Grand Oasis Cancún",
+                "habCode": "GSDR",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Standard",
+                "maxOcc": "5",
+                "maxAdults": "4",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_goc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOC",
+                "hotelName": "Grand Oasis Cancún",
+                "habCode": "GSUN",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":470,\"pax2\":680,\"pax3\":978,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":470,\"pax2\":680,\"pax3\":978,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Sunset",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_goc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOC",
+                "hotelName": "Grand Oasis Cancún",
+                "habCode": "GGRT",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":480,\"pax2\":700,\"pax3\":1008,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":480,\"pax2\":700,\"pax3\":1008,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Grand Terrace",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_goc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOC",
+                "hotelName": "Grand Oasis Cancún",
+                "habCode": "GDOV",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":1062,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.59,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.6105,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.631,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6515,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6200000047683716,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":1062,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Ocean view",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_goc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "PSUN",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":494,\"pax2\":728,\"pax3\":1050,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":494,\"pax2\":728,\"pax3\":1050,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Standard",
+                "maxOcc": "4",
+                "maxAdults": "3",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "GSUN",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":512,\"pax2\":764,\"pax3\":1104,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":512,\"pax2\":764,\"pax3\":1104,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Sunset",
+                "maxOcc": "4",
+                "maxAdults": "3",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "GPOV",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":553,\"pax2\":846,\"pax3\":1227,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":553,\"pax2\":846,\"pax3\":1227,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Ocean View",
+                "maxOcc": "4",
+                "maxAdults": "3",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "SKST",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":553,\"pax2\":846,\"pax3\":1227,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":553,\"pax2\":846,\"pax3\":1227,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Sian Kaan Standard",
+                "maxOcc": "3",
+                "maxAdults": "3",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "GPOF",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":580,\"pax2\":900,\"pax3\":1290,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":580,\"pax2\":900,\"pax3\":1290,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Ocean Front",
+                "maxOcc": "4",
+                "maxAdults": "3",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "GSTE",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":595,\"pax2\":930,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":595,\"pax2\":930,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "SKJS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":630,\"pax2\":1000,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":630,\"pax2\":1000,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Sian Kaan Junior Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "PYR",
+                "hotelName": "The Pyramid at Grand Oasis",
+                "habCode": "SKMS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":680,\"pax2\":1100,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.56,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.582,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.604,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.63,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5907999873161316,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":680,\"pax2\":1100,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Sian Kaan Master Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_pyr.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OPB",
+                "hotelName": "Oasis Palm",
+                "habCode": "OPSR",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":401,\"pax2\":542,\"pax3\":771,\"pax4\":972,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":401,\"pax2\":542,\"pax3\":771,\"pax4\":972,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Estandar",
+                "maxOcc": "5",
+                "maxAdults": "4",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_opb.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OPB",
+                "hotelName": "Oasis Palm",
+                "habCode": "DLXS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":430,\"pax2\":600,\"pax3\":858,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":430,\"pax2\":600,\"pax3\":858,\"pax4\":1088,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Superior",
+                "maxOcc": "5",
+                "maxAdults": "4",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_opb.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OPB",
+                "hotelName": "Oasis Palm",
+                "habCode": "DFS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":613,\"pax2\":966,\"pax3\":1407,\"pax4\":1820,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5725,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.6,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.62,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5814999938011169,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":613,\"pax2\":966,\"pax3\":1407,\"pax4\":1820,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Family Suite",
+                "maxOcc": "5",
+                "maxAdults": "4",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_opb.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "GSDR",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":442,\"pax2\":624,\"pax3\":894,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Grand ",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "GDLV",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":470,\"pax2\":680,\"pax3\":978,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":470,\"pax2\":680,\"pax3\":978,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Lagoon View",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "GDOV",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":1062,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":1062,\"pax4\":0,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Grand Ocean view",
+                "maxOcc": "5",
+                "maxAdults": "3",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "SKST",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":498,\"pax2\":736,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Sian Kaan Standard",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "GPJS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":570,\"pax2\":880,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":570,\"pax2\":880,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Sian Kaan Junior Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "SMSU",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":620,\"pax2\":980,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":620,\"pax2\":980,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Sian Kaan Master Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "GOP",
+                "hotelName": "Grand Oasis Palm",
+                "habCode": "GDFS",
+                "tarifa_pp": "1",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":687,\"pax2\":1114,\"pax3\":1629,\"pax4\":2268,\"paxMenor\":84},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.57,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5915,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.613,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6345,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.6000999808311462,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":687,\"pax2\":1114,\"pax3\":1629,\"pax4\":2268,\"paxMenor\":84},\"isClosed\":0}}",
+                "habName": "Grand Family Suite",
+                "maxOcc": "5",
+                "maxAdults": "4",
+                "maxChild": "3",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_gop.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "SMART",
+                "hotelName": "Smart Cancún by Oasis",
+                "habCode": "STEP",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.47,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.523,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5099999904632568,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":160,\"pax2\":160,\"pax3\":180,\"pax4\":210,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.47,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.523,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5099999904632568,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":160,\"pax2\":160,\"pax3\":180,\"pax4\":210,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Smart",
+                "maxOcc": "4",
+                "maxAdults": "4",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_smart.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "SMART",
+                "hotelName": "Smart Cancún by Oasis",
+                "habCode": "SMSP",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.47,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.523,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5099999904632568,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":180,\"pax2\":180,\"pax3\":220,\"pax4\":250,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.47,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.523,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.55,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5099999904632568,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":180,\"pax2\":180,\"pax3\":220,\"pax4\":250,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Smart Plus",
+                "maxOcc": "4",
+                "maxAdults": "4",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_smart.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OH",
+                "hotelName": "Oh! The Urban Oasis",
+                "habCode": "GSTD",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.53,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5535,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.58,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6005,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5629000067710876,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":200,\"pax2\":200,\"pax3\":240,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.53,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5535,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.58,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6005,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5629000067710876,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":200,\"pax2\":200,\"pax3\":240,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Estandar",
+                "maxOcc": "3",
+                "maxAdults": "3",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_oh.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OH",
+                "hotelName": "Oh! The Urban Oasis",
+                "habCode": "GSTE",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.53,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5535,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.58,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6005,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5629000067710876,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":260,\"pax2\":260,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.53,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.5535,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.58,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.6005,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.5629000067710876,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":260,\"pax2\":260,\"pax3\":0,\"pax4\":0,\"paxMenor\":0},\"isClosed\":0}}",
+                "habName": "Suite",
+                "maxOcc": "2",
+                "maxAdults": "2",
+                "maxChild": "0",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_oh.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OHOC",
+                "hotelName": "Oh! Cancun on the Beach",
+                "habCode": "OHGDN",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":240,\"pax2\":240,\"pax3\":280,\"pax4\":320,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":240,\"pax2\":240,\"pax3\":280,\"pax4\":320,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Garden",
+                "maxOcc": "4",
+                "maxAdults": "4",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_ohoc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OHOC",
+                "hotelName": "Oh! Cancun on the Beach",
+                "habCode": "OHGDS",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":262,\"pax2\":262,\"pax3\":302,\"pax4\":342,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":262,\"pax2\":262,\"pax3\":302,\"pax4\":342,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Garden Superior",
+                "maxOcc": "4",
+                "maxAdults": "4",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_ohoc.jpg",
+                "minNights": "1"
+            },
+            {
+                "hotel": "OHOC",
+                "hotelName": "Oh! Cancun on the Beach",
+                "habCode": "OHOF",
+                "tarifa_pp": "0",
+                "jsonData": "{\"2022-06-16\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":280,\"pax2\":280,\"pax3\":321,\"pax4\":360,\"paxMenor\":0},\"isClosed\":0},\"2022-06-17\":{\"n1\":{\"name\":\"Publica\",\"code\":\"1 (JM)\",\"descuento\":0.29,\"active\":1,\"allEnabled\":1},\"n2\":{\"name\":\"Silver\",\"code\":\"2 (Jm)\",\"descuento\":0.33,\"active\":1,\"allEnabled\":1},\"n3\":{\"name\":\"Gold\",\"code\":\"3 (jM)\",\"descuento\":0.361,\"active\":1,\"allEnabled\":1},\"n4\":{\"name\":\"Platinum\",\"code\":\"4 (jm)\",\"descuento\":0.4,\"active\":1,\"allEnabled\":0},\"n5\":{\"name\":\"Paquete\",\"code\":\"5 (JN)\",\"descuento\":0.3400000035762787,\"active\":1,\"allEnabled\":0},\"precio\":{\"pax1\":280,\"pax2\":280,\"pax3\":321,\"pax4\":360,\"paxMenor\":0},\"isClosed\":1}}",
+                "habName": "Ocean Front",
+                "maxOcc": "4",
+                "maxAdults": "4",
+                "maxChild": "2",
+                "isNR": "0",
+                "isCC": "1",
+                "tipoCamas": "3",
+                "tipoCambio": "19.5",
+                "hotelUrl": "https://cyc-oasishoteles.com/assets/img/logos/logo_ohoc.jpg",
+                "minNights": "1"
+            }
+        ],
+        "extra": {
+            "grupo": {
+                "grupo": "3Day presummer_2022 (b)",
+                "grupoCielo": "3Day presummer_2022 (b)",
+                "discountCode": "3Day presummer_2022 (b)",
+                "xldPolicy": "24h-ta8",
+                "cieloUSD": "3DPSB2",
+                "cieloMXN": "3DPSB2",
+                "mayorista": "DIR",
+                "mxAgencia": "CALLMXPH",
+                "mxAgenciaNR": "CALLMXNR",
+                "usAgencia": "CALLUSPH",
+                "usAgenciaNR": "CALLUSNR",
+                "mxAgenciaEp": "CALMPHDI",
+                "mxAgenciaEpNR": "CALMNRDI",
+                "usAgenciaEp": "CALPHDI",
+                "usAgenciaEpNR": "CALNRDI",
+                "bwInicio": "2022-06-08",
+                "bwFin": "2022-06-30",
+                "p1": "C,3,6,9,12",
+                "p2": "C,3,6,9,12",
+                "p3": "C,3,6,9,12",
+                "p4": "C,3,6,9,12",
+                "p5": "C,3,6,9,12",
+                "activo": "1",
+                "code1": "1 (JM)",
+                "code2": "2 (Jm)",
+                "code3": "3 (jM)",
+                "code4": "4 (jm)",
+                "code5": "5 (JN)",
+                "code6": null,
+                "code7": null,
+                "code8": null,
+                "code9": null,
+                "Last_Update": "2022-06-15 16:47:56",
+                "fixedTC": null,
+                "notComision": "0",
+                "ccOnly": "0",
+                "comAg": "0.025",
+                "comGe": "0.005",
+                "tipoComision": "1",
+                "l1_name": "Publica",
+                "l2_name": "Silver",
+                "l3_name": "Gold",
+                "l4_name": "Platinum",
+                "l5_name": "Paquete",
+                "l1_active": "1",
+                "l2_active": "1",
+                "l3_active": "1",
+                "l4_active": "1",
+                "l5_active": "1",
+                "l1_allEnabled": "1",
+                "l2_allEnabled": "1",
+                "l3_allEnabled": "1",
+                "l4_allEnabled": "0",
+                "l5_allEnabled": "0",
+                "defaultLevel": "2",
+                "mainCampaign": "1",
+                "isLocal": "0",
+                "isOR": "1",
+                "hasPaq": "1",
+                "paqLevel": "[5,3]",
+                "hasInsurance": "1",
+                "insuranceAtFirst": "1",
+                "insurancePacked": "1",
+                "freeTransfer": "0",
+                "freeTransferMinUsdPP": "240",
+                "usdActive": "1",
+                "mxnActive": "1",
+                "pagoEnHotel": "1",
+                "centroSinImpuestos": "0"
+            }
+        }
+    }}
+  }
 
 
 }

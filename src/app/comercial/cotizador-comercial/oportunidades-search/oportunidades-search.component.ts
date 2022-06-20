@@ -50,7 +50,7 @@ export class OportunidadesSearchComponent implements OnInit {
   opCtrlProps = {
     "TipoRegistroNombre":    {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TipoDeOportunidad',  default: ''  },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'TipoDeOportunidad',  default: ''  },
           type: 'select',     
           displayText:'Tipo de Registro',             
           listName: 'sf_tipoReg' 
@@ -63,7 +63,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "TipoDeCuenta":          {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TipoDeCuenta',  default: 'Grupos'  },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'TipoDeCuenta',  default: 'Grupos'  },
           type: 'text',       
           displayText:'Tipo de Cuenta',               
         },
@@ -75,7 +75,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "SocioComercialId":      {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
-          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'SocioComercialId',  default: ''  },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'SocioComercialId',  default: ''  },
           type: 'text',       
           displayText:'SocioComercialId',             
         },
@@ -150,7 +150,7 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "Etapa":                 {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Etapa', default: 'Inicio'  },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'Etapa', default: 'Inicio'  },
           type: 'text',       
           displayText:'Etapa',                        
         },
@@ -169,9 +169,10 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "contactId":             {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'contactoId', default: ''  },
+          create:            { active: false, shown: false, bodas: true,  grupos: true,     map: 'contactoId', default: ''  },
           type: 'text',       
-          displayText:'contactId',                    
+          email: true,
+          displayText:'Correo Contacto (id)',                    
         },
     "accountId":             {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
@@ -213,6 +214,7 @@ export class OportunidadesSearchComponent implements OnInit {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
           create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EmailAccount',  default: ''  },
           type: 'text',       
+          email: true,
           displayText:'Email de Cuenta',              
         },
     "NacionalidadAccount":   {
@@ -242,53 +244,54 @@ export class OportunidadesSearchComponent implements OnInit {
         },
     "EstadoAccount":         {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'EstadoAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EstadoAccount', default: ''  },
           type: 'text',       
           displayText:'Estado de Cuenta',             
         },
     "paisAccount":           {
           get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'paisAccount', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'paisAccount', default: ''  },
           type: 'select',     
           displayText:'Pais de Cuenta',               
           listName: 'sf_pais' 
         },
     "NombreContact":         {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'NombreContact', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NombreContact', default: ''  },
           type: 'text',       
           displayText:'Nombre del Contacto',          
         },
     "ApellidosContact":      {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'ApellidosContact',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'ApellidosContact',  default: ''  },
           type: 'text',       
           displayText:'Apellidos del Contacto',       
         },
     "TelefonoContact":       {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'TelefonoContact', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TelefonoContact', default: ''  },
           type: 'text',       
           displayText:'Telefono del Contacto',        
         },
     "EmailContact":          {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'EmailContact',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EmailContact',  default: ''  },
           type: 'text',       
+          email: true,
           displayText:'Email del Contacto',           
         },
     "NacionalidadContact":   {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'NacionalidadContact', default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NacionalidadContact', default: ''  },
           type: 'select',     
           displayText:'Nacionalidad del Contacto',    
           listName: 'sf_pais' 
         },
     "cargoContact":          {
           get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
-          create:            { shown: true, bodas: true,  grupos: true,     map: 'cargoContact',  default: ''  },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'cargoContact',  default: ''  },
           type: 'text',       
-          displayText:'cargo del Contacto',           
+          displayText:'Cargo del Contacto',           
         },
   }
 
@@ -406,10 +409,10 @@ export class OportunidadesSearchComponent implements OnInit {
                 });
   }
 
-  updateOp(){
+  updateOp( create = false, form = this.opportunityForm ){
 
     Swal.fire({
-      title: 'Guardando cambios...',
+      title: `Guardando ${ create ? 'oportunidad' : 'cambios'} ...`,
       showCancelButton: false,
       showConfirmButton: false,
     })
@@ -418,32 +421,43 @@ export class OportunidadesSearchComponent implements OnInit {
     this.opportunities = []
     this.loading['updateOp'] = true;
 
-    let params = this.opportunityForm.value
-    if( params['FechaCierre'] ){
-      params['FechaCierre'] = this.opportunityForm.get('FechaCierre').value.format('YYYY/MM/DD')
-    }
-    if( params['FechaBoda'] ){
-      params['FechaBoda'] = this.opportunityForm.get('FechaBoda').value.format('YYYY/MM/DD')
-    }
-    if( params['FechaInicioEstancia'] ){
-      params['FechaInicioEstancia'] = this.opportunityForm.get('FechaInicioEstancia').value.format('YYYY/MM/DD')
-    }
-    if( params['FechaFinEstancia'] ){
-      params['FechaFinEstancia'] = this.opportunityForm.get('FechaFinEstancia').value.format('YYYY/MM/DD')
+    let params = {}
+
+    for( let f in this.opCtrlProps ){
+      let c = this.opCtrlProps[f]
+
+      if( c['create']['active'] && c['create'][ this.opportunityForm.get('TipoRegistroNombre').value.toLowerCase() ]){
+        params[c['create']['map']] = this.opportunityForm.get(f).value
+
+        if( c['type'] == 'date' ){
+          if( this.opportunityForm.get(f).value != null ){
+            params[c['create']['map']] = params[c['create']['map']].format('YYYY/MM/DD')
+          }else{
+            params[c['create']['map']] = null
+          }
+        }
+      }
     }
 
-    this._api.restfulPost( params, 'Sf/updateOportunity' )
+    if( !create ){
+      params['idOportunidad'] = this.opportunityForm.get('idOportunidad').value
+    }
+
+    this._api.restfulPost( { create, params }, 'Sf/updateOportunity' )
                 .subscribe( res => {
 
                   this.loading['updateOp'] = false;
 
                   console.log( res )
 
-                  if( res['data']['updatedOpportunity'] ){
+                  if( res['data'][ create ? 'opportunityId' : 'updatedOpportunity'] ){
                     Swal.fire('Guardado', res['msg'], 'success')
                     this._init.snackbar('success', res['msg'], 'Cerrar')
                   }else{
                     Swal.fire('Error', 'No se actualizó el registro', 'error')
+                    if( create ){
+                      this.openCreateDialog( form )
+                    }
                   }
 
 
@@ -452,10 +466,14 @@ export class OportunidadesSearchComponent implements OnInit {
 
                   const error = err.error;
                   Swal.fire('Error', error.msg, 'error')
+                  if( create ){
+                    this.openCreateDialog( form )
+                  }
                   console.error(err.statusText, error.msg);
 
                 });
   }
+
 
   async askForType(){
 
@@ -512,19 +530,27 @@ export class OportunidadesSearchComponent implements OnInit {
 
       for( let ctrl in this.opCtrlProps ){
 
-        let map = t == 'get' ? ctrl : this.opCtrlProps[ctrl]['create']['map']
+        let c = this.opCtrlProps[ctrl]
 
-        let val = this.opCtrlProps[ctrl][t]['required'] ? [ Validators.required ] : []
+        let val = c[t]['required'] ? [ Validators.required ] : []
 
-        if( this.opCtrlProps[ctrl][t][o['TipoRegistroNombre'].toLowerCase()] ){
-          if( this.opCtrlProps[ctrl]['type'] == 'date' ){
-            this.opportunityForm.addControl( map, new UntypedFormControl({ value: o[ctrl] ? moment(o[ctrl], 'YYYY-M-DD').tz('Americas/Bogota') : null,     disabled: false }, val ))
-          }else{
-            this.opportunityForm.addControl( map, new UntypedFormControl({ value: o[ctrl] ?? null,     disabled: false }, val ))
+        if( c['email'] ){
+          val.push( Validators.email )
+        }
+
+        if( c[t][o['TipoRegistroNombre'].toLowerCase()] ){
+          if( t == 'get' || t == 'create' && c[t]['active'] ){
+            if( c['type'] == 'date' ){
+              this.opportunityForm.addControl( ctrl, new UntypedFormControl({ value: o[ctrl] ? moment(o[ctrl], 'YYYY-M-DD').tz('America/Bogota') : null,     disabled: t == 'get' ? c['get']['readonly'] : !c['create']['shown'] }, val ))
+            }else{
+              this.opportunityForm.addControl( ctrl, new UntypedFormControl({ value: t == 'get' ? (o[ctrl] ?? null) : (ctrl == 'TipoRegistroNombre'? o['TipoRegistroNombre'] : c['create']['default']),     disabled: t == 'get' ? c['get']['readonly'] : (!c['create']['shown'])  }, val ))
+            }
           }
         }
 
       }
+
+      console.log(this.opportunityForm)
 
       resolve( true )
     })
@@ -533,13 +559,18 @@ export class OportunidadesSearchComponent implements OnInit {
 
   async createOp( o = {} ) {
 
-    await this.createOpEditForm( o )
+    await this.createOpEditForm( o, 'create' )
 
     console.log( this.opportunityForm.value )
 
+    this.openCreateDialog()
+    
+  }
+
+  openCreateDialog( form = this.opportunityForm ){
     const dialogRef = this.dialog.open(OportunidadesCreateDialog, {
       maxWidth: '80vw',
-      data: { form: this.opportunityForm, params: this.opCtrlProps, collections: this.collections }
+      data: { form: form, params: this.opCtrlProps, collections: this.collections }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -548,7 +579,7 @@ export class OportunidadesSearchComponent implements OnInit {
       if( typeof result == 'undefined' ){
         // this.extraInfo['grupo']['insuranceIncluded'] = true;
       }else{
-        // this.extraInfo['grupo']['insuranceIncluded'] = result;
+        this.updateOp( true )
       }
     });
   }
