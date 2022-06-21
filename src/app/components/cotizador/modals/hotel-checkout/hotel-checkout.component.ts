@@ -186,6 +186,19 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  hotelVal( m, t, usd, g = this.rsvData['habSelected']['extraInfo']['grupo'] ){
+
+    if( usd ){
+      return +( m['monto'] ).toFixed(2)
+    }else{
+      if( g['fixedMxn'] == '1' ){
+        return +( m['monto_m'] ).toFixed(2)
+      }else{
+        return +( t * m['monto'] ).toFixed(2)
+      }
+    }
+  }
+
   buildMonto( hData = this.rsvData['habSelected'] ){
 
     let hGpo = hData['extraInfo']['grupo']
@@ -202,9 +215,9 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       }
   
       (this.rsvForm.get('data.hab' + i + '.hotel') as UntypedFormGroup).addControl('monto', this.fb.group({
-        monto:          [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
-        montoOriginal:  [{ value: +(habMonto.total.neta.monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
-        montoParcial:   [{ value: +(habMonto.total['n' + this.levelSelected.selected ].monto * (usd ? 1 : hData.hotel.tipoCambio)).toFixed(2),  disabled: false }, [ Validators.required ] ],
+        monto:          [{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
+        montoOriginal:  [{ value: this.hotelVal( habMonto.total.neta, hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
+        montoParcial:   [{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
         moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
         lv:             [{ value: this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
         lv_name:        [{ value: this.levelSelected.data['name'],  disabled: false }, [ Validators.required ] ],
