@@ -10,8 +10,6 @@ import { CapitalizadoPipe } from 'src/app/pipes/capitalizado.pipe';
 import { LowercasePipe } from 'src/app/pipes/lowercase.pipe';
 import { KeysPipe } from 'src/app/pipes/keys.pipe';
 
-import { SnackBarTemplateComponent } from './snack-bar-template/snack-bar-template.component';
-import { SnackBarComponent } from './snack-bar/snack-bar.component';
 import { ZdUserSearchComponent } from './zd-user-search/zd-user-search.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -38,8 +36,6 @@ import { PaymentRegisterComponent } from './payment-register/payment-register.co
 @NgModule({
   declarations: [
     GoToLocComponent,
-    SnackBarComponent,
-    SnackBarTemplateComponent,
     ZdUserSearchComponent,
     LocSearchComponent,
     ZdUserEditComponent,
@@ -55,8 +51,6 @@ import { PaymentRegisterComponent } from './payment-register/payment-register.co
     ReactiveFormsModule,
 
     GoToLocComponent,
-    SnackBarComponent,
-    SnackBarTemplateComponent,
     ZdUserSearchComponent,
     LocSearchComponent,
     ZdUserEditComponent,

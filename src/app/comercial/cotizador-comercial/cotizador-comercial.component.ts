@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
@@ -16,6 +16,8 @@ import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Moment } from 'moment-timezone';
+import { OportunidadesSearchComponent } from './oportunidades-search/oportunidades-search.component';
+import { DisplayOptionsComponent } from './display-options/display-options.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -47,14 +49,13 @@ declare var jQuery: any;
 })
 export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
+  @ViewChild( OportunidadesSearchComponent, { static: false } ) opp: OportunidadesSearchComponent;
+  @ViewChild( DisplayOptionsComponent, { static: false } ) dsp: DisplayOptionsComponent;
+
   @Output() rsv = new EventEmitter<any>()
   @Input() data: any;
 
   loading = {}
-
-  hotelSearch: UntypedFormGroup
-  
-  summarySearch = {}
 
   minDate = moment(moment().format('YYYY-MM-DD'))
   maxDate = moment(`${moment().add(1, 'years').format('YYYY')}-12-19`)
@@ -72,10 +73,8 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   cotizacion = []
   selectedOp = {}
-  extraInfo = {}
-  selectedLevel = 1
+  
 
-  cotizadorType = 'comercial'
   comercial$: Subscription
   
   constructor( 
@@ -91,19 +90,21 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
       this.createForm()
 
-      
+      this._com.selectedLevel = 1
 
       this.comercial$ = this._com.quoteType.subscribe( t => {
-        this.cotizadorType = t
+        this._com.cotizadorType = t
       })
     }
 
   ngOnInit(): void {
 
-    this.cotizadorType = this._com.lastQuoteType
+    this._com.cart = []
+
+    this._com.cotizadorType = this._com.lastQuoteType
 
     // Redirect if not from menu
-    if( this.cotizadorType == '' && this._init.previousUrl != '/comercial' ){
+    if( this._com.cotizadorType == '' && this._init.previousUrl != '/comercial' ){
       this.router.navigate(['/comercial']);
     }
 
@@ -113,7 +114,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
       // this.maxDate = moment().add(2,'years')
     }
 
-    switch( this.cotizadorType ){
+    switch( this._com.cotizadorType ){
       case 'otlc':
         let otlc = {
           gpoTitle: "OTLC",
@@ -124,7 +125,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
         }
 
         this.grupos = [otlc]
-        this.hotelSearch.get('grupo').setValue( otlc )
+        this._com.hotelSearch.get('grupo').setValue( otlc )
         break
       case 'comercial':
         this.filtersReady = false
@@ -135,7 +136,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
         break
     } 
 
-    this.summarySearch = this.hotelSearch.value
+    this._com.summarySearch = this._com.hotelSearch.value
 
 
     
@@ -143,6 +144,39 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.comercial$.unsubscribe()
+  }
+
+  async comercialSetFilters( e ){
+
+    if( !e ){ return false }
+    
+    let tipo = this.opp.opportunityForm.get('TipoRegistroNombre').value.toLowerCase()
+    // SET FILTERS GROUPS
+    let grupoTfa = {
+      gpoTitle: tipo,
+      grupo: tipo,
+      hasInsurance: "0",
+      hasPaq: "0",
+      mainCampaign: "1",
+    }
+
+    this.grupos = [grupoTfa]
+    this._com.hotelSearch.get('grupo').setValue( grupoTfa )
+
+    // SET DATES
+    let inicio = moment( this.opp.opportunityForm.get( tipo == 'grupos' ? 'FechaInicioEstancia' : 'FechaBoda').value.format('YYYY/MM/DD') )
+    this._com.hotelSearch.get('inicio').setValue( inicio )
+
+    let fin = this.opp.opportunityForm.get( tipo == 'grupos' ? 'FechaFinEstancia' : 'FechaBoda').value
+    this._com.hotelSearch.get('fin').setValue( tipo == 'grupos' ? fin : fin.add(1,'days') )
+
+    // SET HABS
+    this._com.hotelSearch.get('habs').setValue( 4 )
+    this._com.hotelSearch.get('habitaciones.hab1.adultos').setValue( 1 )
+
+    this.filtersReady = true
+    this.filterExpanded = false
+
   }
 
 
@@ -173,14 +207,14 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   }
 
   resetValues(){
-    this.hotelSearch.reset({})
+    this._com.hotelSearch.reset({})
     this.createForm()
   }
 
   
   
   createForm(){
-    this.hotelSearch =  this.fb.group({
+    this._com.hotelSearch =  this.fb.group({
       inicio:       [{ value: '',  disabled: false }, [ Validators.required ] ],
       fin:          [{ value: '',  disabled: false }, [ Validators.required ] ],
       habs:         [{ value: '',   disabled: false }, [ Validators.required ] ],
@@ -188,6 +222,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
       nacionalidad: [{ value: 'nacional',  disabled: false }, [ Validators.required ] ],
       noRestrict:   [{ value: false,  disabled: false }, [ Validators.required ] ],
       isUSD:        [{ value: false,  disabled: false }, [ Validators.required ] ],
+      isQuote:      [{ value: true,  disabled: false }, [ Validators.required ] ],
       bwDate:       [{ value: false,  disabled: true }, [] ],
       comercial:    [{ value: true,  disabled: false }, [] ],
       habitaciones: this.fb.group({})
@@ -195,31 +230,39 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
       validators: this.dateValidation('inicio', 'fin')
     })
 
-    this.hotelSearch.controls['habs'].valueChanges.subscribe( x => { 
+    this._com.hotelSearch.controls['habs'].valueChanges.subscribe( x => { 
 
-      this.roomsControls(x)
+      let autofill = this._com.hotelSearch.get('grupo').value['gpoTitle'] == 'bodas' || this._com.hotelSearch.get('grupo').value['gpoTitle'] == 'grupos'
+
+      this.roomsControls(x, autofill)
 
     })
 
     
-    this.hotelSearch.get('noRestrict').valueChanges.subscribe( x => { 
+    this._com.hotelSearch.get('noRestrict').valueChanges.subscribe( x => { 
       if( x ){
-        this.hotelSearch.get('bwDate').enable()
+        this._com.hotelSearch.get('bwDate').enable()
       }else{
-        this.hotelSearch.get('bwDate').disable()
-        this.hotelSearch.get('bwDate').reset()
+        this._com.hotelSearch.get('bwDate').disable()
+        this._com.hotelSearch.get('bwDate').reset()
       }
       
     })
     
-    this.hotelSearch.get('isUSD').valueChanges.subscribe( x => { 
-      this.summarySearch['isUSD'] = x
+    this._com.hotelSearch.get('isUSD').valueChanges.subscribe( x => { 
+      this._com.summarySearch['isUSD'] = x
+    })
+    
+    this._com.hotelSearch.get('isQuote').valueChanges.subscribe( x => { 
+      this._com.summarySearch['isQuote'] = x
     })
 
-    this.hotelSearch.controls['habs'].setValue(1)
+    this._com.hotelSearch.controls['habs'].setValue(1)
   }
 
-  roomsControls( x ){
+  roomsControls( x, af = false ){
+
+    // af = autofill
 
     if( x <= 0 || x > 10 ){
       return false
@@ -227,13 +270,13 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
     for( let i = 1; i <= 10; i++ ){
       if( i > x ){
-        if( this.hotelSearch.get('habitaciones.hab' + i) ){
-          (this.hotelSearch.get('habitaciones') as UntypedFormGroup).removeControl('hab' + i)
+        if( this._com.hotelSearch.get('habitaciones.hab' + i) ){
+          (this._com.hotelSearch.get('habitaciones') as UntypedFormGroup).removeControl('hab' + i)
         }
       }else{
-        if( !this.hotelSearch.get('habitaciones.hab' + i) ){
-          (this.hotelSearch.get('habitaciones') as UntypedFormGroup).addControl('hab' + i, new UntypedFormGroup({
-            ['adultos']:    new UntypedFormControl({ value: 2, disabled: false }, [ Validators.required ]),
+        if( !this._com.hotelSearch.get('habitaciones.hab' + i) ){
+          (this._com.hotelSearch.get('habitaciones') as UntypedFormGroup).addControl('hab' + i, new UntypedFormGroup({
+            ['adultos']:    new UntypedFormControl({ value: af ? i : 2, disabled: false }, [ Validators.required ]),
             ['menores']:    new UntypedFormControl({ value: 0, disabled: false }, [ Validators.required ]),
             ['edades']:     new UntypedFormGroup({
                               ['menor_1']:    new UntypedFormControl({ value: 0, disabled: true }, [ Validators.required ]),
@@ -242,7 +285,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
                           })
                     }))
 
-            this.hotelSearch.get('habitaciones.hab' + i + '.menores').valueChanges.subscribe( y => {
+            this._com.hotelSearch.get('habitaciones.hab' + i + '.menores').valueChanges.subscribe( y => {
               if( y < 0 || y > 3 ){
                 return false
               }
@@ -250,10 +293,10 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
               for( let z = 1; z <= 3; z++ ){
                 let room = 'habitaciones.hab' + i + '.edades.menor_' + z
                 if( z > y ){
-                  this.hotelSearch.get(room).setValue(0)
-                  this.hotelSearch.get(room).disable()
+                  this._com.hotelSearch.get(room).setValue(0)
+                  this._com.hotelSearch.get(room).disable()
                 }else{
-                  this.hotelSearch.get(room).enable()
+                  this._com.hotelSearch.get(room).enable()
                 }
               }
             })
@@ -294,7 +337,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     this._init.snackbar('success', 'Componene de hotel iniciado', 'Cerrar')
   }
 
-  getErrorMessage( ctrl, form = this.hotelSearch ) {
+  getErrorMessage( ctrl, form = this._com.hotelSearch ) {
 
     if ( this.loading[ctrl] ){
       return 'Cargando ' + ctrl + '...'
@@ -331,15 +374,17 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     return 'El campo tiene errores';
   }
 
-  cotizar( f = this.hotelSearch ){
+  cotizar( f = this._com.hotelSearch ){
+
+    this._com.emptyCart()
 
     this.filterExpanded = false
     this.cotizacion = []
-    this.extraInfo = {
+    this._com.extraInfo = {
       'grupo': null,
       'seguros': null
     }
-    this.selectedLevel = 1
+    this._com.selectedLevel = 1
     
     // VALIDATE DATES
 
@@ -362,13 +407,13 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   changeSumNation( v ){
     if( v == 'nacional' ){
-      this.summarySearch['cobertura'] = 'normal'
+      this._com.summarySearch['cobertura'] = 'normal'
     }
 
-    this.summarySearch['nacionalidad'] = v
+    this._com.summarySearch['nacionalidad'] = v
   }
   
-  getHotelsQuote( f = this.hotelSearch ){
+  getHotelsQuote( f = this._com.hotelSearch ){
 
     // GET QUOTATION
     this.loading['cotizar'] = true
@@ -377,13 +422,13 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
                 .subscribe( res => {
 
                   this.loading['cotizar'] = false;
-                  this.summarySearch = f.value
-                  this.summarySearch['cobertura'] = 'normal'
+                  this._com.summarySearch = f.value
+                  this._com.summarySearch['cobertura'] = 'normal'
 
-                  this.extraInfo['grupo'] = res['extra']['grupo']
-                  this.extraInfo['grupo']['insuranceIncluded'] = res['extra']['grupo']['insuranceAtFirst'] == '1' && this.summarySearch['nacionalidad'] == 'internacional' && this.extraInfo['grupo']['hasPaq'] == 0
+                  this._com.extraInfo['grupo'] = res['extra']['grupo']
+                  this._com.extraInfo['grupo']['insuranceIncluded'] = res['extra']['grupo']['insuranceAtFirst'] == '1' && this._com.summarySearch['nacionalidad'] == 'internacional' && this._com.extraInfo['grupo']['hasPaq'] == 0
 
-                  this.selectedLevel = res['extra']['grupo']['defaultLevel']
+                  this._com.selectedLevel = res['extra']['grupo']['defaultLevel']
                   let result = res['data']
                   let habDet = this.buildOcc(f.value)
 
@@ -395,8 +440,12 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
 
                   // console.log(result)
-                  // console.log(this.extraInfo)
+                  // console.log(this._com.extraInfo)
                   this.cotizacion = result
+
+                  if( this.isComercial ){
+                    this.breakDatesDetect( result )
+                  }
 
                   
                 }, err => {
@@ -404,7 +453,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
                   this.filterExpanded = true
                   this.cotizacion = []
-                  this.extraInfo = {
+                  this._com.extraInfo = {
                     'grupo': null,
                     'seguros': null
                   }
@@ -420,7 +469,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
  
   
 
-  getInsurancesQuote( f = this.hotelSearch ){
+  getInsurancesQuote( f = this._com.hotelSearch ){
 
     this.loading['cotizar'] = true
 
@@ -433,7 +482,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     this._api.restfulPut( params, 'Assistcard/multipleQuote' )
                 .subscribe( res => {
 
-                  this.extraInfo['seguros'] = res['data']
+                  this._com.extraInfo['seguros'] = res['data']
                   this.getHotelsQuote( f )
 
                 }, err => {
@@ -441,7 +490,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
                   this.filterExpanded = true
                   this.cotizacion = []
-                  this.extraInfo = {
+                  this._com.extraInfo = {
                     'grupo': null,
                     'seguros': null
                   }
@@ -520,7 +569,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
       }
 
-      if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){
+      if( this._com.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this._com.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){
         b['hasTransfer'] = false
       }
 
@@ -683,7 +732,8 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
                                       n3: {'monto': 0, 'relativeDisc': 0},
                                       n4: {'monto': 0, 'relativeDisc': 0},
                                       n5: {'monto': 0, 'relativeDisc': 0}
-                                    }
+                                    },
+                                    habsQ: 0
                                   }
 
       result['total']['adultos']  += f['habitaciones'][h]['adultos']
@@ -695,18 +745,13 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   }
 
-  countKeys( o ){
-    return Object.keys(o).length
-  }
-
-
   doRsv( r = {} ){
     let data = {
       hotel: r,
-      level: this.selectedLevel,
-      extraInfo: this.extraInfo,
-      summarySearch: this.summarySearch,
-      selectedLevel: this.selectedLevel,
+      level: this._com.selectedLevel,
+      extraInfo: this._com.extraInfo,
+      summarySearch: this._com.summarySearch,
+      selectedLevel: this._com.selectedLevel,
       type: 'hotel'
     }
 
@@ -717,17 +762,17 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   rsvPaq( r = {} ){
 
     let htl = JSON.parse(JSON.stringify(r))
-    let ss = JSON.parse(JSON.stringify(this.summarySearch))
-    let ei = JSON.parse(JSON.stringify(this.extraInfo))
+    let ss = JSON.parse(JSON.stringify(this._com.summarySearch))
+    let ei = JSON.parse(JSON.stringify(this._com.extraInfo))
     
     ss['isPaq'] = true
-    ss['paqXfer'] = this.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
+    ss['paqXfer'] = this._com.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this._com.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
     ei['grupo']['insuranceIncluded'] = true
-    htl['habs']['hasTransfer'] = this.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
+    htl['habs']['hasTransfer'] = this._com.extraInfo['grupo']['freeTransfer'] == '1' && (r['habs']['total']['monto']['n1']['monto'] / r['habs']['total']['adultos'] ) >= this._com.extraInfo['grupo']['freeTransferMinUsdPP']  && r['habs']['total']['adultos'] > 1
 
     let data = {
       hotel: htl,
-      level: this.selectedLevel,
+      level: this._com.selectedLevel,
       extraInfo: ei,
       summarySearch: ss,
       selectedLevel: this.paqAmmount( r, 'level' ),
@@ -741,10 +786,10 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   doQuote( r = {} ){
     let data = {
       hotel: r,
-      level: this.selectedLevel,
-      extraInfo: this.extraInfo,
-      summarySearch: this.summarySearch,
-      selectedLevel: this.selectedLevel,
+      level: this._com.selectedLevel,
+      extraInfo: this._com.extraInfo,
+      summarySearch: this._com.summarySearch,
+      selectedLevel: this._com.selectedLevel,
       type: 'hotel'
     }
 
@@ -770,7 +815,7 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   paqAmmount( c, v ){
 
-    let paqLevels = JSON.parse( this.extraInfo['grupo']['paqLevel'] )
+    let paqLevels = JSON.parse( this._com.extraInfo['grupo']['paqLevel'] )
 
     // console.log(paqLevels)
 
@@ -785,11 +830,11 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
     let i = 1
 
     for( let pl of paqLevels ){
-      hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + pl]['monto']
-      hotel_base = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto']
-      hotel_ref = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
-      seguro = (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
-      nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+      hotel = (this._com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + pl]['monto']
+      hotel_base = (this._com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto']
+      hotel_ref = (this._com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto']
+      seguro = (this._com.hotelSearch.get('isUSD').value ? 1 : this._com.extraInfo['seguros']['total'][this._com.summarySearch['nacionalidad']][this._com.summarySearch['cobertura']]['tipoCambio']) * this._com.extraInfo['seguros']['total'][this._com.summarySearch['nacionalidad']][this._com.summarySearch['cobertura']]['publico_ci']
+      nights = this._com.summarySearch['fin'].diff(this._com.summarySearch['inicio'], 'days')
 
       if( ((hotel + seguro) > hotel_ref  &&  (hotel + seguro) <= hotel_base) || i == limit ){
 
@@ -813,27 +858,9 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
 
   }
   
-  totalPN( c, l ){
-    let hotel = (this.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n' + l]['monto']
-    let seguro = (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']
-    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
-
-    return (hotel + seguro) / nights
-
-  }
-
-  pricePN( c, tc, h ){
-    let nights = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
-    let hotel = ( this.hotelSearch.get('isUSD').value ? 1 : tc ) * c['total']['n' + this.selectedLevel]['monto']
-    let seguros = ( (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (( this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros'][h][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros'][h][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci']))
-
-    // console.log(nights, hotel, seguros)
-    return (hotel + seguros) / nights
-  }
-
   validateCurr(){
-    let curr = this.hotelSearch.get('isUSD').value
-    let flag = this.extraInfo['grupo'][ (curr ? 'usd' : 'mxn') + 'Active' ] == 1
+    let curr = this._com.hotelSearch.get('isUSD').value
+    let flag = this._com.extraInfo['grupo'][ (curr ? 'usd' : 'mxn') + 'Active' ] == 1
 
     return flag
   }
@@ -841,7 +868,79 @@ export class CotizadorComercialComponent implements OnInit, OnDestroy {
   setComercialDate( e ){
     console.log(e)
   }
+
+  getDates( d ){
+   
+    let dates = []
+
+    for( let date in d['tarifas'] ){
+      dates.push(date)
+    }
+
+    return this.order.transform( dates )
+
+  }
   
+  breakDatesDetect( d ){
+  
+    let i = 0
+    let dates
+    let block = { dates: [] }
+    
+    
+    for( let hab of d ){
+      
+      
+      if( i == 0 ){
+        dates = this.getDates(hab)
+      }
+      
+      
+      
+      for( let hbn in hab['habs']['porHabitacion'] ){
+        
+        let ref = -1
+        let x = 0
+
+        let hbData = hab['habs']['porHabitacion'][hbn]
+        hbData['dateBlocks'] = []
+        
+        for( let date of dates ){
+        
+          let dt = hbData['fechas'][date]
+          let dsc = dt['n1']['descuento']
+  
+          block = x == 0 ? dt : block
+
+          if( ref != dsc ){
+            if( x != 0 ){
+              hbData['dateBlocks'].push( block )
+            }
+            
+            ref = dsc
+            
+            block = dt
+            block['dateStart'] = date
+            block['dateEnd'] = date
+          }else{
+            block['dateStart'] = x == 0 ? dt : block['dateStart']
+            block['dateEnd'] = date
+          }
+  
+          x++
+          if( x >= dates.length ){
+            hbData['dateBlocks'].push( block )
+          }
+        }
+      }
+
+      // console.log( `${hab['hotel']} - ${hab['habCode']}`, hab['dateBlocks'] )
+      
+      i++
+
+    }
+    console.log( d )
+  }
 
 
 }

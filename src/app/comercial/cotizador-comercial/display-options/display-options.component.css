@@ -1,0 +1,12 @@
+.card-room{
+    width: 100%;
+}
+
+.bg-selected{
+    background-color: #d7faf8!important;
+}
+
+:host ::ng-deep .mat-add {
+    background-color: #15ab13;
+    color: #fff;
+  }

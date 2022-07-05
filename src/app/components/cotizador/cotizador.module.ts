@@ -46,6 +46,7 @@ import { CotizaDaypassComponent } from './daypass/daypass.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
+import { PackageBuilderComponent } from './hotel/package-builder/package-builder.component';
 
 
 
@@ -64,6 +65,7 @@ import { ButtonModule } from 'primeng/button';
     TourCheckoutComponent,
     SendQuoteComponent,
     ValidateTicketComponent,
+    PackageBuilderComponent 
   ],
   exports: [
     CotizadorComponent,
@@ -79,6 +81,7 @@ import { ButtonModule } from 'primeng/button';
     TourCheckoutComponent,
     SendQuoteComponent,
     ValidateTicketComponent,
+    PackageBuilderComponent
   ],
   imports: [    
     OrderModule,

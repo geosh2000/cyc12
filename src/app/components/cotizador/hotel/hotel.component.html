@@ -228,6 +228,7 @@
                                                                 </span>
                                                             </b>
                                                             <br><small style="font-size: xx-small;">( {{ pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab )  | currency:'USD':'symbol-narrow':'.2-2' }} p/n )</small>
+                                                            <br><small style="font-size: xx-small;">( pkg pax: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'pax' ) }} // level: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'level' ) }} // total: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'total' ) }} // dif: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'dif' ) }} // orig: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'cRate' ) }} )</small>
                                                         </div>
                                                         
                                                     </div>
@@ -396,7 +397,8 @@
                                     </small></div>
                                 </div>
                                 <div class="col-xs-12 col-lg-6 d-flex justify-content-center align-items-center" style="border: solid 1px green;" *ngIf="extraInfo['grupo']['hasPaq'] == 1">
-                                    <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true) && extraInfo['grupo']['hasPaq'] == 1">
+                                    <!-- <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true) && extraInfo['grupo']['hasPaq'] == 1"> -->
+                                    <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="1 == 2">
                                 <!-- <div class="col-xs-12 col-lg-6 d-flex justify-content-center align-items-center">
                                     <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true)"> -->
                                         <div>
@@ -458,10 +460,12 @@
                 Este grupo no acepta la moneda seleccionada, cambiala para ver los precios
             </div>
         </ng-container>
+        
     </mat-card>
 
 
 </div>
+<package-builder></package-builder>
 
 
 

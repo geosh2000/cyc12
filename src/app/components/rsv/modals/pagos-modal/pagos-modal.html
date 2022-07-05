@@ -29,7 +29,7 @@
                     </td>
                     <td class='text-center'>
                         <button mat-button color="primary" [disabled]="_api.isLoading | async" 
-                            (click)="applyPayments( p['itemId'] )"
+                            (click)="applyPayments( p['cashTxId'] )"
                             *ngIf="_init.checkSingleCredential('allmighty') && p['txCielo'] == null && p['cashTxId'] != null && p['complejo'].toLowerCase() != 'vcm'">
                             Aplicar
                         </button>

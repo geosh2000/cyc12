@@ -49,6 +49,10 @@ export class HelpersService {
     return a / 100 
   }
 
+  moneyFormat( a ){
+    return this.moneyInts( this.moneyCents(a) )
+  }
+
   excelDate( excelDate, dt = false ) {
     
     if( excelDate == null ){

@@ -1,22 +1,22 @@
 <div class="container">
     <mat-card>
         <mat-card-header class="text-end">
-            <mat-card-title>Cotizador {{ cotizadorType }}</mat-card-title>
+            <mat-card-title>Cotizador {{ _com.cotizadorType }}</mat-card-title>
         </mat-card-header>
         
         <mat-card-content>
 
-            <oportunidades-search  *ngIf="isComercial"></oportunidades-search>
+            <oportunidades-search (opReady)="comercialSetFilters( $event )" [visible]="isComercial"></oportunidades-search>
 
             <ng-container *ngIf="filtersReady">
-                <form [formGroup]="hotelSearch">
+                <form [formGroup]="_com.hotelSearch">
                     <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
 
                         <!-- HABITACIONES -->
-                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100"  *ngIf="!isComercial">
                             <mat-label>Habitaciones</mat-label>
                             <input matInput class="text-center" type="number" formControlName="habs" min=1 max=10 autocomplete="off">
-                            <mat-error *ngIf="hotelSearch.controls['habs'].invalid">{{ getErrorMessage('habs') }}</mat-error>
+                            <mat-error *ngIf="_com.hotelSearch.controls['habs'].invalid">{{ getErrorMessage('habs') }}</mat-error>
                         </mat-form-field>
                         
                         <!-- FECHA -->
@@ -28,12 +28,12 @@
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-date-range-picker #picker></mat-date-range-picker>
-                            <mat-error *ngIf="hotelSearch.controls['inicio'].invalid">{{ getErrorMessage('inicio') }}</mat-error>
-                            <mat-error *ngIf="hotelSearch.controls['fin'].invalid">{{ getErrorMessage('fin') }}</mat-error>
+                            <mat-error *ngIf="_com.hotelSearch.controls['inicio'].invalid">{{ getErrorMessage('inicio') }}</mat-error>
+                            <mat-error *ngIf="_com.hotelSearch.controls['fin'].invalid">{{ getErrorMessage('fin') }}</mat-error>
                         </mat-form-field>
         
                         <!-- GRUPO -->
-                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170">
+                        <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="170"  *ngIf="!isComercial">
                             <mat-label>Grupo</mat-label>
                             <mat-select formControlName="grupo" fname="grupo">
                                 <mat-option>Selecciona</mat-option>
@@ -44,20 +44,21 @@
                                 </ng-container>
                             </mat-select>
                             <!-- <mat-hint>Selecciona un tipo de servicio</mat-hint> -->
-                            <mat-error *ngIf="hotelSearch.controls['grupo'].invalid">{{ getErrorMessage('grupo') }}</mat-error>
+                            <mat-error *ngIf="_com.hotelSearch.controls['grupo'].invalid">{{ getErrorMessage('grupo') }}</mat-error>
                         </mat-form-field>
         
         
                         <!-- Switches -->
                         <div class="ms-auto d-flex flex-wrap justify-content-end">
+                            <mat-slide-toggle class="mx-1 mb-2" formControlName="isQuote" *ngIf="isComercial">{{ _com.hotelSearch.get('isQuote').value ? 'Cotizacion' : 'Desgloce' }}</mat-slide-toggle>
                             <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
-                            <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="hotelSearch.invalid || loading['cotizar']">Cotizar</button>
+                            <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="_com.hotelSearch.invalid || loading['cotizar']">Cotizar</button>
                         </div>
         
                         
         
                     </div>  
-                    <mat-accordion >
+                    <mat-accordion  *ngIf="!isComercial">
                         <mat-expansion-panel [expanded]="filterExpanded">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -68,38 +69,38 @@
                                 <div class="container" formGroupName="habitaciones">
                     
                                     <!-- PAX -->
-                                    <div class="pt-3  mx-3 d-flex justify-content-start flex-wrap align-items-center" [formGroupName]="'hab' + (i+1)" *ngFor="let h of hotelSearch.controls.habitaciones.value | keys, index as i">
+                                    <div class="pt-3  mx-3 d-flex justify-content-start flex-wrap align-items-center" [formGroupName]="'hab' + (i+1)" *ngFor="let h of _com.hotelSearch.controls.habitaciones.value | keys, index as i">
                                         <h3>Hab. {{ i + 1 }}</h3>
                                         <mat-form-field class="ms-3 me-1 mb-2" appearance="outline" [style.width.px]="100">
                                             <mat-label>Adultos</mat-label>
                                             <input matInput class="text-center" type="number" formControlName="adultos" min=1 max=4 autocomplete="off">
                                             <mat-hint>> de 12 años</mat-hint>
-                                            <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.adultos').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.adultos') }}</mat-error>
+                                            <mat-error *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.adultos').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.adultos') }}</mat-error>
                                         </mat-form-field>
                                         <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100">
                                             <mat-label>Menores</mat-label>
                                             <input matInput class="text-center" type="number" formControlName="menores" min=0 max=3 autocomplete="off">
                                             <mat-hint>0 a 12 años</mat-hint>
-                                            <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
+                                            <mat-error *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.menores') }}</mat-error>
                                         </mat-form-field>
                                         <ng-container formGroupName="edades">
-                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 1">
                                                 <mat-label>Edad 1</mat-label>
                                                 <input matInput class="text-center" type="number" formControlName="menor_1" min=0 max=12 autocomplete="off">
                                                 <mat-hint>0 a 12 años</mat-hint>
-                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                                <mat-error *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_1').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
                                             </mat-form-field>
-                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 2">
                                                 <mat-label>Edad 2</mat-label>
                                                 <input matInput class="text-center" type="number" formControlName="menor_2" min=0 max=12 autocomplete="off">
                                                 <mat-hint>0 a 12 años</mat-hint>
-                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
+                                                <mat-error *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_2').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_2') }}</mat-error>
                                             </mat-form-field>
-                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
+                                            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="100" *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.menores').value >= 3">
                                                 <mat-label>Edad 3</mat-label>
                                                 <input matInput class="text-center" type="number" formControlName="menor_3" min=0 max=12 autocomplete="off">
                                                 <mat-hint>0 a 12 años</mat-hint>
-                                                <mat-error *ngIf="hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
+                                                <mat-error *ngIf="_com.hotelSearch.get('habitaciones.hab'+(i+1)+'.edades.menor_3').invalid">{{ getErrorMessage('habitaciones.hab'+(i+1)+'.edades.menor_1') }}</mat-error>
                                             </mat-form-field>
                                         </ng-container>
                                         <!-- <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="70">
@@ -155,13 +156,13 @@
         <!-- RESUMEN BUSQUEDA -->
         <mat-card-header>
             <!-- <div mat-card-avatar class="example-header-image"></div> -->
-            <mat-card-title><span class="text-primary">{{ summarySearch['fin'].diff(summarySearch['inicio'], 'days') }}</span> noches del <span class="text-primary">{{ summarySearch['inicio'].format('DD MMM YYYY') }} al {{ summarySearch['fin'].format('DD MMM YYYY') }}</span>, grupo <span class="text-success">{{ summarySearch['grupo']['gpoTitle'] }}</span>
+            <mat-card-title><span class="text-primary">{{ _com.summarySearch['fin'].diff(_com.summarySearch['inicio'], 'days') }}</span> noches del <span class="text-primary">{{ _com.summarySearch['inicio'].format('DD MMM YYYY') }} al {{ _com.summarySearch['fin'].format('DD MMM YYYY') }}</span>, grupo <span class="text-success">{{ _com.summarySearch['grupo']['gpoTitle'] }}</span>
             </mat-card-title>
-            <mat-card-subtitle>
-                <span>{{ summarySearch['habs'] }} habitaciones (</span>
-                <span>{{ summarySearch['habitaciones']['hab1']['adultos'] }}.{{ summarySearch['habitaciones']['hab1']['menores'] }}</span>
-                <ng-container *ngFor="let hbs of summarySearch['habitaciones'] | keys">
-                    <span *ngIf="hbs != 'hab1'">, {{ summarySearch['habitaciones'][hbs]['adultos'] }}.{{ summarySearch['habitaciones'][hbs]['menores'] }}</span>
+            <mat-card-subtitle *ngIf="!isComercial">
+                <span>{{ _com.summarySearch['habs'] }} habitaciones (</span>
+                <span>{{ _com.summarySearch['habitaciones']['hab1']['adultos'] }}.{{ _com.summarySearch['habitaciones']['hab1']['menores'] }}</span>
+                <ng-container *ngFor="let hbs of _com.summarySearch['habitaciones'] | keys">
+                    <span *ngIf="hbs != 'hab1'">, {{ _com.summarySearch['habitaciones'][hbs]['adultos'] }}.{{ _com.summarySearch['habitaciones'][hbs]['menores'] }}</span>
                 </ng-container>
                 <span>)</span>
             </mat-card-subtitle>
@@ -170,7 +171,7 @@
         <!-- VALIDATE CURRENCY -->
         <ng-container *ngIf="validateCurr()">
             <!-- OPCIONES -->
-            <mat-card-content>
+            <mat-card-content *ngIf="!isComercial">
                 <div class="container-fluid">
                     <mat-card [class.mat-elevation-z8]="true" class="pt-0 px-0 mb-1" *ngFor="let c of cotizacion">
                         <mat-card-content class="mb-0">
@@ -186,7 +187,7 @@
                                                     <div class="hotelImageResponsive d-inline d-sm-none" [style.background-image]="c['hotelUrl']"></div>
                                                     <div class="ms-4">
                                                         <p class="m-0"><b><span class="d-none d-sm-inline">{{ c['hotel'] }}</span> {{ c['habName'] }}</b></p>
-                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
+                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
                                                     </div>
                                                 </mat-panel-title>
                                             </mat-expansion-panel-header>
@@ -198,13 +199,13 @@
                                                             {{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }}.{{ c['habs']['porHabitacion'][hab]['occ']['menores'] }} 
                                                         </div>
                                                         <div mat-line class="col-6">
-                                                            {{ c['tarifas'][ summarySearch['inicio'].format('YYYY-MM-DD') ]['n' + selectedLevel ]['name'] }}: 
-                                                            <b>{{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel]['monto'] + ((extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                            {{ c['tarifas'][ _com.summarySearch['inicio'].format('YYYY-MM-DD') ]['n' + _com.selectedLevel ]['name'] }}: 
+                                                            <b>{{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + _com.selectedLevel]['monto'] + ((_com.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((_com.hotelSearch.get('isUSD').value ? 1 : _com.extraInfo['seguros'][hab][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['tipoCambio']) * _com.extraInfo['seguros'][hab][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }} 
                                                                 <span class="d-none d-sm-inline">
-                                                                    {{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}
+                                                                    {{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}
                                                                 </span>
                                                             </b>
-                                                            <br><small style="font-size: xx-small;">( {{ pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab )  | currency:'USD':'symbol-narrow':'.2-2' }} p/n )</small>
+                                                            <br><small style="font-size: xx-small;">( {{ _com.pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab )  | currency:'USD':'symbol-narrow':'.2-2' }} p/n )</small>
                                                         </div>
                                                         
                                                     </div>
@@ -216,9 +217,9 @@
                                         </mat-expansion-panel>
                                     </mat-accordion>
                                 </div>
-                                <ng-container *ngIf="!c['habs']['hasErrors'] || (c['habs']['hasErrors'] && c['habs']['skippableErrors'] && hotelSearch.get('noRestrict').value == true)">
+                                <ng-container *ngIf="!c['habs']['hasErrors'] || (c['habs']['hasErrors'] && c['habs']['skippableErrors'] && _com.hotelSearch.get('noRestrict').value == true)">
                                     <div class="col-xs-12 col-lg-6 text-end">
-                                        <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedLevel">
+                                        <mat-radio-group aria-label="Select an option" [(ngModel)]="_com.selectedLevel">
                                             <div class="row my-1 align-items-center">
                                                 <ng-container *ngIf="c['habs']['total']['levels']['n1']['active']">
                                                     <div class="col-2 col-lg-1">
@@ -226,9 +227,9 @@
                                                     </div>
                                                     <div class="col-10 col-lg-5">
                                                         <mat-chip-list class="mat-chip-list-stacked">
-                                                            <mat-chip class="chips" [matTooltip]="(totalPN(c,1)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
+                                                            <mat-chip class="chips" [matTooltip]="(_com.totalPN(c,1)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="warn" value="1" [disabled]="!c['habs']['total']['levels']['n1']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n1']['monto'] + (_com.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((_com.hotelSearch.get('isUSD').value ? 1 : _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['tipoCambio']) * _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -238,13 +239,13 @@
                                                     <div class="col-2 col-lg-2 text-center text-success">
                                                         <b>
                                                         <span class="">{{ c['habs']['total']['monto']['n2']['relativeDisc'] | percent:'.0-0' }}</span><br>
-                                                        {{ cotizadorType == 'publico' ? 'ORewards' : (cotizadorType == 'otlc' ? 'OTLC' : '') }}</b>
+                                                        {{ _com.cotizadorType == 'publico' ? 'ORewards' : (_com.cotizadorType == 'otlc' ? 'OTLC' : '') }}</b>
                                                     </div>
                                                     <div class="col-10 col-lg-4">
                                                         <mat-chip-list class="mat-chip-list-stacked">
-                                                            <mat-chip class="chips" color="primary" selected [matTooltip]="(totalPN(c,2)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
+                                                            <mat-chip class="chips" color="primary" selected [matTooltip]="(_com.totalPN(c,2)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="2" [disabled]="!c['habs']['total']['levels']['n2']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n2']['monto'] + (_com.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((_com.hotelSearch.get('isUSD').value ? 1 : _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['tipoCambio']) * _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -258,9 +259,9 @@
                                                     </div>
                                                     <div class="col-10 col-lg-5">
                                                         <mat-chip-list class="mat-chip-list-stacked">
-                                                            <mat-chip class="chips" color="accent" selected [matTooltip]="(totalPN(c,3)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
+                                                            <mat-chip class="chips" color="accent" selected [matTooltip]="(_com.totalPN(c,3)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="primary" value="3" [disabled]="!c['habs']['total']['levels']['n3']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n3']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n3']['monto'] + (_com.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((_com.hotelSearch.get('isUSD').value ? 1 : _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['tipoCambio']) * _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -272,9 +273,9 @@
                                                     </div>
                                                     <div class="col-10 col-lg-5">
                                                         <mat-chip-list class="mat-chip-list-stacked">
-                                                            <mat-chip class="chips" color="warn" selected [matTooltip]="(totalPN(c,4)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
+                                                            <mat-chip class="chips" color="warn" selected [matTooltip]="(_com.totalPN(c,4)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="4" [disabled]="!c['habs']['total']['levels']['n4']['enabled']">
-                                                                    {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n4']['monto'] + (extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ((_com.hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['n4']['monto'] + (_com.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((_com.hotelSearch.get('isUSD').value ? 1 : _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['tipoCambio']) * _com.extraInfo['seguros']['total'][_com.summarySearch['nacionalidad']][_com.summarySearch['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -287,7 +288,7 @@
                                 <ng-container *ngIf="c['habs']['hasErrors']">
                                     <div class="col-xs-12 col-lg-6 text-end">
                                         <ng-container *ngFor="let hb of c['habs']['porHabitacion'] | keys">
-                                            <p *ngIf="countKeys(c['habs']['porHabitacion'][hb]['errors']['errors']) > 0"><span class="text-secondary" *ngIf="c['habs']['porHabitacion'][hb]['errors']['flag']">
+                                            <p *ngIf="_com.countKeys(c['habs']['porHabitacion'][hb]['errors']['errors']) > 0"><span class="text-secondary" *ngIf="c['habs']['porHabitacion'][hb]['errors']['flag']">
                                                 Error <span class="text-bold text-danger">{{ hb }}</span>: 
                                                 <ng-container *ngFor="let err of c['habs']['porHabitacion'][hb]['errors']['errors'] | keys">
                                                     <span *ngIf="err != 'dispo' && err != 'sinTarifaFecha' && err != 'minNights'">{{ c['habs']['porHabitacion'][hb]['errors']['errors'][err] }} | </span>
@@ -314,6 +315,9 @@
                     </mat-card>
                 </div>
             </mat-card-content>
+
+            <!-- OPCIONES PARA COMERCIAL -->
+            <display-options [cotizacion]="cotizacion" [oportunidad]="opp.opportunityForm" *ngIf="isComercial"></display-options>
         </ng-container>
         <ng-container *ngIf="!validateCurr()">
             <div class="alert alert-warning d-block text-center" role="alert">
@@ -322,9 +326,13 @@
         </ng-container>
     </mat-card>
 
+    <div *ngIf="isComercial" style="position: fixed; bottom: 40px; right: 40px;">
+        <button mat-fab color="primary" [matBadge]="_com.cart.length" [matBadgeHidden]="_com.cart.length == 0" matBadgeColor="accent" (click)="dsp._send.buildQuote(_com.cart)">
+          <mat-icon>shopping_cart</mat-icon>
+        </button>
+    </div>
 
 </div>
-
 
 
 

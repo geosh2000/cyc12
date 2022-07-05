@@ -27,6 +27,8 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { AccountConfigComponent } from './account-config/account-config.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { SnackBarComponent } from './snack-bar/snack-bar.component';
+import { SnackBarTemplateComponent } from './snack-bar-template/snack-bar-template.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import { MatListModule } from '@angular/material/list';
 
     FlightSearchComponent,
     AccountConfigComponent,
+    SnackBarComponent,
+    SnackBarTemplateComponent,
 
   ],
   exports: [
@@ -45,13 +49,15 @@ import { MatListModule } from '@angular/material/list';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    
+        
     CapitalizadoPipe,
     LowercasePipe,
     KeysPipe,
 
     FlightSearchComponent,
     AccountConfigComponent,
+    SnackBarComponent,
+    SnackBarTemplateComponent,
 
   ],
   imports: [

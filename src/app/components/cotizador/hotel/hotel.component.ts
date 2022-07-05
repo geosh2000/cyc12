@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
@@ -12,6 +12,7 @@ import 'moment/locale/es-mx';
 import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
+import { PackageBuilderComponent } from './package-builder/package-builder.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -43,6 +44,8 @@ declare var jQuery: any;
 })
 export class CotizaHotelComponent implements OnInit {
 
+  @ViewChild( PackageBuilderComponent, { static: false } ) pkg: PackageBuilderComponent;
+  
   @Output() rsv = new EventEmitter<any>()
   @Input() data: any;
 
@@ -334,10 +337,32 @@ export class CotizaHotelComponent implements OnInit {
                     i['tarifas'] = JSON.parse(i['jsonData']) 
                     i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, f)
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
+                    
+                    // TOTALIZA DIFERENCIAS PAQUETES
+                    if( res['extra']['grupo']['insuranceAtFirst'] == '1' ){
+                      // for( let h of i['habs'] ){
+                      //   if( i['totalDif'] ){
+                      //       i['totalDif']['l1'] += parseFloat(h['total']['pqLevel_1']['dif'])
+                      //       i['totalDif']['l2'] += parseFloat(h['total']['pqLevel_2']['dif']) 
+                      //       i['totalDif']['l3'] += parseFloat(h['total']['pqLevel_3']['dif'])
+                      //       i['totalDif']['l4'] += parseFloat(h['total']['pqLevel_4']['dif'])
+                      //       i['totalDif']['l5'] += parseFloat(h['total']['pqLevel_5']['dif'])
+                      //   }else{
+                      //     i['totalDif'] = {
+                      //       l1:  parseFloat(h['total']['pqLevel_1']['dif']),
+                      //       l2:  parseFloat(h['total']['pqLevel_2']['dif']), 
+                      //       l3:  parseFloat(h['total']['pqLevel_3']['dif']),
+                      //       l4:  parseFloat(h['total']['pqLevel_4']['dif']),
+                      //       l5:  parseFloat(h['total']['pqLevel_5']['dif']),
+                      //     }
+                      //   }
+                      // }
+                    }
                   }
 
+                  
 
-                  // console.log(result)
+                  console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
 
@@ -541,6 +566,34 @@ export class CotizaHotelComponent implements OnInit {
         
         b['total']['levels']['noR'] = noR
 
+      }
+
+      // insurance package build
+      for( let l = 1; l <= 5; l++ ){
+        b['porHabitacion'][h]['total']['pqLevel_' + l] = {
+          level : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'level' ),
+          rate  : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'rate' ),
+          pax : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'pax' ),
+          total : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'total' ),
+          dif : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'dif' ),
+          cRate : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'cRate' ),
+        }
+      }
+
+      if( b['totalDif'] ){
+          b['totalDif']['l1'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif'])
+          b['totalDif']['l2'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']) 
+          b['totalDif']['l3'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif'])
+          b['totalDif']['l4'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif'])
+          b['totalDif']['l5'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif'])
+      }else{
+        b['totalDif'] = {
+          l1:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif']),
+          l2:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']), 
+          l3:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif']),
+          l4:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif']),
+          l5:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif']),
+        }
       }
 
       if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){

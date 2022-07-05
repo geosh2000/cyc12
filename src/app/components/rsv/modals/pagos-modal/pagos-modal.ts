@@ -55,7 +55,7 @@ import { ApiService, InitService } from 'src/app/services/service.index';
 
       this.loading['apply'] = true
   
-      this._api.restfulPut( { itemId: id }, 'Rsv/applyPaymentsCielo' )
+      this._api.restfulPut( { txId: id }, 'Rsv/applyPaymentsCielo' )
                   .subscribe( res => {
   
                     this.loading['apply'] = false;

@@ -31,11 +31,14 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatBadgeModule } from '@angular/material/badge';
 
 import { CotizadorComercialComponent } from './cotizador-comercial/cotizador-comercial.component';
 import { HomeComponent } from './home/home.component';
 import { OportunidadesSearchComponent } from './cotizador-comercial/oportunidades-search/oportunidades-search.component';
 import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-search/oportunidades-create/oportunidades-create.dialog';
+import { SendRoomComponent } from './cotizador-comercial/send-room/send-room.component';
+import { DisplayOptionsComponent } from './cotizador-comercial/display-options/display-options.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +48,8 @@ import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-s
     HomeComponent,
     OportunidadesSearchComponent,
     OportunidadesCreateDialog,
+    SendRoomComponent,
+    DisplayOptionsComponent,
   ],
   exports: [
     ComercialComponent,
@@ -53,6 +58,8 @@ import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-s
     HomeComponent,
     OportunidadesSearchComponent,
     OportunidadesCreateDialog,
+    SendRoomComponent,
+    DisplayOptionsComponent,
   ],
   imports: [
     CommonModule,
@@ -85,6 +92,7 @@ import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-s
     MatMenuModule,
     MatStepperModule,
     MatTooltipModule,
+    MatBadgeModule,
   ]
 })
 export class ComercialModule { }

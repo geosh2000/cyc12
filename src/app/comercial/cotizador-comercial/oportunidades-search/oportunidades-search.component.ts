@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ApiService, ComercialService, HelpersService, InitService } from 'src/app/services/service.index';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
@@ -43,6 +43,9 @@ declare var jQuery: any;
   ]
 })
 export class OportunidadesSearchComponent implements OnInit {
+
+  @Input() visible: boolean
+  @Output() opReady = new EventEmitter
 
   opportunitySearch: UntypedFormGroup
   opportunityForm: UntypedFormGroup
@@ -311,8 +314,6 @@ export class OportunidadesSearchComponent implements OnInit {
       TipoRegistroNombre    : [{ value: '',     disabled: false}, [ Validators.required ], [{ metadata: true }] ]
     })
 
-    console.log(this.opportunityForm)
-
     this.createOpForm()
   }
 
@@ -512,19 +513,13 @@ export class OportunidadesSearchComponent implements OnInit {
 
     return new Promise( async ( resolve ) => {
 
-      console.log(o['TipoRegistroNombre'])
-      
-      if( (o['TipoRegistroNombre'] ?? null) == null ){
-        console.log('triggered', o['TipoRegistroNombre'])
-
-        o['TipoRegistroNombre'] = await this.askForType()
+     if( (o['TipoRegistroNombre'] ?? null) == null ){
+       o['TipoRegistroNombre'] = await this.askForType()
 
         if( !o['TipoRegistroNombre'] ){
           this.dialog.closeAll()
         }
       }
-
-      console.log(o['TipoRegistroNombre'])
 
       this.opportunityForm =  this.fb.group({})
 
@@ -550,7 +545,7 @@ export class OportunidadesSearchComponent implements OnInit {
 
       }
 
-      console.log(this.opportunityForm)
+      this.opReady.emit( true )
 
       resolve( true )
     })
