@@ -99,6 +99,15 @@ export class ConfirmacionesPendientesComponent implements OnInit, OnDestroy {
           return false
         }
       }
+      
+      if( r['packedItems'] ){
+        for( let p of r['packedItems'] ){
+          if( p['cieloCaptured'] == '0' ){
+            this._init.snackbar('error', 'Debes capturar el seguro empaquetado para poder ingresar la confirmacion', 'Cerrar')
+            return false
+          }
+        }
+      }
 
       this.sendConf( r, c, u )
     }else{

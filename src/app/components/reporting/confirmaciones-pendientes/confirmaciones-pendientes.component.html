@@ -111,7 +111,6 @@
                                             </ng-container>
                                             <ng-container  *ngIf="r['insurance']['cieloCaptured'] == '0' && !r['insurance']['loading']">
                                                 <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
-                                                <b>Seguro: </b>{{ r['insurance']['Seguro'] }} || 
                                                 <b>Moneda: </b>{{ r['insurance']['moneda'] }} || 
                                                 <b>Cantidad: </b>{{ r['insurance']['sg_pax'] }} ||  
                                                 <b>Total: </b>{{ r['insurance']['monto'] }} ||
@@ -123,6 +122,26 @@
                                                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
                                             </ng-container>
                                         </div>
+                                        <ng-container *ngIf="r['packedItems'] && r['packedItems'].length > 0">
+                                            <div class="text-center" *ngFor="let p of r['packedItems']">
+                                                Contiene paquete: <br>
+                                                <ng-container  *ngIf="p['cieloCaptured'] == '1'">
+                                                    <b>SEGURO YA CAPTURADO</b>
+                                                </ng-container>
+                                                <ng-container  *ngIf="p['cieloCaptured'] == '0' && !p['loading']">
+                                                    <b>Seguro: </b>{{ p['Seguro'] }} || 
+                                                    <b>Moneda: </b>{{ p['moneda'] }} || 
+                                                    <b>Cantidad: </b>{{ p['sg_pax'] }} ||  
+                                                    <b>Total: </b>{{ p['monto'] }} ||
+                                                    <b>Comprobante: </b>{{ p['confirm'] }} || 
+                                                    <b>Voucher: </b>{{ p['itemLocatorId'] }}
+                                                    <button mat-icon-button class="table-button" color="primary" (click)="setCaptured({'insurance':p})" [disabled]="p['loading']"><mat-icon>check_circle</mat-icon></button>
+                                                </ng-container>
+                                                <ng-container *ngIf="p['cieloCaptured'] == '0' && p['loading']">
+                                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
                                     </td>
 
                                     <td colspan=100>

@@ -209,7 +209,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     
     for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
       let insPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq'] ? true : false
-      let lvPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']['lnumber']
+      let lvPaq = insPaq ? curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']['lnumber'] : 1
       let level = {
         code: hGpo['code' + lvPaq],
         name: hGpo['l' + lvPaq + '_name'],
