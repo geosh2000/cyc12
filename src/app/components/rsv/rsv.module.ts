@@ -48,6 +48,7 @@ import { LocSumComponent } from './components/loc-sum/loc-sum.component';
 import { MainFrameComponent } from './components/main-frame/main-frame.component';
 import { GenerateAuthFileComponent } from './generate-auth-file/generate-auth-file.component';
 import { ItemBlockSumComponent } from './components/item-block-sum/item-block-sum.component';
+import { CancelHotelDialogComponent } from './modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
 
 
 
@@ -73,6 +74,7 @@ import { ItemBlockSumComponent } from './components/item-block-sum/item-block-su
     SaldarDialog,
     ModifyHotelDialog,
     ShowItemPaymentsDialog,
+    CancelHotelDialogComponent,
   ],
   exports: [
     RsvComponent,
@@ -94,6 +96,7 @@ import { ItemBlockSumComponent } from './components/item-block-sum/item-block-su
     SaldarDialog,
     ModifyHotelDialog,
     ShowItemPaymentsDialog,
+    CancelHotelDialogComponent,
   ],
   imports: [
     OrderModule,

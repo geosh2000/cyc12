@@ -9,8 +9,9 @@
     
                 <!-- <div class="row align-items-center px-3 pt-3 pb-1"> -->
                     
-                    <div class="container">
+                    <div class="container"  #hotelCard>
                         <div class="container d-flex justify-content-end my-2" *ngIf="_com.hotelSearch.get('isQuote').value">
+                            <button mat-raised-button color="primary" (click)="createImg( hotelCard )">Crear</button>
                             <mat-slide-toggle [(ngModel)]="c['selectedForQuote']">Cotizar</mat-slide-toggle>
                         </div>
 
@@ -53,7 +54,7 @@
                                                     </mat-form-field>
         
                                                     <div>
-                                                        <button mat-mini-fab color="add" type="button" (click)="addCart( c, hab, qHabs.value, block['selectedStart'], block['selectedNoches'] )"><mat-icon>add_shopping_cart</mat-icon></button>
+                                                        <button mat-mini-fab color="add" type="button" (click)="addCart( c, hab, qHabs.value, block['selectedStart'], block['selectedNoches'], x )"><mat-icon>add_shopping_cart</mat-icon></button>
                                                     </div>
         
                                                 </div>

@@ -173,6 +173,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     // BUILD SEGUROS
     this.buildInsurance( hData, user )
     this.buildMonto( hData )
+    this.buildInsPaq( hData )
 
     // console.log( this.rsvForm.value )
   }
@@ -205,8 +206,15 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     let hSum = hData['summarySearch']
     let curr = this.rsvData
     let usd = hSum['isUSD']
-
+    
     for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
+      let insPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq'] ? true : false
+      let lvPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']['lnumber']
+      let level = {
+        code: hGpo['code' + lvPaq],
+        name: hGpo['l' + lvPaq + '_name'],
+      }
+      
       // BUILD MONTOS HABITACION
       let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
@@ -215,19 +223,87 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       }
   
       (this.rsvForm.get('data.hab' + i + '.hotel') as UntypedFormGroup).addControl('monto', this.fb.group({
-        monto:          [{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
+        monto:          [{ value: insPaq ? habMonto['insPaq']['hotelRate'] : this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
         montoOriginal:  [{ value: this.hotelVal( habMonto.total.neta, hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
-        montoParcial:   [{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
+        montoParcial:   [{ value: insPaq ? habMonto['insPaq']['hotelRate'] : this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
         moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
-        lv:             [{ value: this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
-        lv_name:        [{ value: this.levelSelected.data['name'],  disabled: false }, [ Validators.required ] ],
+        lv:             [{ value: insPaq ? level['code'] : this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
+        lv_name:        [{ value: insPaq ? level['name'] : this.levelSelected.data['name'],  disabled: false }, [ Validators.required ] ],
         grupo:          [{ value: hGpo[ usd ? 'cieloUSD' : 'cieloMXN'],  disabled: false }, [ Validators.required ] ],
         grupoTfas:      [ hGpo.grupo, [ Validators.required ] ],
         promo:          [{ value: hGpo['p' + this.levelSelected.selected],  disabled: false }, [ Validators.required ] ],
         tipoCambio:     [{ value: usd ? 1 : hData.hotel.tipoCambio,  disabled: false }, [ Validators.required ] ],
+        lv_goalCode:        [{ value: this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
+        lv_goalName:        [{ value: this.levelSelected.data['name'],  disabled: false }, [ Validators.required ] ],
+        lv_originalRate:[{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
+        importeManual:  [{ value: insPaq ? 1 : 0,  disabled: false }, [ Validators.required ] ], 
       }))
     }
   }
+  
+
+
+  buildInsPaq(  hData = this.rsvData['habSelected'], user = this.rsvData['formRsv']['zdUser'] ){
+    
+    let hSum = hData['summarySearch']
+    let curr = this.rsvData
+    let usd = hSum['isUSD']
+    let nacionalidad = hSum.nacionalidad
+    let cobertura = hSum.cobertura
+
+
+      for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
+        let insPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq'] ? true : false
+
+        if( !insPaq ){
+          continue
+        }else{
+          this.rsvForm.get('hasInclusionIns').setValue( true )
+        }
+
+        let paq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']
+        let pax = paq['pax']
+        let sg_monto = paq['insRate'];
+        
+        for( let z = 1; z <= paq['paqs']; z++ ){
+
+          if( this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z) ){
+            (this.rsvForm.get('data.hab' + i) as  UntypedFormGroup).removeControl('insurance_inclusion_' + z)
+          }
+  
+          (this.rsvForm.get('data.hab' + i) as UntypedFormGroup).addControl('insurance_inclusion_' + z, this.fb.group({
+            item:       this.fb.group({
+              itemType:     [{ value: 15,  disabled: false }, [ Validators.required ] ],
+              isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
+              zdTicket:     [''],
+              parentPriced: [ 1 ]
+            }),
+            monto:      this.fb.group({
+              montoOriginal:  [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
+              tipoCambio:     [{ value: usd ? 1 : paq['tipoCambio'],  disabled: false }, [ Validators.required ] ],
+              monto:          [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
+              moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
+              lv:             [{ value: 1,  disabled: false }, [ Validators.required ] ],
+              lv_name:        [{ value: 'default',  disabled: false }, [ Validators.required ] ],
+              grupo:          [{ value: 'assistCard',  disabled: false }, [ Validators.required ] ],
+              promo:          [{ value: 'C',  disabled: false }, [ Validators.required ] ],
+              montoParcial:   [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
+            }),
+            insurance:  this.fb.group({
+              sg_pax:       [{ value: pax,  disabled: false }, [ Validators.required ] ],
+              sg_hotel:     [{ value: hData.hotel.hotel,  disabled: false }, [ Validators.required ] ],
+              sg_inicio:    [{ value: moment(hSum['inicio']).add( (z-1) * 8, 'days').format('YYYY-MM-DD'),  disabled: false }, [ Validators.required ] ],
+              sg_fin:       [{ value: moment(hSum['inicio']).add( z * 8 - 1, 'days').format('YYYY-MM-DD'),  disabled: false }, [ Validators.required ] ],
+              sg_mdo:       [{ value: nacionalidad,  disabled: false }, [ Validators.required ] ],
+              sg_cobertura: [{ value: 'inclusion',  disabled: false }, [ Validators.required ] ],
+            }),
+          }));
+
+        }
+      }
+
+  }
+
 
   buildInsurance(  hData = this.rsvData['habSelected'], user = this.rsvData['formRsv']['zdUser'] ){
     

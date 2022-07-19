@@ -8,6 +8,10 @@
                 <br>
                 <span style="font-size: xx-small;">{{ _h.formatDate(i['llegada'], 'DD-MMM-YY') }} {{ i['htlNoches'] }} nts {{ _h.occup(i) }} {{ i['categoria'] }}</span>
             </ng-container>
+            <ng-container *ngIf="i['isPacked'] == 1">
+                <br>
+                <span style="font-size: xx-small;">Paq. {{ i['itemPacked'] }}</span>
+            </ng-container>
         </div>
     </div>
 </div>

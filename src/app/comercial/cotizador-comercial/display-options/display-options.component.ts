@@ -1,10 +1,14 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ComercialService } from 'src/app/services/comercial.service';
+import { HelpersService, InitService } from 'src/app/services/service.index';
+import { SendRoomComponent } from '../send-room/send-room.component';
 
 import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
-import { HelpersService, InitService } from 'src/app/services/service.index';
-import { SendRoomComponent } from '../send-room/send-room.component';
+
+import html2canvas from 'html2canvas';
+import { MatDialog } from '@angular/material/dialog';
+import { CartCheckoutDialog } from './cart-checkout/cart-checkout.dialog';
 
 @Component({
   selector: 'display-options',
@@ -22,7 +26,8 @@ export class DisplayOptionsComponent implements OnInit {
 
   cart = []
 
-  constructor( public _com: ComercialService, public _h: HelpersService, public _init: InitService ) { }
+  constructor( public _com: ComercialService, 
+    public dialog: MatDialog, public _h: HelpersService, public _init: InitService ) { }
 
   ngOnInit(): void {
   }
@@ -45,7 +50,7 @@ export class DisplayOptionsComponent implements OnInit {
     return moment(d['dateEnd']) 
   }
 
-  addCart( c, hab, h, s, n ){
+  addCart( c, hab, h, s, n, x ){
 
     if( !s || !n || h <= 0 || s == null || n == null){
       this._init.snackbar('error', `Faltan elementos para agregar habitacion al carrito`, '')
@@ -67,7 +72,7 @@ export class DisplayOptionsComponent implements OnInit {
       "Hotel": c['hotelName'],
       "TipoHabitacion": c['habName'],
       "TipoOcupacion": occ[hb['occ']['adultos']],
-      "Tarifa": this._h.moneyFormat( hb['total']['n1']['monto'] ),
+      "Tarifa": this._com.hotelVal(  hb['dateBlocks'][x]['n1'], c['tipoCambio'] ) ,
       "CantidadHabitaciones": h,
       "FechaLlegada": s.format('YYYY/MM/DD'),
       "FechaSalida": moment( s.format('YYYY/MM/DD') ).add(n, 'days').format('YYYY/MM/DD'),
@@ -123,6 +128,45 @@ export class DisplayOptionsComponent implements OnInit {
 
   sendRoom( r ){
     this._send.buildQuote( r )
+  }
+
+  createImg( el ){
+    console.log( el )
+
+    let params = {
+      backgroundColor: '#ffffff',	
+    }
+
+    html2canvas( el, params ).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg")
+ 
+      console.log(imgData, canvas)
+
+      const source = imgData;
+      const link = document.createElement("a");
+      link.href = source;
+      link.download = `Table.jpeg`
+      link.click();
+    })
+  }
+
+  checkOutDialog( cart = this._com.cart ){
+    const dialogRef = this.dialog.open( CartCheckoutDialog, {
+      maxWidth: '80vw',
+      data: cart
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed', result);
+
+      if( typeof result == 'undefined' ){
+        // this.extraInfo['grupo']['insuranceIncluded'] = true;
+      }else{
+        if( result ){
+          this._send.buildQuote( this._com.cart )
+        }
+      }
+    });
   }
 
   

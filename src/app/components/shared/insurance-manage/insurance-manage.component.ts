@@ -52,7 +52,7 @@ export class InsuranceManageComponent implements OnInit {
   }
 
   getRelatedInsurance( d, i ){
-
+    console.log( d )
     let resultado = d.find( related => related.sg_itemRelatedStatus === i + '-0' );
     if( resultado != null ){
       resultado['monto'] = parseFloat(resultado['monto'])

@@ -39,6 +39,7 @@ import { OportunidadesSearchComponent } from './cotizador-comercial/oportunidade
 import { OportunidadesCreateDialog } from './cotizador-comercial/oportunidades-search/oportunidades-create/oportunidades-create.dialog';
 import { SendRoomComponent } from './cotizador-comercial/send-room/send-room.component';
 import { DisplayOptionsComponent } from './cotizador-comercial/display-options/display-options.component';
+import { CartCheckoutDialog } from './cotizador-comercial/display-options/cart-checkout/cart-checkout.dialog';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { DisplayOptionsComponent } from './cotizador-comercial/display-options/d
     OportunidadesCreateDialog,
     SendRoomComponent,
     DisplayOptionsComponent,
+    CartCheckoutDialog,
   ],
   exports: [
     ComercialComponent,
@@ -60,6 +62,7 @@ import { DisplayOptionsComponent } from './cotizador-comercial/display-options/d
     OportunidadesCreateDialog,
     SendRoomComponent,
     DisplayOptionsComponent,
+    CartCheckoutDialog,
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,23 @@
+<div class="container" style="background-color: white" #sumTable>
+    <table class="table table-sm table-bordered table-stripped" *ngIf="data.length > 0">
+        <thead>
+            <tr> 
+                <th *ngFor="let field of data[0] | keys">{{ field }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of data">
+                <td class="text-center" *ngFor="let col of row | keys">
+                    <span [ngSwitch]="col">
+                        <span *ngSwitchCase="'Tarifa'">{{ row[col] | currency:'USD':'symbol-narrow':'.2-2' }}</span>
+                        <span *ngSwitchDefault>{{ row[col] }}</span>
+                    </span>
+                    
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<button mat-raised-button (click)="createImg(sumTable)">Img</button>
+<button mat-raised-button color="primary" (click)="submit()">Crear</button>

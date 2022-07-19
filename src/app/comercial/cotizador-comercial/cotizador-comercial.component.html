@@ -327,7 +327,7 @@
     </mat-card>
 
     <div *ngIf="isComercial" style="position: fixed; bottom: 40px; right: 40px;">
-        <button mat-fab color="primary" [matBadge]="_com.cart.length" [matBadgeHidden]="_com.cart.length == 0" matBadgeColor="accent" (click)="dsp._send.buildQuote(_com.cart)">
+        <button mat-fab color="primary" [matBadge]="_com.cart.length" [matBadgeHidden]="_com.cart.length == 0" matBadgeColor="accent" (click)="dsp.checkOutDialog(_com.cart)">
           <mat-icon>shopping_cart</mat-icon>
         </button>
     </div>

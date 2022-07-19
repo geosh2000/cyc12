@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment-timezone';
 import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
+import { CancelHotelDialogComponent } from '../../modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
 import { ShowItemPaymentsDialog } from '../../modals/show-item-payments-dialog/show-item-payments-dialog';
 
 @Component({
@@ -28,6 +29,17 @@ export class ItemSumComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+  }
+
+  cancelItem( d ){
+    console.log( d )
+    switch( d['itemType'] ){
+      case '1':
+        this.cancelHotel(d)
+        break
+      default:
+        return false
+    }
   }
 
   // **************************** VALIDADORES INICIO ****************************
@@ -372,6 +384,21 @@ export class ItemSumComponent implements OnInit {
         // if( result == true ){
         //   this.reload.emit( this.data['master']['masterlocatorid'] )
         // }
+      });
+    }
+
+    cancelHotel( d:any = null ): void {
+      const dialogRef = this.dialog.open(CancelHotelDialogComponent, {
+        data: { item: d, all: this.data['items']},
+        disableClose: true,
+        width: '600px',
+        maxHeight: '90vh'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if( result == true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
       });
     }
 

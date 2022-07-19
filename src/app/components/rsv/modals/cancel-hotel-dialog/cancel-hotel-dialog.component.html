@@ -1,0 +1,155 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Confirmar Cancelación</mat-card-title>
+        <mat-card-subtitle>Políticas de Cancelación</mat-card-subtitle>
+    </mat-card-header> 
+
+    <mat-list role="list" *ngIf="!(item['isQuote'] == 1 && item['isConfirmable'] == 0)">
+        <mat-list-item role="listitem">
+            <div class="container d-flex justify-content-between">
+                <div class="text-primary"><b>Travel Window</b></div>
+                <div style="font-size: smaller;">{{ xldPolicy['inicioTW'] }} a {{ xldPolicy['finTW'] }}</div>
+            </div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item role="listitem">
+            <div class="container d-flex justify-content-between">
+                <div class="text-primary"><b>Valor de la reserva</b></div>
+                <div style="font-size: smaller;">{{ (_h.moneyFormat(item['monto']) + _h.moneyFormat(item['pkgItems']['totalValue'])) | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+            </div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item role="listitem">
+            <div class="container d-flex justify-content-between">
+                <div class="text-primary"><b>Temporada</b></div>
+                <div style="font-size: smaller;">{{ xldPolicy['hs'] == 1 ? 'Alta' : 'Baja' }}</div>
+            </div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item role="listitem">
+            <div class="container d-flex justify-content-between">
+                <div class="text-primary"><b>Tipo de Cancelación</b></div>
+                <div style="font-size: smaller;">{{ xldPolicy['isBusy'] == 1 ? 'Salida Anticipada / No Show' : 'Anticipado' }}</div>
+            </div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <ng-container *ngIf="item['tipoPago'] != 'PH'">
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Tiempo para cancelar</b></div>
+                    <div style="font-size: smaller;">{{ xldPolicy['policyDays'] }} días</div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Penalidad Política</b></div>
+                    <div style="font-size: smaller;">
+                        <span *ngIf="xldPolicy['isNights'] == 1">{{ xldPolicy['penalty'] }} noches</span>
+                        <span *ngIf="xldPolicy['isNights'] != 1">{{ xldPolicy['penalty'] | percent:'.0-0' }}</span>
+                    </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Monto Pagado</b></div>
+                    <div style="font-size: smaller;">{{ (_h.moneyFormat(item['montoPagado']) + _h.moneyFormat(item['pkgItems']['totalPagado'])) | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="xldPolicy['isBusy'] == 1">
+                <mat-list-item role="listitem">
+                    <div class="container d-flex justify-content-between">
+                        <div class="text-primary"><b>Noches Dormidas</b></div>
+                        <div style="font-size: smaller;">{{ xldPolicy['nochesDormidas'] }}</div>
+                    </div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Penalidad Aplicable</b></div>
+                    <div style="font-size: smaller;" class="text-danger"><b>{{ xldPolicy['penalidadTotal'] | currency:'MXN':'symbol-narrow':'.2-2' }} <span *ngIf="xldPolicy['isNights']==1">( {{ xldPolicy['penalty'] }} noches )</span></b></div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Penalidad Sugerida</b></div>
+                    <div style="font-size: smaller;">
+                        {{ xldPolicy['penalidad'] | currency:'MXN':'symbol-narrow':'.2-2' }} <span *ngIf="xldPolicy['isNights']==1">( {{ xldPolicy['penalty'] + xldPolicy['nochesDormidas'] }} noches )</span>
+                        </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+        
+            <mat-list-item role="listitem" style="height: 75px;">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary" [ngClass]="{'text-danger': (item['penalidad'] < (item['xldType'] != 'reembolso' ? xldPolicy['minimumPenalty'] : item['omit10'] ? 0 : xldPolicy['minimumPenalty'])) || item['penalidad'] > (_h.moneyFormat(item['montoPagado']) + _h.moneyFormat(item['pkgItems']['totalPagado']))}">
+                        <b>Penalidad a Aplicar</b>
+                        <br>
+                        <span style="font-size: smaller; color: black; font-weight: normal;">Rango: {{ (item['xldType'] != 'reembolso' ? 0 : item['omit10'] ? 0 : ((_h.moneyFormat(item['montoPagado']) + _h.moneyFormat(item['pkgItems']['totalPagado']))) * .1) | currency:'MXN':'symbol-narrow':'.2-2' }} ~ {{ ((_h.moneyFormat(item['montoPagado']) + _h.moneyFormat(item['pkgItems']['totalPagado']))) | currency:'MXN':'symbol-narrow':'.2-2' }}</span>
+                    </div>
+                    <div style="font-size: smaller;">
+                        <mat-form-field class="penaltyInput">
+                            <mat-label>Monto Manual de Penalidad</mat-label>
+                            <span matPrefix>$ &nbsp;</span>
+                            <input autocomplete="off" type="number" matInput [(ngModel)]="item['penalidad']">
+                            <mat-icon matSuffix>mode_edit</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="item['penalidad'] >= 0">
+                <mat-list-item role="listitem">
+                    <div class="container d-flex justify-content-between">
+                        <div class="text-primary"><b>Tipo de Operacion</b></div>
+                        <div style="font-size: smaller;">
+                            <mat-radio-group aria-label="Tipo de Operacion" [(ngModel)]="item['xldType']">
+                                <mat-radio-button class="mx-2" value="traspaso">Traspaso</mat-radio-button>
+                                <mat-radio-button value="reembolso">Reembolso</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                </mat-list-item>
+            </ng-container>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="item['xldType'] == 'reembolso'">
+                <mat-list-item role="listitem">
+                    <div class="container d-flex justify-content-between">
+                        <div class="text-primary"><b>Omitir 10% por gasto administrativo</b></div>
+                        <div style="font-size: smaller;">
+                            <mat-checkbox class="check-margin" [(ngModel)]="item['omit10']">Omitir</mat-checkbox>
+                        </div>
+                    </div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
+        </ng-container>
+        <ng-container *ngIf="item['packs'].length > 0">
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Servicios Incluidos a cancelar</b><br>(penalidad aplicable)</div>
+                    <div style="font-size: smaller;">
+                        <div *ngFor="let incl of item['packs']">{{ incl['itemLocatorId'] }} - {{ incl['Servicio'] }} ({{ ( isToday ? (incl['montoPagado'] + incl['montoEnValidacion']) : 0 ) | currency:'MXN':'symbol-narrow':'.2-2' }})</div>
+                    </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-list>
+
+        <!-- <pre>{{ xldPolicy | json }}</pre> -->
+ 
+    <mat-card-actions>
+        <div class="container d-flex justify-content-end">
+            <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]="_api.isLoading | async">Cerrar</button>
+            <button mat-raised-button class="ms-2" color="warn" (click)="sendCancellation()" [disabled]="!(this.item['isQuote'] == 1 && this.item['isConfirmable'] == 0) && (!item['xldType'] || item['penalidad'] == null) || (_api.isLoading | async)">Aplicar Cancelacion</button>
+        </div>
+    </mat-card-actions>
+    <mat-card-footer>
+        <mat-progress-bar mode="buffer" *ngIf="_api.isLoading | async"></mat-progress-bar>
+    </mat-card-footer>
+</mat-card>

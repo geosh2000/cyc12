@@ -112,8 +112,18 @@ export class SendRoomComponent implements OnInit {
     //   this.swalUpload( p )
     //   return false
     // }
+    let opd = {}
 
-    this._api.restfulPut( p , 'Sf/sendRoomOportunity' )
+    for( let ops in this.oportunidad.controls ){
+
+      if( ops == 'FechaFinEstancia' || ops == 'FechaInicioEstancia' || ops == 'FechaCierre' || ops == 'FechaBoda'){
+        opd[ops] = this.oportunidad.controls[ops].value.format('YYYY-MM-DD')
+      }else{
+        opd[ops] = this.oportunidad.controls[ops].value
+      }
+    }
+
+    this._api.restfulPut( { rooms: p, oportunidad: opd } , 'Sf/sendRoomOportunity' )
                 .subscribe( res => {
 
                   this.loading['updateOp'] = false;

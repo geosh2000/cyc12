@@ -335,7 +335,7 @@ export class CotizaHotelComponent implements OnInit {
 
                   for( let i of result ){
                     i['tarifas'] = JSON.parse(i['jsonData']) 
-                    i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, f)
+                    i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, f, result['tipoCambio'])
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                     
                     // TOTALIZA DIFERENCIAS PAQUETES
@@ -481,7 +481,7 @@ export class CotizaHotelComponent implements OnInit {
 
   }
 
-  habPriceBuild( b, i, f, test = false ){
+  habPriceBuild( b, i, f, tc, test = false ){
 
     let r = i['tarifas']
     let htl = i['hotel']
@@ -571,12 +571,12 @@ export class CotizaHotelComponent implements OnInit {
       // insurance package build
       for( let l = 1; l <= 5; l++ ){
         b['porHabitacion'][h]['total']['pqLevel_' + l] = {
-          level : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'level' ),
-          rate  : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'rate' ),
-          pax : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'pax' ),
-          total : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'total' ),
-          dif : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'dif' ),
-          cRate : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'cRate' ),
+          level : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'level', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          rate  : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'rate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          pax : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'pax', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          total : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'total', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          dif : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'dif', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          cRate : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'cRate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
         }
       }
 
@@ -809,6 +809,14 @@ export class CotizaHotelComponent implements OnInit {
   }
 
   doRsv( r = {} ){
+    
+    if( this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' && this.selectedLevel != 4){
+      for( let h in r['habs']['porHabitacion'] ){
+        let hab = r['habs']['porHabitacion'][h]
+        hab['insPaq'] = this.pkg.defInsPaq( hab, this.selectedLevel, 'array', r['tipoCambio'], this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] )
+      }
+    }
+
     let data = {
       hotel: r,
       level: this.selectedLevel,
@@ -817,6 +825,10 @@ export class CotizaHotelComponent implements OnInit {
       selectedLevel: this.selectedLevel,
       type: 'hotel'
     }
+
+
+    console.log( r, data )
+    // pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'pax' )
 
     data = JSON.parse(JSON.stringify(data))
     this.rsv.emit({ action: 'doRsv', data })

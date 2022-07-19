@@ -14,7 +14,24 @@ export class PackageBuilderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  defInsPaq( d, cl, type ){
+  hotelVal( m, t, usd, g ){
+
+    if( usd ){
+      return +( m['monto'] ).toFixed(2)
+    }else{
+      if( g['fixedMxn'] == '1' ){
+        return +( m['monto_m'] ).toFixed(2)
+      }else{
+        return +( t * m['monto'] ).toFixed(2)
+      }
+    }
+  }
+
+  defInsPaq( d, cl, type, t, usd, g ){
+
+    let days = Object.keys(d['fechas']).length + 1
+    let insQ = Math.ceil( days / 8 )
+    let insRate = this.insPaxRate * insQ * (usd ? 1 : parseFloat(t) + 1)
 
     if( cl == 4 ){
       return 'N/A'
@@ -22,14 +39,20 @@ export class PackageBuilderComponent implements OnInit {
 
     let result = {
       level: 'n1',
-      rate: 0,
+      lnumber: 1,
+      rate: (0-0).toFixed(2),
+      hotelRate: (0-0).toFixed(2),
+      tipoCambio: (parseFloat(t) + 1).toFixed(2),
+      insRate: (0-0).toFixed(2),
       pax: 0,
-      total: 0,
+      total: (0-0).toFixed(2),
       dif: (0-0).toFixed(2),
       cRate: (0-0).toFixed(2),
+      paqs: insQ,
+      days: days
     }
 
-    if( result[type] === undefined ){
+    if( result[type] === undefined && type != 'array'){
       return result[type]
       return 'N/A'
     }
@@ -49,21 +72,29 @@ export class PackageBuilderComponent implements OnInit {
     let startPax = pax > 4 ? pax : 4
     for( let p = startPax; p >= pax; p -= 2 ){
       result = {
-        level: 'n' + this.levelCorrect((this.insPaxRate * p) / lCompare + (.05 * (cl-1)), cl),
-        rate: (d['total']['n' + this.levelCorrect((this.insPaxRate * p) / lCompare + (.05 * (cl-1)), cl)]['monto']).toFixed(2),
+        level: 'n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl),
+        lnumber: this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl),
+        rate: (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g)).toFixed(2),
+        hotelRate: (this.hotelVal(d['total']['n' + cl], t, usd, g) - (p * insRate)).toFixed(2),
+        tipoCambio: (parseFloat(t) + 1).toFixed(2),
+        insRate: (this.insPaxRate * p * (usd ? 1 : parseFloat(t) + 1)).toFixed(2),
         pax: p,
-        total: (d['total']['n' + this.levelCorrect((this.insPaxRate * p) / lCompare + (.05 * (cl-1)), cl)]['monto'] + p * this.insPaxRate).toFixed(2),
-        dif: (d['total']['n' + cl]['monto'] - (d['total']['n' + this.levelCorrect((this.insPaxRate * p) / lCompare + (.05 * (cl-1)), cl)]['monto'] + p * this.insPaxRate)).toFixed(2),
-        cRate: (d['total']['n' + cl]['monto']).toFixed(2),
+        total: (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g) + p * insRate).toFixed(2),
+        dif: (this.hotelVal(d['total']['n' + cl], t, usd, g) - (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g) + p * insRate)).toFixed(2),
+        cRate: (this.hotelVal(d['total']['n' + cl], t, usd, g)).toFixed(2),
+        paqs: insQ,
+        days: days
       }
 
-      if( (this.insPaxRate * p) / lCompare <= cLevel ){
-        return result[type]
+      if( (insRate * p) / lCompare <= cLevel ){
+
+        return type == 'array' ? result : result[type]
       }
 
     }
 
-    return result[type]
+    return type == 'array' ? result : result[type]
+    
 
     // El resultado depende del flag rate --> true devuelve el descuento, false devuelve los pax
 
