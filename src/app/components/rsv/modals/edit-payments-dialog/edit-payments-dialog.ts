@@ -54,6 +54,14 @@ import Swal from 'sweetalert2';
 
     }
 
+    editOneNight( x ){
+      this.items[x]['montoParcialEdit'] = this.oneNight(x)
+    }
+
+    oneNight(x){
+      return this._h.moneyInts( (this._h.moneyCents(this.items[x]['monto']) + this._h.moneyCents(this.items[x]['pkgItems']['totalValue'])) / this.items[x]['htlNoches'] - this._h.moneyCents(this.items[x]['pkgItems']['totalValue']))
+    }
+
     editParcial( x ){
       this.items[x]['editFlag'] = true
       this.items[x]['montoParcialEdit'] = this.items[x]['montoParcial']

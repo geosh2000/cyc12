@@ -3,6 +3,11 @@
     margin-left: 16px;
 }
 
+.mat-onenight {
+    background-color: #2e24b3;
+    color: #fff;
+}
+
 .mat-success {
     background-color: #33a933;
     color: #fff;

@@ -285,7 +285,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
               moneda:         [{ value: usd ? 'USD' : 'MXN',  disabled: false }, [ Validators.required ] ],
               lv:             [{ value: 1,  disabled: false }, [ Validators.required ] ],
               lv_name:        [{ value: 'default',  disabled: false }, [ Validators.required ] ],
-              grupo:          [{ value: 'assistCard',  disabled: false }, [ Validators.required ] ],
+              grupo:          [{ value: 'assistCard-i',  disabled: false }, [ Validators.required ] ],
               promo:          [{ value: 'C',  disabled: false }, [ Validators.required ] ],
               montoParcial:   [{ value: sg_monto,  disabled: false }, [ Validators.required ] ],
             }),

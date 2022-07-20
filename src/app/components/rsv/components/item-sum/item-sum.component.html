@@ -181,6 +181,14 @@
                     &nbsp;Set PH
                 </button>
                 
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="warn"
+                    (click)="setPackage(i)"
+                    *ngIf="_init.checkSingleCredential('allmighty') && i['itemType'] == '1' && i['montoEnValidacion'] == 0"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>payments</mat-icon>
+                    &nbsp;Set Pack
+                </button>
+                
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="manualInsEmit(i['itemLocatorId'])"
                     *ngIf="_init.checkSingleCredential('allmighty') && i['isQuote']==0 && i['confirmOK'] == null && (i['itemType']==10 || i['itemType']==15)"

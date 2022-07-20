@@ -86,6 +86,26 @@ export class ItemSumComponent implements OnInit {
       })
     }
 
+    setPackage(i){
+
+      this._api.restfulPut( { itemId: i['itemId'] }, 'Rsv/package' )
+                  .subscribe( res => {
+  
+                    
+                    this.reload.emit( this.data['master']['masterlocatorid'] )
+
+                    
+                  }, err => {
+                    this.loading['setPH'] = false;
+                    
+                    const error = err.error;
+                    this._init.snackbar( 'error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+  
+                  });
+
+    }
+
     setPHApi(i){
 
       return new Promise ( async resolve => {

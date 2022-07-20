@@ -67,7 +67,7 @@
                                     <td class="text-center">{{ r['lv']                              }}</td>
                                     <td class="text-center">{{ r['Apellido']                        }}</td>
                                     <td class="text-center">{{ r['Nombre']                          }}</td>
-                                    <td class="text-center">{{ r['monto']       | number:'.2-2'     }}</td>
+                                    <td class="text-center">{{ r['monto']       | number:'.2-2'     }}<br><mat-icon color="primary" *ngIf="r['importeManual']=='1'">back_hand</mat-icon></td>
                                     <td class="text-center">{{ r['montoPagado'] | number:'.2-2'     }}</td>
                                     <td class="text-center">{{ r['creador']                         }}</td>
                                     <td class="text-center">{{ r['correo']                          }}</td>

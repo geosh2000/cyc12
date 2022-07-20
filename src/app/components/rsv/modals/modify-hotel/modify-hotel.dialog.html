@@ -10,16 +10,19 @@
     <div class="align-items-center d-block" *ngIf="hotels.length>0">
         
         <mat-list class="ps-5 pe-3 container" #shoes>
-            <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" @fade>
+            <!-- <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" @fade>
                 <div class="col-3"></div>
                 <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('selectedRoom')"><mat-icon>checklist</mat-icon></button></div>
                 <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('selectedOcc')"><mat-icon>checklist</mat-icon></button></div>
                 <div class="col-2 text-center"><button mat-icon-button color="warn" (click)="applyAll('llegada')"><mat-icon>checklist</mat-icon></button></div>
                 <div class="col-1 text-center"></div>
                 <div class="col-1 text-center"><button mat-icon-button color="warn" (click)="applyAll('nights')"><mat-icon>checklist</mat-icon></button></div>
-            </div>
+            </div> -->
             <ng-container *ngFor="let i of hotels">
-                <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" @fade>
+                <div class="container  mat-elevation-z4 p-0 my-2 py-2 align-items-center" *ngIf="i['hotelChanging']">
+                    <mat-progress-bar mode="buffer"></mat-progress-bar>
+                </div>
+                <div class="container  mat-elevation-z4 p-0 my-2 py-2 row align-items-center" *ngIf="!i['hotelChanging']" @fade>
                     <div class="col-3">
                         <div class="d-flex text-mat-primary  justify-content-between align-items-center" >
                             <item-sum [i]="i"></item-sum>
@@ -29,7 +32,7 @@
                     <div class="col-1 mt-auto mb-auto text-center">
                         <mat-form-field appearance="standard" [style.width.%]="100">
                             <mat-label>{{ i['changes']['selectedRoom']['code'] }} / Cat</mat-label>
-                            <mat-select [(ngModel)]="i['changes']['selectedRoom']" [@remark]="i['changes']['selectedRoom']['code'] != i['hotel'] || i['changes']['selectedRoom']['habCode'] != i['categoria'] ? 'alert' : 'void'">
+                            <mat-select (selectionChange)="cotizarCambio(i)" [(ngModel)]="i['changes']['selectedRoom']" [@remark]="i['changes']['selectedRoom']['code'] != i['hotel'] || i['changes']['selectedRoom']['habCode'] != i['categoria'] ? 'alert' : 'void'">
                               <mat-optgroup *ngFor="let h of hotelList | keys" [label]="h">
                                 <mat-option *ngFor="let c of hotelList[h]" [value]="c">
                                   {{ c['habCode'] }}
@@ -43,7 +46,7 @@
                     <div class="col-1 text-center">
                         <mat-form-field appearance="standard" [style.width.%]="100">
                             <mat-label>Occup</mat-label>
-                            <mat-select [(ngModel)]="i['changes']['selectedOcc']" [@remark]="i['changes']['selectedOcc'] === null ? 'warn' : (i['changes']['selectedOcc'] != i['adultos']+'.'+i['juniors']+'.'+i['menores'] ? 'alert' : 'void')">
+                            <mat-select (selectionChange)="cotizarCambio(i)" [(ngModel)]="i['changes']['selectedOcc']" [@remark]="i['changes']['selectedOcc'] === null ? 'warn' : (i['changes']['selectedOcc'] != i['adultos']+'.'+i['juniors']+'.'+i['menores'] ? 'alert' : 'void')">
 
                                 <mat-option *ngFor="let o of i['changes']['selectedRoom']['occ']" [value]="o">
                                   {{ o }}
@@ -80,8 +83,17 @@
                         </mat-form-field>                     
                     </div>
                     
-                    <div class="col-1 text-center">
-                        Occup: {{ i['changes']['selectedOcc']  }}          
+                    <div class="col-3 text-center" *ngIf="i['quoteLoading']">
+                        <mat-progress-bar mode="buffer"></mat-progress-bar>
+                    </div>
+
+                    <div class="col-2 text-center" *ngIf="!i['quoteLoading'] && i['changeQuote']">
+                        <div><b class="text-success">Total: </b>{{ (getQuoteTotal(i)) | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+                        <div><b class="text-success">Diff: </b>{{ getQuoteDif(i) | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+                    </div>
+                    
+                    <div class="col-1 text-center" *ngIf="!i['quoteLoading'] && i['changeQuote']">
+                        <button mat-raised-button color="primary" (click)="setChange(i)" [disabled]="!i['changeQuote']">Aplicar</button>
                     </div>
                     <!-- <div class="col-2 text-end" [ngClass]="{'text-danger': (i['monto'] - i['montoAllPaid']) > 0, 'text-success': (i['monto'] - i['montoAllPaid']) <= 0}">
                         <b>{{ (i['montoSaldoTotal']) | currency:'MXN':'symbol-narrow':'.2-2' }}</b>
