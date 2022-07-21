@@ -50,6 +50,12 @@ export class CancelHotelDialogComponent implements OnInit {
   }
 
   onNoClick( f = null ): void {
+
+    if( f == null ){
+      if( this.item['insuranceFlag'] ){
+        f = true
+      }
+    }
     this.editPaymentDialog.close( f );
   }
 
@@ -73,7 +79,7 @@ export class CancelHotelDialogComponent implements OnInit {
 
     let packs = []
     for( let i of itms ){
-      if( i['itemPacked'] == this.item['itemLocatorId'] ){
+      if( i['itemPacked'] == this.item['itemLocatorId'] && i['isCancel'] == 0){
         i['montoPagado'] = this._h.moneyFormat(i['montoPagado'])
         i['montoEnValidacion'] = this._h.moneyFormat(i['montoEnValidacion'])
         packs.push(i)
@@ -111,6 +117,28 @@ export class CancelHotelDialogComponent implements OnInit {
 
                 });
 
+  }
+
+  cancelIns( i, f ){
+    if( f ){
+      i['insXldLoading'] = true
+
+      this._api.restfulPut( i, 'Rsv/xldInsV12' )
+          .subscribe( res => {
+            i['insXldLoading'] = false
+            i['insuranceFlag'] = true
+
+          }, err => {
+            i['insXldLoading'] = false
+            const error = err.error;
+            this._init.snackbar('error', error.msg, err.status );
+            console.error(err.statusText, error.msg);
+
+          });
+    }else{
+      i['insuranceFlag'] = true
+      i['insuranceKeep'] = true
+    }
   }
 
 }

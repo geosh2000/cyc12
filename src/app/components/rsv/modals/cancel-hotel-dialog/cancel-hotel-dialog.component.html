@@ -128,8 +128,9 @@
                 <mat-divider></mat-divider>
             </ng-container>
         </ng-container>
+
         <ng-container *ngIf="item['packs'].length > 0">
-            <mat-list-item role="listitem">
+            <mat-list-item role="listitem" style="height: auto!important">
                 <div class="container d-flex justify-content-between">
                     <div class="text-primary"><b>Servicios Incluidos a cancelar</b><br>(penalidad aplicable)</div>
                     <div style="font-size: smaller;">
@@ -139,14 +140,35 @@
             </mat-list-item>
             <mat-divider></mat-divider>
         </ng-container>
+        
     </mat-list>
 
+    <ng-container *ngIf="item['insuranceRelated'] != null">
+        <mat-list role="list">
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Cancelar Seguro</b></div>
+                    <div *ngIf="item['insXldLoading']">
+                        <mat-progress-bar mode="buffer"></mat-progress-bar>
+                    </div>
+                    <div *ngIf="!item['insXldLoading'] && !item['insuranceFlag']">
+                        <button mat-raised-button class="ms-2" color="accent" (click)="cancelIns(item, false)" [disabled]="_api.isLoading | async">Mantener</button>
+                        <button mat-raised-button class="ms-2" color="warn" (click)="cancelIns(item, true)" [disabled]="_api.isLoading | async">Cancelar</button>
+                    </div>
+                    <div *ngIf="!item['insXldLoading'] && item['insuranceFlag']">
+                        Seguro {{ item['insuranceKeep'] ? 'se mantiene' : 'cancelado' }}
+                    </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+        </mat-list>
+    </ng-container>
         <!-- <pre>{{ xldPolicy | json }}</pre> -->
  
     <mat-card-actions>
         <div class="container d-flex justify-content-end">
             <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]="_api.isLoading | async">Cerrar</button>
-            <button mat-raised-button class="ms-2" color="warn" (click)="sendCancellation()" [disabled]="!(this.item['isQuote'] == 1 && this.item['isConfirmable'] == 0) && (!item['xldType'] || item['penalidad'] == null) || (_api.isLoading | async)">Aplicar Cancelacion</button>
+            <button mat-raised-button class="ms-2" color="warn" (click)="sendCancellation()" [disabled]="(item['insuranceRelated'] != null && !item['insuranceFlag']) || !(this.item['isQuote'] == 1 && this.item['isConfirmable'] == 0) && (!item['xldType'] || item['penalidad'] == null) || (_api.isLoading | async)">Aplicar Cancelacion</button>
         </div>
     </mat-card-actions>
     <mat-card-footer>

@@ -155,7 +155,7 @@
                     <th mat-header-cell *matHeaderCellDef><b>Acciones</b></th>
                     <td mat-cell *matCellDef="let link"> 
 
-                        <button mat-raised-button color="primary" aria-label="Aplicar" matTooltip="Aplicar" matTooltipPosition="above" (click)="apply(link)" [disabled]="link.loading" *ngIf="!link.applied">
+                        <button mat-raised-button color="primary" aria-label="Aplicar" (click)="apply(link)" [disabled]="link.loading" *ngIf="!link.applied">
                             Aplicar
                         </button> 
                         <mat-progressbar mode="'buffer" *ngIf="link.loading">

@@ -361,7 +361,8 @@ export class ModifyHotelDialog implements OnInit {
       },
       hasIns: parseInt(i['pkgItems']['totalActive']) > 0,
       keepOld: pkgFlag[0],
-      pkgNew: pkgFlag[1]
+      pkgNew: pkgFlag[1],
+      insRate: i['changeQuote']['assist']['price']
     }
 
     i['hotelChanging'] = true;
@@ -372,6 +373,7 @@ export class ModifyHotelDialog implements OnInit {
 
                   i['hotelChanging'] = false;
 
+                  this._init.snackbar('success', res['msg'], 'Guardado' );
                   this.modifyDialog.close( true );
                   
 
