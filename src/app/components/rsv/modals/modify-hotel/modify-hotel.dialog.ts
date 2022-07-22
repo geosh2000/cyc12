@@ -388,5 +388,7 @@ export class ModifyHotelDialog implements OnInit {
     
 
   }
+
+  
   
 }

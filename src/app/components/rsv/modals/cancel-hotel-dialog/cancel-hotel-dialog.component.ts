@@ -59,12 +59,49 @@ export class CancelHotelDialogComponent implements OnInit {
     this.editPaymentDialog.close( f );
   }
 
+  penalidadTotal( i ){
+    let hotel = i['penalidad']
+    let packs = 0
+    let seguro = 0
+
+    for( let p of this.item['packs'] ){
+      if( p['keep'] ){ 
+        packs += p['montoPagado'] > 0 ? parseFloat(p['monto']) : 0 
+      }
+    }
+
+    this.item['minPenalty'] = packs 
+
+    return hotel + packs + seguro
+  }
+  
+  montoReembolso( i ){
+    let penalty = this.penalidadTotal(i)
+    let pagado = parseFloat(i['montoPagado']) + parseFloat(i['montoEnValidacion']) + parseFloat(i['sg_montoPagadoTotal']) + parseFloat(i['pkgItems']['totalValidacion']) + parseFloat(i['pkgItems']['totalPagado'])
+
+    return pagado - penalty
+  }
+
+  packsSelected( e ){
+    let selected = e.source._value
+    
+    let i = 0
+    for( let p of this.item['packs'] ){
+      p['keep'] = selected.includes(i)
+
+      i++
+    }
+
+    console.log( this.item['packs'] )
+  }
+
   getPolicy(){
 
     this._api.restfulPut( {item: this.item}, 'Rsv/getXldPolicy' )
     .subscribe( res => {
 
       this.xldPolicy = res['data']
+      this.item['penalidad'] = parseFloat(this.xldPolicy['penalidadTotal']) > parseFloat(this.item['montoPagado']) + parseFloat(this.item['montoEnValidacion']) ? parseFloat(this.item['montoPagado']) + parseFloat(this.item['montoEnValidacion']) : parseFloat(this.xldPolicy['penalidadTotal'])
 
     }, err => {
       
@@ -77,16 +114,41 @@ export class CancelHotelDialogComponent implements OnInit {
 
   filterPkgIncl( itms ){
 
+    
+    this.item['minPenalty'] = 0
+
     let packs = []
     for( let i of itms ){
-      if( i['itemPacked'] == this.item['itemLocatorId'] && i['isCancel'] == 0){
+      console.log(i['itemPacked'], this.item['itemLocatorId'], i['sg_itemRelated'], i['isCancel'] )
+      if( (i['itemPacked'] == this.item['itemLocatorId'] || i['sg_itemRelated'] == this.item['itemLocatorId']) && i['isCancel'] == 0){
+        console.log(i)
+
+        if( ( parseFloat(i['montoPagado']) + parseFloat(i['montoEnValidacion'])) != 0 ){ 
+          i['keep'] = true
+
+          this.item['minPenalty'] += i['monto']
+
+          if( moment(i['llegada']) <= moment() ){
+            i['notCancellable'] = true
+          }
+        }
+
+
         i['montoPagado'] = this._h.moneyFormat(i['montoPagado'])
         i['montoEnValidacion'] = this._h.moneyFormat(i['montoEnValidacion'])
+
+        if( i['itemType'] == '10' ){
+          this.item['sg_montoTotal'] = (this.item['sg_montoTotal'] ?? 0) + parseFloat(i['monto']) 
+          this.item['sg_montoPagadoTotal'] = parseFloat(i['montoPagado'] ?? 0) + parseFloat(i['montoEnValidacion'] ?? 0)
+        }
+
         packs.push(i)
       }
     }
 
+    console.log (this.item)
     return packs
+
   }
 
   sendCancellation(){
@@ -140,5 +202,6 @@ export class CancelHotelDialogComponent implements OnInit {
       i['insuranceKeep'] = true
     }
   }
+
 
 }

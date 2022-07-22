@@ -2,7 +2,7 @@
     <ng-container *ngFor="let i of data['items']">
 
         <!-- ESCONDE SEGUROS CANCELADOS SI EL FLAG ESTA ACTIVADO -->
-        <mat-expansion-panel class="my-2" style="background: #ebe6f640;" *ngIf="!(i['itemType'] == 10 && hideInsXld && i['isCancel'] == '1')" [hideToggle]="true">
+        <mat-expansion-panel class="my-2" style="background: #ebe6f640;" *ngIf="!((i['itemType'] == 10 || i['itemType'] == 15) && hideInsXld && i['isCancel'] == '1' && (i['montoPenalidad'] == 0))" [hideToggle]="true">
 
             <!-- RESUMEN CONTRAIDO -->
             <mat-expansion-panel-header class="p-0">
@@ -175,7 +175,7 @@
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="setPH(i)"
-                    *ngIf="_init.checkSingleCredential('rsv_set_ph') && i['isQuote']==1 && i['montoPagado'] == 0 && i['montoEnValidacion'] == 0"
+                    *ngIf="_init.checkSingleCredential('rsv_set_ph') && i['montoPagado'] == 0 && i['montoEnValidacion'] == 0"
                     [disabled]=" _api.isLoading | async">
                     <mat-icon>payments</mat-icon>
                     &nbsp;Set PH
