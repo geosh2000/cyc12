@@ -85,7 +85,7 @@ import Swal from 'sweetalert2';
         return false
       }
   
-      if( i['itemType'] != '1' ){
+      if( i['itemType'] != '1' && !this._init.checkSingleCredential('allmighty') ){
         this._init.snackbar( 'error', 'Este servicio no permite realizar un pago parcial. El prepago debe hacerse al 100%', 'ERROR!')
         i['loadingEdit'] = false;
         return false

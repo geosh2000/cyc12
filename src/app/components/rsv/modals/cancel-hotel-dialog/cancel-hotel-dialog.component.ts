@@ -116,6 +116,8 @@ export class CancelHotelDialogComponent implements OnInit {
 
     
     this.item['minPenalty'] = 0
+    this.item['sg_montoTotal'] = 0
+    this.item['sg_montoPagadoTotal'] = 0
 
     let packs = []
     for( let i of itms ){
