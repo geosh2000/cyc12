@@ -26,6 +26,9 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     data: {}
   }
 
+  totalAmmount = 0
+  totalsIndex = []
+
   levelsData = {}
 
   levelNames = {
@@ -221,7 +224,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
       if( this.rsvForm.get('data.hab' + i + '.hotel.monto') ){
         (this.rsvForm.get('data.hab' + i + '.hotel') as  UntypedFormGroup).removeControl('monto')
       }
-  
+
       (this.rsvForm.get('data.hab' + i + '.hotel') as UntypedFormGroup).addControl('monto', this.fb.group({
         monto:          [{ value: insPaq ? habMonto['insPaq']['hotelRate'] : this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
         montoOriginal:  [{ value: this.hotelVal( habMonto.total.neta, hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
@@ -236,9 +239,19 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
         lv_goalCode:        [{ value: this.levelSelected.data['code'],  disabled: false }, [ Validators.required ] ],
         lv_goalName:        [{ value: this.levelSelected.data['name'],  disabled: false }, [ Validators.required ] ],
         lv_originalRate:[{ value: this.hotelVal( habMonto.total['n' + this.levelSelected.selected ], hData.hotel.tipoCambio, usd, hGpo ),  disabled: false }, [ Validators.required ] ],
-        importeManual:  [{ value: insPaq ? 1 : 0,  disabled: false }, [ Validators.required ] ], 
+        importeManual:  [{ value: insPaq ? (habMonto['insPaq']['importeManual'] ? 1 : 0) : 0,  disabled: false }, [ Validators.required ] ], 
       }))
+
+      if( this.totalsIndex.indexOf('data.hab' + i + '.hotel.monto.monto') == -1 ){
+        this.totalsIndex.push('data.hab' + i + '.hotel.monto.monto')
+        this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value)
+        console.log('Total Ammount: ', this.totalAmmount, 'data.hab' + i + '.hotel.monto.monto', +(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value))
+      }
     }
+  }
+
+  roomPrice( i ){
+    return (parseFloat(this.rsvForm.get('data.hab' + (i + 1) + '.hotel.monto.monto').value) + (parseFloat(this.rsvForm.get('hasInsurance').value) ? parseFloat(this.rsvForm.get('data.hab' + (i + 1) + '.insurance.monto.monto').value) : 0))
   }
   
 
@@ -298,6 +311,12 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
               sg_cobertura: [{ value: 'inclusion',  disabled: false }, [ Validators.required ] ],
             }),
           }));
+
+          if( this.totalsIndex.indexOf('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto') == -1 ){
+            this.totalsIndex.push('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto')
+            this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value)
+            console.log('Total Ammount: ', this.totalAmmount, 'data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto',+(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value))
+          }
 
         }
       }
@@ -359,6 +378,12 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
             sg_cobertura: [{ value: cobertura,  disabled: false }, [ Validators.required ] ],
           }),
         }));
+
+        if( this.totalsIndex.indexOf('data.hab' + i + '.insurance.monto.monto') == -1 ){
+          this.totalsIndex.push('data.hab' + i + '.insurance.monto.monto')
+          this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value)
+          console.log('Total Ammount: ', this.totalAmmount,'data.hab' + i + '.insurance.monto.monto', +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value))
+        }
 
       }
 

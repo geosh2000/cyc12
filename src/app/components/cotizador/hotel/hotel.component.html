@@ -228,7 +228,7 @@
                                                                 </span>
                                                             </b>
                                                             <br><small style="font-size: xx-small;">( {{ pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab )  | currency:'USD':'symbol-narrow':'.2-2' }} p/n )</small>
-                                                            <!-- <br><small style="font-size: xx-small;">( pkg pax: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'pax' ) }} // level: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'level' ) }} // total: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'total' ) }} // dif: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'dif' ) }} // orig: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'cRate' ) }} // days: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'days' ) }}  // hotelRate: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'hotelRate' ) }} )</small> -->
+                                                            <br><small style="font-size: xx-small;">( dif: {{ pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'dif', c['tipoCambio'], hotelSearch.get('isUSD').value, extraInfo['grupo']  ) }}  )</small>
                                                         </div>
                                                         
                                                     </div>
@@ -396,30 +396,30 @@
                                             <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                     </small></div>
                                 </div>
-                                <div class="col-xs-12 col-lg-6 d-flex justify-content-center align-items-center" style="border: solid 1px green;" *ngIf="extraInfo['grupo']['hasPaq'] == 1">
+                                <div class="col-xs-12 col-lg-6 d-flex justify-content-center align-items-center" style="border: solid 1px green;"  *ngIf="extraInfo['grupo']['insuranceIncludedPaq'] == '1' && (!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true) && extraInfo['grupo']['hasPaq'] == 1">
                                     <!-- <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true) && extraInfo['grupo']['hasPaq'] == 1"> -->
-                                    <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="1 == 2">
+                                    <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center">
                                 <!-- <div class="col-xs-12 col-lg-6 d-flex justify-content-center align-items-center">
                                     <div class="d-flex container justify-content-between align-items-center m-0 p-0 text-center" *ngIf="(!c['habs']['hasErrors'] || hotelSearch.get('noRestrict').value == true)"> -->
                                         <div>
-                                            <button mat-raised-button type="button" (click)="rsvPaq(c)" color="paquete">Reservar Paquete ( {{ paqAmmount(c, 'total') | currency:'USD':'symbol-narrow':'.2-2' }} )</button>
+                                            <button mat-raised-button type="button" (click)="doRsv(c, true)" color="paquete">Reservar Paquete ( {{ c['habs']['totalPaqs'][hotelSearch.get('isUSD').value ? 'usd' : 'mxn']['totalPaq'] | currency:'USD':'symbol-narrow':'.2-2' }} )</button>
                                         </div>
 
                                         <!-- INFO ORIGINAL -->
 
                                         <div class="m-0 p-0 text-center">
                                             <small class="text-success">
-                                                Valor real de extras: {{ ((extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1) ? (20 * c['habs']['total']['pax'] * (hotelSearch.get('isUSD').value ? 1 : c['tipoCambio'])) : 0) + (( (hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros']['total'][summarySearch['nacionalidad']][summarySearch['cobertura']]['normal_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                Valor real de extras: {{ c['habs']['totalPaqs'][hotelSearch.get('isUSD').value ? 'usd' : 'mxn']['totalIns'] | currency:'USD':'symbol-narrow':'.2-2' }} 
                                                 <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                 <br>
-                                                Valor en paquete: {{ paqAmmount(c, 'dif') | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                Valor en paquete: {{ c['habs']['totalPaqs'][hotelSearch.get('isUSD').value ? 'usd' : 'mxn']['totalDif'] | currency:'USD':'symbol-narrow':'.2-2' }} 
                                                 <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                         </small></div>
                                         <div class="me-1">
                                             <small style="font-size: xx-small;">
                                                 *Incluye seguro 
-                                                    <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1">, traslado</span>
-                                                <br>** Pago minimo inicial {{ paqAmmount(c, 'min') | currency:'USD':'symbol-narrow':'.2-2' }}
+                                                    <!-- <span *ngIf="extraInfo['grupo']['freeTransfer'] == '1' && (c['habs']['total']['monto']['n1']['monto'] / c['habs']['total']['adultos'] ) >= extraInfo['grupo']['freeTransferMinUsdPP']  && c['habs']['total']['adultos'] > 1">, traslado</span>
+                                                <br>** Pago minimo inicial {{ paqAmmount(c, 'min') | currency:'USD':'symbol-narrow':'.2-2' }} -->
                                             </small>
                                         </div>
 

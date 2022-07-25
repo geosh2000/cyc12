@@ -80,7 +80,7 @@ export class PackageBuilderComponent implements OnInit {
         insRate: (this.insPaxRate * p * (usd ? 1 : parseFloat(t) + 1)).toFixed(2),
         pax: p,
         total: (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g) + p * insRate).toFixed(2),
-        dif: (this.hotelVal(d['total']['n' + cl], t, usd, g) - (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g) + p * insRate)).toFixed(2),
+        dif: (this.hotelVal(d['total']['n' + cl], t, usd, g) - (this.hotelVal(d['total']['n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl)], t, usd, g) + (this.insPaxRate * p * (usd ? 1 : parseFloat(t) + 1)))).toFixed(2),
         cRate: (this.hotelVal(d['total']['n' + cl], t, usd, g)).toFixed(2),
         paqs: insQ,
         days: days

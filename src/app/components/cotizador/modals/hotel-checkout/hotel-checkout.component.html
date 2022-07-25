@@ -101,7 +101,7 @@
                                 </span>
                                 <span>
                                     <b>
-                                        {{ (rsvForm.get('data.hab' + (i + 1) + '.hotel.monto.monto').value + (rsvForm.get('hasInsurance').value ? rsvForm.get('data.hab' + (i + 1) + '.insurance.monto.monto').value : 0)) | currency:'USD':'symbol-narrow':'.2-2' }}
+                                        {{ roomPrice(i) | currency:'USD':'symbol-narrow':'.2-2' }}
                                     </b>
                                 </span>
                             </span>
@@ -181,7 +181,8 @@
                     {{ (( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio']) * rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + rsvData['habSelected']['selectedLevel']]['monto'] + (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * ((rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio']) * rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span>
                 </b> -->
                 <!-- <button noDobuleClick class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary">Reservar por  {{ (( rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['hotel']['tipoCambio']) * rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + levelSelected['selected'] ]['monto'] + (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * ((rsvData['habSelected']['summarySearch']['isUSD'] ? 1 : rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio']) * rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci'])) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span></button> -->
-                <button noDobuleClick class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary">Reservar por  {{ (
+                <button noDobuleClick class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary">Reservar por  {{ totalAmmount | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span></button>
+                <!-- <button noDobuleClick class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary">Reservar por  {{ (
                     hotelVal( rsvData['habSelected']['hotel']['habs']['total']['monto']['n' + levelSelected['selected'] ], rsvData['habSelected']['hotel']['tipoCambio'], rsvData['habSelected']['summarySearch']['isUSD'] )  + 
                     (
                         (rsvData['formRsv']['rsvInsurance'] ? 1 : 0) * 
@@ -190,7 +191,7 @@
                         rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['tipoCambio'])
                     ) * 
                     rsvData['habSelected']['extraInfo']['seguros']['total'][rsvData['habSelected']['summarySearch']['nacionalidad']][rsvData['habSelected']['summarySearch']['cobertura']]['publico_ci']
-                ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span></button>
+                ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvData['habSelected']['summarySearch']['isUSD'] ? 'USD' : 'MXN' }}</span></button> -->
             </div>
         </div>
 </form>

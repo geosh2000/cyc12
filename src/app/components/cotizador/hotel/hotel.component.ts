@@ -320,7 +320,7 @@ export class CotizaHotelComponent implements OnInit {
     this.loading['cotizar'] = true
 
     this._api.restfulPut( f.value, 'Venta/cotizaV2' )
-                .subscribe( res => {
+                .subscribe( async res => {
 
                   this.loading['cotizar'] = false;
                   this.summarySearch = f.value
@@ -335,7 +335,35 @@ export class CotizaHotelComponent implements OnInit {
 
                   for( let i of result ){
                     i['tarifas'] = JSON.parse(i['jsonData']) 
-                    i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, f, result['tipoCambio'])
+                    i['habs'] = await this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, f, i['tipoCambio'])
+
+                    let totalPaq = [0,0]
+                    let totalIns = [0,0]
+                    let totalDif = [0,0]
+
+                    for( let h in i['habs']['porHabitacion'] ){
+                      i['habs']['porHabitacion'][h]['paq'] = this.paqWInc( i['habs']['porHabitacion'][h], i['tipoCambio'], h )
+                      totalPaq[0] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['montoPaq'])
+                      totalPaq[1] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['montoPaq'])
+                      totalIns[0] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['seguro'])
+                      totalIns[1] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['seguro'])
+                      totalDif[0] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['montoPaq']) - parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['montoMinimo'])
+                      totalDif[1] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['montoPaq']) - parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['montoMinimo'])
+                    }
+
+                    i['habs']['totalPaqs'] = {
+                        mxn: {
+                          totalPaq: totalPaq[0].toFixed(2),
+                          totalIns: totalIns[0].toFixed(2),
+                          totalDif: totalDif[0].toFixed(2)
+                        },
+                        usd: {
+                          totalPaq: totalPaq[1].toFixed(2),
+                          totalIns: totalIns[1].toFixed(2),
+                          totalDif: totalDif[1].toFixed(2)
+                        }                      
+                    }
+
                     i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
                     
                     // TOTALIZA DIFERENCIAS PAQUETES
@@ -403,11 +431,13 @@ export class CotizaHotelComponent implements OnInit {
       i['tarifas'] = JSON.parse(i['jsonData']) 
       i['habs'] = this.habPriceBuild(JSON.parse(JSON.stringify(habDet)),i, this.hotelSearch, true)
       i['hotelUrl'] = ''
+
+      
       // i['hotelUrl'] = this.sanitization.bypassSecurityTrustStyle(`url(${i['hotelUrl']})`)
     }
 
 
-    // console.log(result)
+    console.log(result)
     // console.log(this.extraInfo)
     this.cotizacion = result
 
@@ -483,137 +513,143 @@ export class CotizaHotelComponent implements OnInit {
 
   habPriceBuild( b, i, f, tc, test = false ){
 
-    let r = i['tarifas']
-    let htl = i['hotel']
-    let noR = this._init.checkSingleCredential('app_cotizador_allLevels')
+    return new Promise(resolve => {
     
-    for( let h in b['porHabitacion']){
-      for( let f in r ){
-        
-        let neta = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] )
-        let neta_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] )
-        
-        
-        b['porHabitacion'][h]['fechas'][f] = {
-          'neta': neta,
-          'n1': {'monto_m': (neta_m * (1-r[f]['n1']['descuento'])), 'monto': (neta * (1-r[f]['n1']['descuento'])), 'descuento': r[f]['n1']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n1']['descuento'])) / neta) },
-          'n2': {'monto_m': (neta_m * (1-r[f]['n2']['descuento'])), 'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n3': {'monto_m': (neta_m * (1-r[f]['n3']['descuento'])), 'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n4': {'monto_m': (neta_m * (1-r[f]['n4']['descuento'])), 'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          'n5': {'monto_m': (neta_m * (1-r[f]['n5']['descuento'])), 'monto': (neta * (1-r[f]['n5']['descuento'])), 'descuento': r[f]['n5']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n5']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
-          isClosed: r[f]['isClosed'] == 1
-        }
-        
-        // HAB TOTAL
-        b['porHabitacion'][h]['total']['neta']['monto'] += neta
-        b['porHabitacion'][h]['total']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
-        b['porHabitacion'][h]['total']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
-        b['porHabitacion'][h]['total']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
-        b['porHabitacion'][h]['total']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
-        b['porHabitacion'][h]['total']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
-        
-        b['porHabitacion'][h]['total']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
-        b['porHabitacion'][h]['total']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
-        b['porHabitacion'][h]['total']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
-        b['porHabitacion'][h]['total']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
-        b['porHabitacion'][h]['total']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
-
-        // TOTALES GENERALES
-        b['total']['monto']['neta']['monto'] += neta
-        b['total']['monto']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
-        b['total']['monto']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
-        b['total']['monto']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
-        b['total']['monto']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
-        b['total']['monto']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
-        
-        b['total']['monto']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
-        b['total']['monto']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
-        b['total']['monto']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
-        b['total']['monto']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
-        b['total']['monto']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
-        
-        // FIXED MXN START
-        // HAB TOTAL
-        b['porHabitacion'][h]['total']['neta']['monto_m'] += neta_m
-        b['porHabitacion'][h]['total']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
-        b['porHabitacion'][h]['total']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
-        b['porHabitacion'][h]['total']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
-        b['porHabitacion'][h]['total']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
-        b['porHabitacion'][h]['total']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
-        
-                                        
-        // TOTALES GENERALES
-        b['total']['monto']['neta']['monto_m'] += neta_m
-        b['total']['monto']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
-        b['total']['monto']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
-        b['total']['monto']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
-        b['total']['monto']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
-        b['total']['monto']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
-        
-        // FIXED MXN END
-
-        b['total']['levels']['n1']['active'] = r[f]['n1']['active'] == 0 ? false : b['total']['levels']['n1']['active']
-        b['total']['levels']['n2']['active'] = r[f]['n2']['active'] == 0 ? false : b['total']['levels']['n2']['active']
-        b['total']['levels']['n3']['active'] = r[f]['n3']['active'] == 0 ? false : b['total']['levels']['n3']['active']
-        b['total']['levels']['n4']['active'] = r[f]['n4']['active'] == 0 ? false : b['total']['levels']['n4']['active']
-        b['total']['levels']['n5']['active'] = r[f]['n5']['active'] == 0 ? false : b['total']['levels']['n5']['active']
-        
-        b['total']['levels']['n1']['enabled'] = (r[f]['n1']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n1']['enabled']
-        b['total']['levels']['n2']['enabled'] = (r[f]['n2']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n2']['enabled']
-        b['total']['levels']['n3']['enabled'] = (r[f]['n3']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n3']['enabled']
-        b['total']['levels']['n4']['enabled'] = (r[f]['n4']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n4']['enabled']
-        b['total']['levels']['n5']['enabled'] = (r[f]['n5']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n5']['enabled']
-        
-        b['total']['levels']['noR'] = noR
-
-      }
-
-      // insurance package build
-      for( let l = 1; l <= 5; l++ ){
-        b['porHabitacion'][h]['total']['pqLevel_' + l] = {
-          level : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'level', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-          rate  : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'rate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-          pax : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'pax', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-          total : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'total', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-          dif : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'dif', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-          cRate : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'cRate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
-        }
-      }
-
-      if( b['totalDif'] ){
-          b['totalDif']['l1'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif'])
-          b['totalDif']['l2'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']) 
-          b['totalDif']['l3'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif'])
-          b['totalDif']['l4'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif'])
-          b['totalDif']['l5'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif'])
-      }else{
-        b['totalDif'] = {
-          l1:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif']),
-          l2:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']), 
-          l3:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif']),
-          l4:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif']),
-          l5:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif']),
-        }
-      }
-
-      if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){
-        b['hasTransfer'] = false
-      }
-
-      let errors = this.lookForErrors( i, b['porHabitacion'][h], f, test )
-
-      b['porHabitacion'][h]['errors'] = errors
-
-      if( errors.flag ){
-        b['hasErrors'] = true
-      }
+      let r = i['tarifas']
+      let htl = i['hotel']
+      let noR = this._init.checkSingleCredential('app_cotizador_allLevels')
       
-      if( !errors.skippable ){
-        b['skippableErrors'] = false
-      }
-    }
+      for( let h in b['porHabitacion']){
+        
+        for( let f in r ){
+          
+          let neta = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] )
+          let neta_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] )
+          
+          
+          b['porHabitacion'][h]['fechas'][f] = {
+            'neta': neta,
+            'n1': {'monto_m': (neta_m * (1-r[f]['n1']['descuento'])), 'monto': (neta * (1-r[f]['n1']['descuento'])), 'descuento': r[f]['n1']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n1']['descuento'])) / neta) },
+            'n2': {'monto_m': (neta_m * (1-r[f]['n2']['descuento'])), 'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+            'n3': {'monto_m': (neta_m * (1-r[f]['n3']['descuento'])), 'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+            'n4': {'monto_m': (neta_m * (1-r[f]['n4']['descuento'])), 'monto': (neta * (1-r[f]['n4']['descuento'])), 'descuento': r[f]['n4']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n4']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+            'n5': {'monto_m': (neta_m * (1-r[f]['n5']['descuento'])), 'monto': (neta * (1-r[f]['n5']['descuento'])), 'descuento': r[f]['n5']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n5']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
+            isClosed: r[f]['isClosed'] == 1
+          }
+          
+          // HAB TOTAL
+          b['porHabitacion'][h]['total']['neta']['monto'] += neta
+          b['porHabitacion'][h]['total']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
+          b['porHabitacion'][h]['total']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
+          b['porHabitacion'][h]['total']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
+          b['porHabitacion'][h]['total']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
+          b['porHabitacion'][h]['total']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
+          
+          b['porHabitacion'][h]['total']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
+          b['porHabitacion'][h]['total']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
+          b['porHabitacion'][h]['total']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
+          b['porHabitacion'][h]['total']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
+          b['porHabitacion'][h]['total']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
 
-    return b
+          // TOTALES GENERALES
+          b['total']['monto']['neta']['monto'] += neta
+          b['total']['monto']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
+          b['total']['monto']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
+          b['total']['monto']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
+          b['total']['monto']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
+          b['total']['monto']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
+          
+          b['total']['monto']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
+          b['total']['monto']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
+          b['total']['monto']['n3']['relativeDisc'] = 1 - (b['total']['monto']['n3']['monto'] / b['total']['monto']['n1']['monto'])
+          b['total']['monto']['n4']['relativeDisc'] = 1 - (b['total']['monto']['n4']['monto'] / b['total']['monto']['n1']['monto'])
+          b['total']['monto']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
+          
+          // FIXED MXN START
+          // HAB TOTAL
+          b['porHabitacion'][h]['total']['neta']['monto_m'] += neta_m
+          b['porHabitacion'][h]['total']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
+          b['porHabitacion'][h]['total']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
+          b['porHabitacion'][h]['total']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
+          b['porHabitacion'][h]['total']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
+          b['porHabitacion'][h]['total']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
+          
+                                          
+          // TOTALES GENERALES
+          b['total']['monto']['neta']['monto_m'] += neta_m
+          b['total']['monto']['n1']['monto_m'] += (neta_m * (1-r[f]['n1']['descuento']))
+          b['total']['monto']['n2']['monto_m'] += (neta_m * (1-r[f]['n2']['descuento']))
+          b['total']['monto']['n3']['monto_m'] += (neta_m * (1-r[f]['n3']['descuento']))
+          b['total']['monto']['n4']['monto_m'] += (neta_m * (1-r[f]['n4']['descuento']))
+          b['total']['monto']['n5']['monto_m'] += (neta_m * (1-r[f]['n5']['descuento']))
+          
+          // FIXED MXN END
+
+          b['total']['levels']['n1']['active'] = r[f]['n1']['active'] == 0 ? false : b['total']['levels']['n1']['active']
+          b['total']['levels']['n2']['active'] = r[f]['n2']['active'] == 0 ? false : b['total']['levels']['n2']['active']
+          b['total']['levels']['n3']['active'] = r[f]['n3']['active'] == 0 ? false : b['total']['levels']['n3']['active']
+          b['total']['levels']['n4']['active'] = r[f]['n4']['active'] == 0 ? false : b['total']['levels']['n4']['active']
+          b['total']['levels']['n5']['active'] = r[f]['n5']['active'] == 0 ? false : b['total']['levels']['n5']['active']
+          
+          b['total']['levels']['n1']['enabled'] = (r[f]['n1']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n1']['enabled']
+          b['total']['levels']['n2']['enabled'] = (r[f]['n2']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n2']['enabled']
+          b['total']['levels']['n3']['enabled'] = (r[f]['n3']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n3']['enabled']
+          b['total']['levels']['n4']['enabled'] = (r[f]['n4']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n4']['enabled']
+          b['total']['levels']['n5']['enabled'] = (r[f]['n5']['allEnabled'] == 1 || noR) == false ? false : b['total']['levels']['n5']['enabled']
+          
+          b['total']['levels']['noR'] = noR
+
+        }
+
+        // insurance package build
+        for( let l = 1; l <= 5; l++ ){
+          b['porHabitacion'][h]['total']['pqLevel_' + l] = {
+            level : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'level', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+            rate  : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'rate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+            pax : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'pax', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+            total : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'total', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+            dif : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'dif', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+            cRate : this.pkg.defInsPaq( b['porHabitacion'][h], l, 'cRate', tc, this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] ),
+          }
+        }
+
+        if( b['totalDif'] ){
+            b['totalDif']['l1'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif'])
+            b['totalDif']['l2'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']) 
+            b['totalDif']['l3'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif'])
+            b['totalDif']['l4'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif'])
+            b['totalDif']['l5'] += parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif'])
+        }else{
+          b['totalDif'] = {
+            l1:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_1']['dif']),
+            l2:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_2']['dif']), 
+            l3:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_3']['dif']),
+            l4:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_4']['dif']),
+            l5:  parseFloat(b['porHabitacion'][h]['total']['pqLevel_5']['dif']),
+          }
+        }
+
+        if( this.extraInfo['grupo']['freeTransfer'] == '1' && (b['total']['monto']['n1']['monto'] / b['total']['adultos'] ) >= this.extraInfo['grupo']['freeTransferMinUsdPP']  && b['total']['adultos'] > 1 ){
+          b['hasTransfer'] = false
+        }
+
+        let errors = this.lookForErrors( i, b['porHabitacion'][h], f, test )
+
+        b['porHabitacion'][h]['errors'] = errors
+
+        if( errors.flag ){
+          b['hasErrors'] = true
+        }
+        
+        if( !errors.skippable ){
+          b['skippableErrors'] = false
+        }
+
+        
+      }
+
+      resolve(b)
+    })
   }
 
   lookForErrors( i, b, f, test ){
@@ -808,21 +844,39 @@ export class CotizaHotelComponent implements OnInit {
     this.extraInfo['grupo']['insuranceIncluded'] = false
   }
 
-  doRsv( r = {} ){
+  doRsv( r = {}, over = false ){
+
+    // over en true es para paquetes
+    let selectedLevel = over ? (this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' ? 2 : this.selectedLevel) : this.selectedLevel
+    let usd = this.hotelSearch.get('isUSD').value
     
-    if( this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' && this.selectedLevel != 4){
+    if( this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' && selectedLevel != 4){
       for( let h in r['habs']['porHabitacion'] ){
         let hab = r['habs']['porHabitacion'][h]
-        hab['insPaq'] = this.pkg.defInsPaq( hab, this.selectedLevel, 'array', r['tipoCambio'], this.hotelSearch.get('isUSD').value, this.extraInfo['grupo'] )
+        hab['insPaq'] = this.pkg.defInsPaq( hab, selectedLevel, 'array', r['tipoCambio'], usd, this.extraInfo['grupo'] )
+        hab['insPaq']['importeManual'] = hab['paq'][usd ? 'paqueteUSD' : 'paqueteMXN']['montoManual'] != hab['paq'][usd ? 'paqueteUSD' : 'paqueteMXN']['montoHotel']
+
+        if( over ){
+          hab['insPaq']['hotelRate'] = hab['paq'][usd ? 'paqueteUSD' : 'paqueteMXN']['montoManual']
+        }
       }
+    }
+
+    let ss = JSON.parse(JSON.stringify(this.summarySearch))
+    let ei = JSON.parse(JSON.stringify(this.extraInfo))
+    
+    if( over ){
+      ss['isPaq'] = true
+      ss['paqXfer'] = false
+      ei['grupo']['insuranceIncluded'] = true
     }
 
     let data = {
       hotel: r,
-      level: this.selectedLevel,
-      extraInfo: this.extraInfo,
-      summarySearch: this.summarySearch,
-      selectedLevel: this.selectedLevel,
+      level: selectedLevel,
+      extraInfo: ei,
+      summarySearch: ss,
+      selectedLevel: selectedLevel,
       type: 'hotel'
     }
 
@@ -1017,6 +1071,47 @@ export class CotizaHotelComponent implements OnInit {
     }
 
     return compare[0] ? compare[0][v] : false
+
+  }
+  
+  paqWInc( hab, tc, l ){
+
+    tc = parseFloat(tc)
+
+
+    let paqMxn = this.pkg.defInsPaq( hab, 2, 'array', tc, false, this.extraInfo['grupo']  )
+    let paqUsd = this.pkg.defInsPaq( hab, 2, 'array', tc, true, this.extraInfo['grupo']  )
+
+    let result = {}
+      result['paqueteMXN'] = { 
+        montoHotel: parseFloat(paqMxn['rate']).toFixed(2),
+        montoHotelAjustado: parseFloat(paqMxn['hotelRate']).toFixed(2),
+        montoMinimo: parseFloat(paqMxn['cRate']).toFixed(2),
+        montoInclusion: (parseFloat(paqMxn['cRate']) - parseFloat(paqMxn['hotelRate'])).toFixed(2),
+        seguro: (this.extraInfo['seguros'][l][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros'][l][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci'],
+        nights: this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days'),
+      }
+      result['paqueteUSD'] = { 
+        montoHotel: parseFloat(paqUsd['rate']).toFixed(2),
+        montoHotelAjustado: parseFloat(paqUsd['hotelRate']).toFixed(2),
+        montoMinimo: parseFloat(paqUsd['cRate']).toFixed(2),
+        montoInclusion: (parseFloat(paqUsd['cRate']) - parseFloat(paqUsd['hotelRate'])).toFixed(2),
+        seguro: (1) * this.extraInfo['seguros'][l][this.summarySearch['nacionalidad']][this.summarySearch['cobertura']]['publico_ci'],
+        nights: this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days'),
+      }
+
+      let paqAmmMxn = parseFloat(result['paqueteMXN']['montoHotel']) + parseFloat(result['paqueteMXN']['seguro']) + parseFloat(result['paqueteMXN']['montoInclusion'])
+      let paqAmmUsd = parseFloat(result['paqueteUSD']['montoHotel']) + parseFloat(result['paqueteUSD']['seguro']) + parseFloat(result['paqueteUSD']['montoInclusion'])
+
+      result['paqueteMXN']['montoPaq'] = result['paqueteMXN']['montoMinimo'] < paqAmmMxn ? (paqAmmMxn).toFixed(2) : (parseFloat(result['paqueteMXN']['montoMinimo'])*1.02).toFixed(2)
+      result['paqueteMXN']['montoReal'] = (parseFloat(result['paqueteMXN']['montoHotel']) + parseFloat(result['paqueteMXN']['seguro']) + parseFloat(result['paqueteMXN']['montoInclusion'])).toFixed(2)
+      result['paqueteMXN']['montoManual'] = (parseFloat(result['paqueteMXN']['montoHotel']) + (parseFloat(result['paqueteMXN']['montoPaq']) - parseFloat(result['paqueteMXN']['montoReal']))).toFixed(2)
+      result['paqueteUSD']['montoPaq'] = result['paqueteUSD']['montoMinimo'] < paqAmmUsd ? (paqAmmUsd).toFixed(2) : (parseFloat(result['paqueteUSD']['montoMinimo'])*1.02).toFixed(2)
+      result['paqueteUSD']['montoReal'] = (parseFloat(result['paqueteUSD']['montoHotel']) + parseFloat(result['paqueteUSD']['seguro']) + parseFloat(result['paqueteUSD']['montoInclusion'])).toFixed(2)
+      result['paqueteUSD']['montoManual'] = (parseFloat(result['paqueteUSD']['montoHotel']) + (parseFloat(result['paqueteUSD']['montoPaq']) - parseFloat(result['paqueteUSD']['montoReal']))).toFixed(2)
+      
+
+    return result
 
   }
   

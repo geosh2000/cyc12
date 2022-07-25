@@ -39,7 +39,7 @@ export class CancelHotelDialogComponent implements OnInit {
 
     if( moment(this.item['llegada']) >= moment() ){ this.isToday = true }
     
-    if( this.item['isQuote'] == '0' && this.item['isCancel'] == '0' ){ this.getPolicy() }
+    if( (this.item['isQuote'] == '0' || this.item['isConfirmable'] == '1') && this.item['isCancel'] == '0' ){ this.getPolicy() }
 
      if( this.item['tipoPago'] == 'PH' ){
       this.item['xldType'] = 'traspaso'
