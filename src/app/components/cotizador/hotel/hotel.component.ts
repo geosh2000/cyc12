@@ -390,7 +390,7 @@ export class CotizaHotelComponent implements OnInit {
 
                   
 
-                  console.log(result)
+                  // console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
 

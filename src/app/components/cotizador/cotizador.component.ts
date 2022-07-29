@@ -30,11 +30,11 @@ export class CotizadorComponent implements OnInit {
 
   matChange( e ){
 
-    console.log( e, this.products )
+    // console.log( e, this.products )
 
     this.displayModule = this.products[ e.index ]['title'].toLowerCase()
 
-    console.log(this.displayModule)
+    // console.log(this.displayModule)
     
   }
 

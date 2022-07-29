@@ -34,6 +34,7 @@ export class SaldarDialog implements OnInit {
 
   accSaldo = 0
   items = []
+  searchString = ''
 
   constructor(
     public saldarDialog: MatDialogRef<SaldarDialog>,
@@ -51,6 +52,8 @@ export class SaldarDialog implements OnInit {
       this.selectItems = this._formBuilder.group({
         selectedItems: ['', Validators.required]
       });
+
+      this.searchString = data['master']['masterlocatorid']
 
     }
 
@@ -73,10 +76,10 @@ export class SaldarDialog implements OnInit {
 
     for( let i of this.data['items'] ){
 
-      console.log(i['itemLocatorId'], this._h.isVigente(i['vigencia']))
-      console.log(i['itemLocatorId'], i['isCancel'], i['isCancel'] == 0)
-      console.log(i['itemLocatorId'], i['montoSaldoTotal'], i['montoSaldoTotal'] > 0)
-      console.log(i['itemLocatorId'], i['grupo'], i['grupo'] != 'ohr')
+      // console.log(i['itemLocatorId'], this._h.isVigente(i['vigencia']))
+      // console.log(i['itemLocatorId'], i['isCancel'], i['isCancel'] == 0)
+      // console.log(i['itemLocatorId'], i['montoSaldoTotal'], i['montoSaldoTotal'] > 0)
+      // console.log(i['itemLocatorId'], i['grupo'], i['grupo'] != 'ohr')
 
       if( this._h.isVigente(i['vigencia']) && i['isCancel'] == 0 && i['montoSaldoTotal'] > 0 && i['grupo'] != 'ohr' ){
 
@@ -100,6 +103,7 @@ export class SaldarDialog implements OnInit {
   }
 
   search( f ){
+
 
     this.loading['search'] = true;
 
@@ -217,6 +221,71 @@ export class SaldarDialog implements OnInit {
         resolve ( false )
       }
     })
+  }
+
+  setReembolso( i, r = true ){
+
+    let msg = r ? 'Realmente deseas enviar el monto disponible a reembolso?' : 'Realmente deseas cancelar el reembolso y disponer del monto pendiente?'
+    
+      Swal.fire({
+        icon: 'warning',
+        title: msg,
+        showCancelButton: true,
+        confirmButtonText: 'Reembolsar',
+        allowOutsideClick: false,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          Swal.showLoading()
+          this.setReemgolsoApi( i, r )
+        }
+      })
+  }
+
+  setReemgolsoApi( i, r ){
+
+    this._api.restfulPut( { op: i, isRefound: r }, 'Pagos/setToRefound' )
+                .subscribe( res => {
+
+                  Swal.close()
+                  
+                  this._init.snackbar('success', res['msg'], 'Solicitado' );
+                  this.search( this.searchString )
+
+                }, err => {
+                  Swal.close()
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
+  }
+
+  fixLiga( i ){
+
+    Swal.fire({
+      title: 'Arreglando voucher de pago',
+      allowOutsideClick: false,
+      })
+    Swal.showLoading()
+
+    this._api.restfulPut( { op: i }, 'Pagos/fixPayment' )
+                .subscribe( res => {
+
+                  Swal.close()
+                  
+                  this._init.snackbar('success', res['msg'], 'Arreglado' );
+                  
+
+                }, err => {
+                  Swal.close()
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
   getTotals(total,i){

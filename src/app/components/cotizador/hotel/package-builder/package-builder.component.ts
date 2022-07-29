@@ -69,7 +69,7 @@ export class PackageBuilderComponent implements OnInit {
     let pax = d['occ']['adultos'] ?? 0 + d['occ']['juniors'] ?? 0 + d['occ']['menores'] ?? 0
     
     // Evalua minimo de pax para seguro o descuento
-    let startPax = pax > 4 ? pax : 4
+    let startPax = 4
     for( let p = startPax; p >= pax; p -= 2 ){
       result = {
         level: 'n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl),

@@ -69,7 +69,7 @@ export class DisplayOptionsComponent implements OnInit {
     let r = {
       "Divisa": this._com.summarySearch['isUSD'] ? 'USD' : 'MXN',
       "Complejo":c['complejoSF'],
-      "Hotel": c['hotelName'],
+      "Hotel": c['hotelSF'],
       "TipoHabitacion": c['habName'],
       "TipoOcupacion": occ[hb['occ']['adultos']],
       "Tarifa": this._com.hotelVal(  hb['dateBlocks'][x]['n1'], c['tipoCambio'] ) ,

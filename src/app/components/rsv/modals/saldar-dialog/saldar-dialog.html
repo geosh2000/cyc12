@@ -13,9 +13,9 @@
             <div class="col d-flex justify-content-center flex-wrap">
                 <div class="p-1 text-center">
                     <mat-form-field>
-                        <input matInput class="text-center" placeholder="Referencia / Autorizacion / Operacion" name="operacion" [value]="data['master']['masterlocatorid']" (keyup.enter)="search(operacion.value)" #operacion [readonly]="_api.isLoading | async">
+                        <input matInput class="text-center" placeholder="Referencia / Autorizacion / Operacion" name="operacion" [(ngModel)]="searchString" (keyup.enter)="search(operacion.value)" #operacion [readonly]="_api.isLoading | async">
                     </mat-form-field>
-                    <button class="ms-5" mat-raised-button color="primary" (click)="search(operacion.value)" [disabled]=" (_api.isLoading | async) || operacion.value == '' || !operacion">Buscar</button>
+                    <button class="ms-5" mat-raised-button color="primary" (click)="search(searchString)" [disabled]=" (_api.isLoading | async) || operacion.value == '' || !operacion">Buscar</button>
                 </div>
             </div>
 
@@ -54,6 +54,19 @@
                             <div class="p-2">
                                 <button mat-mini-fab color="primary" (click)="select(item)" [disabled]="loading['select'] || item['montoSaldo'] <= 0">
                                     <mat-icon>done_outline</mat-icon>
+                                </button>
+                            </div>
+                            <div class="p-2">
+                                <button mat-mini-fab color="santander" (click)="setReembolso(item['operacion'])" matTooltip="Solicitar Reembolso" [disabled]="loading['select'] || item['montoSaldo'] <= 0" [disabled]="!_init.checkSingleCredential('allmighty') || item['montoSaldo'] ==  0" *ngIf="item['reembolsoReq'] != '1'">
+                                    <mat-icon>money_off_csred</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="warn" (click)="setReembolso(item['operacion'], false)" matTooltip="A traspaso" [disabled]="loading['select'] || item['montoSaldo'] <= 0" [disabled]="!_init.checkSingleCredential('allmighty') || item['montoSaldo'] !=  0" *ngIf="item['reembolsoReq'] == '1'">
+                                    <mat-icon>toll</mat-icon>
+                                </button>
+                            </div>
+                            <div class="p-2">
+                                <button mat-mini-fab color="accent" (click)="fixLiga(item['operacion'])" [disabled]="loading['select'] || item['montoSaldo'] <= 0" [disabled]="item['tipo'] != 'pagoLiga'">
+                                    <mat-icon>build</mat-icon>
                                 </button>
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApiService, HelpersService, InitService } from 'src/app/services/service.index';
+import Swal from 'sweetalert2';
 
 import { EditZdDialog } from '../../modals/edit-zd-dialog/edit-zd-dialog';
 import { ManageInsDialog } from '../../modals/manage-ins/manage-ins.dialog';
@@ -82,6 +83,48 @@ export class LocSumComponent implements OnInit {
                     this.reloadHistory.emit( true )
                   }, err => {
                     this.loading['sendConf'] = false;
+  
+                    const error = err.error;
+                    this._init.snackbar('error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+  
+                  });
+    }
+
+    sendAuthFormat( i ){
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Realmente deseas enviar el formato de autorización a este cliente?',
+          showCancelButton: true,
+          confirmButtonText: 'Enviar Formato',
+          allowOutsideClick: false,
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            this.sendAuthFormatApi( i )
+          }
+        })
+    }
+
+    sendAuthFormatApi( i ){
+
+      Swal.fire({
+        title: 'Enviando Formato de Autorizacion de Cargo',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+  
+      this._api.restfulPut( { ml: i['masterlocatorid'] }, 'Zendesk/sendAuthFormat' )
+                  .subscribe( res => {
+  
+                    Swal.close()
+                    
+                    this._init.snackbar('success', res['msg'], 'Enviado' );
+                    this.reloadHistory.emit( true )
+        
+                  }, err => {
+                    Swal.close()
   
                     const error = err.error;
                     this._init.snackbar('error', error.msg, err.status );

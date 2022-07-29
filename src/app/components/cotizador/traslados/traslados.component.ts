@@ -498,7 +498,7 @@ export class CotizaTrasladosComponent implements OnInit {
     this.xferSearch.get( formControl + '.vuelo' ).setValue( selected['ident'] )
 
     if( !arrv ){
-      this.xferSearch.get( formControl + '.pickup' ).setValue( moment(selected[ timeControl ]).subtract(3, 'hours').format('HH:mm') )
+      this.xferSearch.get( formControl + '.pickup' ).setValue( moment(selected[ timeControl ]).subtract(4, 'hours').format('HH:mm') )
     }
 
   }

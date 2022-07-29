@@ -11,6 +11,11 @@
         <a style="zoom: 0.8" class="ms-2" mat-icon-button color="primary" target="_blank" [href]=" domSanitizer.bypassSecurityTrustResourceUrl( urlCopy(data['master']) )"><mat-icon>open_in_new</mat-icon></a>
     </div>
 </div>
+<div class="d-flex justify-content-start align-items-center">
+    <div *ngIf="!loading['sendConf']">
+        <button style="zoom: 0.8" mat-button color="primary" (click)="sendAuthFormat(data['master'])"><mat-icon>history_edu</mat-icon> Enviar Formato de Autorización</button>
+    </div>
+</div>
 <hr>
 
 <!-- GESTIONAR SEGUROS -->
