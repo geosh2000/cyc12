@@ -146,7 +146,7 @@ export class AplicacionPagosCieloComponent implements OnInit {
             vals[i+1].setErrors({ finMenorIgual: true })
           }
     
-          if( vals[i+1].value > moment(vals[i].value).add(5,'days') ){
+          if( vals[i+1].value > moment(vals[i].value).add(30,'days') ){
             vals[i+1].setErrors({ maxRange: true })
           }
     

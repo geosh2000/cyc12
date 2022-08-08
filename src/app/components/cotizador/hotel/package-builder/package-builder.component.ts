@@ -66,7 +66,7 @@ export class PackageBuilderComponent implements OnInit {
     let lCompare = d['total'][lName]['monto']
 
     // Define ocupacion
-    let pax = d['occ']['adultos'] ?? 0 + d['occ']['juniors'] ?? 0 + d['occ']['menores'] ?? 0
+    let pax = (d['occ']['adultos'] ?? 0 ) + (d['occ']['menores'] ?? 0)
     
     // Evalua minimo de pax para seguro o descuento
     let startPax = 4
