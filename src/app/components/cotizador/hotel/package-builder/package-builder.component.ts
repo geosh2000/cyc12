@@ -70,7 +70,7 @@ export class PackageBuilderComponent implements OnInit {
     
     // Evalua minimo de pax para seguro o descuento
     let startPax = 4
-    for( let p = startPax; p >= pax; p -= 2 ){
+    for( let p = startPax; p >= (pax > 4 ? 4 : pax); p -= 2 ){
       result = {
         level: 'n' + this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl),
         lnumber: this.levelCorrect((insRate * p) / lCompare + (.05 * (cl-1)), cl),
