@@ -1,0 +1,14 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Facturas Assistcard</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <pre>{{ assistList | json }}</pre>
+
+        <button mat-raised-button color='primary' (click)="upload()" [disabled]="(_api.isLoading | async) || !assistList['factura']">Subir</button>
+    </mat-card-content>
+    <mat-card-footer>
+        <mat-progress-bar mode="indeterminate" *ngIf="_api.isLoading | async"></mat-progress-bar>
+    </mat-card-footer>
+</mat-card>

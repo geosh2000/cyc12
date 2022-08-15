@@ -9,6 +9,7 @@ import { HelpersService } from 'src/app/services/service.index';
 export class ItemBlockSumComponent implements OnInit {
 
   @Input() i = {}
+  @Input() classColor = 'text-mat-primary'
 
   constructor( public _h: HelpersService ) { }
 

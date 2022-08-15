@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 
     loading = {}
     items = []
+    xldItems = []
 
     chgMade = false
 
@@ -38,20 +39,25 @@ import Swal from 'sweetalert2';
 
     filterItems(){
       let items = []
+      let xldItems = []
 
       for( let i of this.data['items'] ){
         if( i['isCancel'] == 0 && i['editablePrepay'] == 1 ){
           items.push( i )
         }
+        
+        if( i['isCancel'] == 1 && this._h.moneyCents(i['montoPenalidad']) > 0 && i ['itemType'] == 1 ){
+          xldItems.push( i )
+        }
       }
 
-      if( items.length == 0 ){
+      if( items.length == 0 && xldItems.length == 0  ){
         Swal.fire('Sin Resultados', 'No existen items que permitan editar los prepagos / totales', 'info')
         this.editPaymentDialog.close( false );
       }
 
       this.items = items
-
+      this.xldItems = xldItems
     }
 
     editOneNight( x ){
@@ -62,10 +68,17 @@ import Swal from 'sweetalert2';
       return this._h.moneyInts( (this._h.moneyCents(this.items[x]['monto']) + this._h.moneyCents(this.items[x]['pkgItems']['totalValue'])) / this.items[x]['htlNoches'] - this._h.moneyCents(this.items[x]['pkgItems']['totalValue']))
     }
 
-    editParcial( x ){
-      this.items[x]['editFlag'] = true
-      this.items[x]['montoParcialEdit'] = this.items[x]['montoParcial']
-      this.items[x]['prepagoIsTraspaso'] = true
+    editParcial( x, xld = false ){
+
+      if( xld ){
+        this.xldItems[x]['editFlag'] = true
+        this.xldItems[x]['montoParcialEdit'] = this.xldItems[x]['montoParcial']
+        this.xldItems[x]['prepagoIsTraspaso'] = true
+      }else{
+        this.items[x]['editFlag'] = true
+        this.items[x]['montoParcialEdit'] = this.items[x]['montoParcial']
+        this.items[x]['prepagoIsTraspaso'] = true
+      }     
     }
 
     editTotal(x){
@@ -75,7 +88,7 @@ import Swal from 'sweetalert2';
       this.items[x]['editTotalComments'] = ''
     }
 
-    editMontoPrepago( i, x ){
+    editMontoPrepago( i, x, xld = false ){
 
       i['loadingEdit'] = true
 
@@ -96,7 +109,8 @@ import Swal from 'sweetalert2';
         new: {
           montoParcial: i['montoParcialEdit']
         },
-        itemId: i['itemId']
+        itemId: i['itemId'],
+        xld
       }
   
       if( this._h.moneyCents(params['new']['montoParcial']) < this._h.moneyCents(i['montoPagado']) ){
@@ -122,9 +136,16 @@ import Swal from 'sweetalert2';
                     i['montoParcialOriginal'] = i['montoParcial']
                     i['montoParcial'] = params['new']['montoParcial']
 
-                    this.items[x] = res['data']
+                    if( xld ){
+                      this.xldItems[x] = res['data']
+  
+                      this.xldItems[x]['editFlag'] = false
+                    }else{
+                      this.items[x] = res['data']
+  
+                      this.items[x]['editFlag'] = false
+                    }
 
-                    this.items[x]['editFlag'] = false
                     
                     this._init.snackbar('success', 'Prepago modificado correctamente', 'Guardado')
                     this.chgMade = true

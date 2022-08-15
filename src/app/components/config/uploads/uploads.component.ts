@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { UploadComplementosComponent } from './upload-complementos/upload-complementos.component';
 import { UploadDesplazosComponent } from './upload-desplazos/upload-desplazos.component';
 import { UploadRoibackComponent } from './upload-roiback/upload-roiback.component';
+import { UploadAssistcardInvoicesComponent } from './upload-assistcard-invoices/upload-assistcard-invoices.component';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class UploadsComponent implements OnInit {
   @ViewChild( UploadComplementosComponent ) private _complementos: UploadComplementosComponent
   @ViewChild( UploadDesplazosComponent ) private _desplazos: UploadDesplazosComponent
   @ViewChild( UploadRoibackComponent ) private _rb: UploadRoibackComponent
+  @ViewChild( UploadAssistcardInvoicesComponent ) private _aci: UploadAssistcardInvoicesComponent
 
   upList = []
   selectedType:any
@@ -127,7 +129,7 @@ export class UploadsComponent implements OnInit {
             let xlsJson = jsonFile
             let flag:any
 
-            console.log(jsonFile)
+            console.log(workbook)
 
             switch( type ){
               case 'cieloLlegadas':
@@ -150,12 +152,43 @@ export class UploadsComponent implements OnInit {
                 flag = await this._rb.buildVouchers(workbook)
                 Swal.close()
                 break;
+              case 'acInvoices':
+
+                let sheets = {}
+
+                if( workbook.SheetNames[5] ){
+                  sheets['start'] = [{[workbook.Sheets[workbook.SheetNames[0]]['A1']['v']]: 1}]
+                  sheets['folio'] = [{[workbook.Sheets[workbook.SheetNames[8]]['A1']['v']]: 1}]
+                  sheets['nc'] = [{[workbook.Sheets[workbook.SheetNames[6]]['A1']['v']]: 1}]
+                  sheets['detail'] = this.getSheet( workbook, 5)
+                  sheets['end'] = this.getSheet( workbook, 7)
+                }else{
+                  sheets['start'] = this.getSheet( workbook, 0)
+                  sheets['end'] = this.getSheet( workbook, 1)
+                }
+
+                flag = await this._aci.buildVouchers( sheets )
+                Swal.close()
+                break;
               default:
                 console.error('process not defined', jsonFile)
                 Swal.close()
             }
 
       }
+
+  }
+
+  getSheet( wb, i ){
+
+    if( wb.SheetNames[i] ){
+      let sheetName = wb.SheetNames[i]
+      let jsonFile = utils.sheet_to_json( wb.Sheets[sheetName], {raw: true, defval:null} )
+      console.log( jsonFile )
+      return jsonFile
+    }else{
+      return false
+    }
 
   }
 

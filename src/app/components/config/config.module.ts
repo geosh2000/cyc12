@@ -11,6 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { UploadComplementosComponent } from './uploads/upload-complementos/upload-complementos.component';
 import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desplazos.component';
 import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.component';
+import { UploadAssistcardInvoicesComponent } from './uploads/upload-assistcard-invoices/upload-assistcard-invoices.component';
 
 
 
@@ -22,6 +23,7 @@ import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.
     UploadComplementosComponent,
     UploadDesplazosComponent,
     UploadRoibackComponent,
+    UploadAssistcardInvoicesComponent,
   ],
   exports: [
     UploadsComponent,
@@ -30,6 +32,7 @@ import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.
     UploadComplementosComponent,
     UploadDesplazosComponent,
     UploadRoibackComponent,
+    UploadAssistcardInvoicesComponent,
   ],
   imports: [
     CommonModule,
