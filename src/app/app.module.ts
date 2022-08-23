@@ -16,6 +16,7 @@ import { PublicModule } from './public/public.module';
 import { NoDobuleClickDirective } from './directives/no-dobule-click.directive';
 import { InterceptorService } from './services/interceptor.service';
 import { ComercialModule } from './comercial/comercial.module';
+import { GruposModule } from './grupos/grupos.module';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ComercialModule } from './comercial/comercial.module';
     MainViewModule,
     PublicModule,
     ComercialModule,
+    GruposModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }

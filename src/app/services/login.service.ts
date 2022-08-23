@@ -133,6 +133,24 @@ export class LoginService {
 
   }
 
+  validateTokenComercial( cred: string = '', app = '' ){
+
+    const localData = JSON.parse(localStorage.getItem('currentUser'))
+          
+    if( cred == '' ){
+      return true
+    }
+
+    let credS = JSON.parse(atob(localData.creds))
+
+    if( credS[cred] == "1" ){
+      return true
+    }else{
+      return false
+    }
+
+  }
+
   logout( app = '' ){
 
     localStorage.removeItem(app + 'currentUser');

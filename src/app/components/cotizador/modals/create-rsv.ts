@@ -1,4 +1,4 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { ZdUserEditComponent } from '../../shared/zd-user-edit/zd-user-edit.comp
     selector: 'create-rsv',
     templateUrl: 'create-rsv.html',
   })
-  export class RsvCreateDialog {
+  export class RsvCreateDialog implements OnInit {
 
     @ViewChild( ZdUserEditComponent, {static: false}) _edit:ZdUserEditComponent
 
@@ -100,9 +100,22 @@ import { ZdUserEditComponent } from '../../shared/zd-user-edit/zd-user-edit.comp
             }
         })
       }
+
+    ngOnInit(): void {
+        console.log(this.data)
+        if( ((this.data['userSelected'] ?? [])['objSelected'] ?? null) != null ){
+            console.log(true, this.data['userSelected'])
+            this.editOptional = this.data['userSelected']['editOptional']
+            this.firstFormGroup = this.data['userSelected']['firstFormGroup']
+            this.secondFormGroup = this.data['userSelected']['secondFormGroup']
+            this.editForm = this.data['userSelected']['editForm']
+            this.selected( this.data['userSelected']['objSelected'] )
+        }
+    }
   
-    onNoClick(): void {
-      this.rsvDialog.close();
+    onNoClick( e = null ): void {
+        console.log( 'recieved', e)
+      this.rsvDialog.close( e );
     }
 
     stepChange( e ){

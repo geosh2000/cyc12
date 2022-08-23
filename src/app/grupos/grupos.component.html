@@ -1,0 +1,59 @@
+<mat-toolbar class='matNavbar' role="heading" [style.paddingBottom.px]="10" color="primary">
+
+    <div class="p-1 d-flex justify-content-end align-items-center" [style.width.%]="100">
+
+        <div class="ms-auto me-3 align-items-center" *ngIf="token">
+            <p class="m-0" style="font-size: small;">Agente: <b>{{ _init.currentUser.hcInfo.Nombre_Corto }}</b></p>
+        </div>
+        
+        <!-- DIV END -->
+        <div class="d-flex justify-content-end align-items-center">
+            
+            <div class="p-1 mx-1">
+
+                <!-- <button mat-icon-button [routerLink]="['/comercial']" *ngIf="token">
+                    <mat-icon>home</mat-icon>
+                </button> -->
+
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" *ngIf="token">
+                    <mat-icon>account_circle</mat-icon>
+                    <mat-icon>expand_more</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <div class="mx-2 text-center" *ngIf="token">
+                        <h4>{{ _init.currentUser.hcInfo.Nombre_Corto }}</h4>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="configDialog()">
+                        <mat-icon>settings</mat-icon>
+                        <span>Configuración</span>
+                    </button>
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Salir</span>
+                    </button>
+                </mat-menu>
+                
+                <button class="ms-auto" mat-icon-button color="accent"  (click)="loginComercialDialog()" *ngIf="!token">
+                    <mat-icon>login</mat-icon>
+                </button>
+
+            </div>
+            
+        </div>
+    </div>
+</mat-toolbar>
+
+<div class="main-container py-4">
+
+    <router-outlet></router-outlet>
+
+    <!-- <div class="container d-flex justify-content-center" *ngIf="!token">
+        <div class="alert alert-danger" role="alert">
+            Debes loguearte para tener acceso a este módulo
+        </div>
+    </div> -->
+
+    <snack-bar></snack-bar>
+
+</div>

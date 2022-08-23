@@ -1,0 +1,8 @@
+.upper{
+    text-transform: uppercase;
+  }
+
+  .mat-row:hover > .mat-cell {
+    color: #673ab7!important;
+    font-weight: bold;
+  }

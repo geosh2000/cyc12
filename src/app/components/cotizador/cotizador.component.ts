@@ -1,7 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ApiService, InitService } from 'src/app/services/service.index';
+import { CotizaHotelComponent } from './hotel/hotel.component';
 import { RsvCreateDialog } from './modals/create-rsv';
 import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
 
@@ -11,6 +12,8 @@ import { SendQuoteComponent } from './modals/send-quote/send-quote.component';
   styleUrls: ['./cotizador.component.css']
 })
 export class CotizadorComponent implements OnInit {
+
+  @ViewChild(CotizaHotelComponent,{static:false}) _hotel:CotizaHotelComponent;
 
   loading = {}
   products = []
@@ -43,7 +46,7 @@ export class CotizadorComponent implements OnInit {
 
     switch( e['action'] ){
       case 'doRsv':
-        this.rsvDialog( e['data'] )
+        this.rsvDialog( e['data'], e['r'] ?? null, e['user'] ?? null )
         break;
       case 'doQuote':
         this.quoteDialog( e['data'] )
@@ -71,7 +74,8 @@ export class CotizadorComponent implements OnInit {
                 });
   }
 
-  rsvDialog( d:any ): void {
+  rsvDialog( d:any, r = null, user = null ): void {
+
     const dialogRef = this.dialog.open(RsvCreateDialog, {
       // width: '250px',
       data: d,
@@ -79,6 +83,14 @@ export class CotizadorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+
+      console.log( 'dialog closed', result )
+
+      if( result['recalc'] ){
+        r['userSelected'] = result['user']
+        this._hotel.selectedLevel = result['level']
+        this._hotel.doRsv( r )
+      }
       // console.log('The dialog was closed', result);
     });
   }

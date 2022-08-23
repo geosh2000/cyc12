@@ -817,14 +817,18 @@ export class CotizaHotelComponent implements OnInit {
 
   doRsv( r = {}, over = false ){
 
+    //let raw = JSON.parse(JSON.stringify(r))
+    
+    let raw = JSON.parse(JSON.stringify(r))
+
     // over en true es para paquetes
     let selectedLevel = over ? (this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' ? 2 : this.selectedLevel) : this.selectedLevel
     let usd = this.hotelSearch.get('isUSD').value
     
     if( this.extraInfo['grupo']['insuranceIncludedPaq'] == '1' && selectedLevel != 4){
-      for( let h in r['habs']['porHabitacion'] ){
-        let hab = r['habs']['porHabitacion'][h]
-        hab['insPaq'] = this.pkg.defInsPaq( hab, selectedLevel, 'array', r['tipoCambio'], usd, this.extraInfo['grupo'] )
+      for( let h in raw['habs']['porHabitacion'] ){
+        let hab = raw['habs']['porHabitacion'][h]
+        hab['insPaq'] = this.pkg.defInsPaq( hab, selectedLevel, 'array', raw['tipoCambio'], usd, this.extraInfo['grupo'] )
         hab['insPaq']['importeManual'] = hab['paq'][usd ? 'paqueteUSD' : 'paqueteMXN']['montoManual'] != hab['paq'][usd ? 'paqueteUSD' : 'paqueteMXN']['montoHotel']
 
         if( over ){
@@ -843,7 +847,7 @@ export class CotizaHotelComponent implements OnInit {
     }
 
     let data = {
-      hotel: r,
+      hotel: raw,
       level: selectedLevel,
       extraInfo: ei,
       summarySearch: ss,
@@ -852,14 +856,13 @@ export class CotizaHotelComponent implements OnInit {
     }
 
 
-    console.log( r, data )
-    // pkg.defInsPaq( c['habs']['porHabitacion'][hab], selectedLevel, 'pax' )
-
-    data = JSON.parse(JSON.stringify(data))
-    this.rsv.emit({ action: 'doRsv', data })
+    console.log(r,raw)
+    this.rsv.emit({ action: 'doRsv', data, r: raw })
   }
 
-  rsvPaq( r = {} ){
+  rsvPaq( raw = {} ){
+
+    let r = Object.assign({},raw)
 
     let htl = JSON.parse(JSON.stringify(r))
     let ss = JSON.parse(JSON.stringify(this.summarySearch))

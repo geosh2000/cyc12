@@ -8,6 +8,7 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
 
 import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
+import Swal from 'sweetalert2';
 
 export const MY_FORMATS = {
   parse: {
@@ -201,6 +202,11 @@ export class ModifyHotelDialog implements OnInit {
   cotizarCambio( i ){
 
     console.log(i)
+
+    if( i['changes']['selectedRoom']['occ'].indexOf( i['change ']['selectedOcc'] )  === -1  ){
+      Swal.fire('Error en ocupación','No se puede cotizar esta ocupación, cotiza de manera manual','error')
+      return false
+    }
 
     if( i['changes']['selectedRoom']['code'] != i['hotel'] ){
       this._init.snackbar('error', 'No es posible modificar el hotel. Debes cancelar y generar un nuevo item', 'ERROR')

@@ -18,6 +18,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
   @Output() done = new EventEmitter
 
   @Input() rsvData = {}
+  @Input() zdUserSelected = {}
 
   rsvForm = this.fb.group({})
 
@@ -45,7 +46,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
             private _api: ApiService,
             public _init: InitService,
           ) { 
-            
+            console.log('new hotel checkout')
   }
   
   ngAfterViewInit(){
@@ -83,102 +84,132 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
 
   }
 
+  async buildForm( curr ){
 
-  buildForm( curr ){
+    await this.buildFormProccess(curr)
+    console.log('ruTotals')
+    this.buildTotal()
+  
+  }
+  
+  buildFormProccess( curr ){
 
-    let hData = curr['habSelected']
-    let hGpo = hData['extraInfo']['grupo']
-    let hSum = hData['summarySearch']
-    let usd = hSum['isUSD']
-    let user = curr['formRsv']['zdUser']
-    let split = curr['formRsv']['splitNames']
+    console.log('start building')
+    return new Promise(resolve => {
+      let hData = curr['habSelected']
+      let hGpo = hData['extraInfo']['grupo']
+      let hSum = hData['summarySearch']
+      let usd = hSum['isUSD']
+      let user = curr['formRsv']['zdUser']
+      let split = curr['formRsv']['splitNames']
 
-    this._validate.createForm( this.rsvData, user )
+      this._validate.createForm( this.rsvData, user )
 
-    for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
-      let pax = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['adultos'] + curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores']
+      for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
+        let pax = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['adultos'] + curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores']
 
-        // BUILD PAX HABITACION
-      let adultos = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['adultos']
-      let menores = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores'] > 2 ? 2 : curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores']
-      let juniors = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores'] > 2 ? 3 - menores : 0
+          // BUILD PAX HABITACION
+        let adultos = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['adultos']
+        let menores = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores'] > 2 ? 2 : curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores']
+        let juniors = curr['habSelected']['summarySearch']['habitaciones']['hab' + i]['menores'] > 2 ? 3 - menores : 0
 
-      // BUILD MONTOS HABITACION
-      let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
+        // BUILD MONTOS HABITACION
+        let habMonto = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]
 
-      // console.log('local', this.rsvForm)
-      // console.log('child', this._validate.rsvForm)
+        // console.log('local', this.rsvForm)
+        // console.log('child', this._validate.rsvForm)
 
-      if( !this.rsvForm.get('data.hab' + i) ){
-        
-        (this.rsvForm.get('data') as UntypedFormGroup).addControl('hab' + i, this.fb.group({
-          hotel:        this.fb.group({
-            item:       this.fb.group({
-              itemType:     [{ value: 1,  disabled: false }, [ Validators.required ] ],
-              isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
-              zdTicket:     [{ value: '' } ],
+        if( !this.rsvForm.get('data.hab' + i) ){
+          
+          (this.rsvForm.get('data') as UntypedFormGroup).addControl('hab' + i, this.fb.group({
+            hotel:        this.fb.group({
+              item:       this.fb.group({
+                itemType:     [{ value: 1,  disabled: false }, [ Validators.required ] ],
+                isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
+                zdTicket:     [{ value: '' } ],
+              }),
+              hotel             : this.fb.group({
+                hotel           : [ hData.hotel.hotel, [ Validators.required ] ],
+                categoria       : [ hData.hotel.habCode, [ Validators.required ] ],
+                mdo             : [ hGpo.mayorista, [ Validators.required ] ],
+                agencia         : [ hGpo[(usd ? 'us' : 'mx') + 'Agencia' + (hData.hotel.tarifa_pp == 0 ? 'Ep' : '') + ( hData.hotel.isNR == 1 ? 'NR' : '')], [ Validators.required ] ],
+                gpoTfa          : [ hGpo[ usd ? 'cieloUSD' : 'cieloMXN'], [ Validators.required ] ],
+                adultos         : [ adultos, [ Validators.required ] ],
+                juniors         : [ juniors, [ Validators.required ] ],
+                menores         : [ menores, [ Validators.required ] ],
+                inicio          : [ moment(hSum['inicio']).format('YYYY-MM-DD'), [ Validators.required ] ],
+                fin             : [ moment(hSum['fin']).format('YYYY-MM-DD'), [ Validators.required ] ],
+                noches          : [ moment(hSum['fin']).diff(moment(hSum['inicio']), 'days'), [ Validators.required ] ],
+                notasHotel      : [ '', [] ],
+                isLocal         : [ hGpo.isLocal, [ Validators.required ] ],
+                isNR            : [ hData.hotel.isNR, [ Validators.required ] ],
+                gpoCC           : [ hGpo.grupo, [ Validators.required ] ],
+                bedPreference   : [ '', [ Validators.required ] ],
+                titular         : [ user['name'], [ Validators.required ] ],
+                htl_nombre_1    : [ split.nombre, [ Validators.required, Validators.pattern( this.namePattern ) ] ],
+                htl_apellido_1  : [ split.apellido, [ Validators.required, Validators.pattern( this.namePattern ) ] ]
+              })
             }),
-            hotel             : this.fb.group({
-              hotel           : [ hData.hotel.hotel, [ Validators.required ] ],
-              categoria       : [ hData.hotel.habCode, [ Validators.required ] ],
-              mdo             : [ hGpo.mayorista, [ Validators.required ] ],
-              agencia         : [ hGpo[(usd ? 'us' : 'mx') + 'Agencia' + (hData.hotel.tarifa_pp == 0 ? 'Ep' : '') + ( hData.hotel.isNR == 1 ? 'NR' : '')], [ Validators.required ] ],
-              gpoTfa          : [ hGpo[ usd ? 'cieloUSD' : 'cieloMXN'], [ Validators.required ] ],
-              adultos         : [ adultos, [ Validators.required ] ],
-              juniors         : [ juniors, [ Validators.required ] ],
-              menores         : [ menores, [ Validators.required ] ],
-              inicio          : [ moment(hSum['inicio']).format('YYYY-MM-DD'), [ Validators.required ] ],
-              fin             : [ moment(hSum['fin']).format('YYYY-MM-DD'), [ Validators.required ] ],
-              noches          : [ moment(hSum['fin']).diff(moment(hSum['inicio']), 'days'), [ Validators.required ] ],
-              notasHotel      : [ '', [] ],
-              isLocal         : [ hGpo.isLocal, [ Validators.required ] ],
-              isNR            : [ hData.hotel.isNR, [ Validators.required ] ],
-              gpoCC           : [ hGpo.grupo, [ Validators.required ] ],
-              bedPreference   : [ '', [ Validators.required ] ],
-              titular         : [ user['name'], [ Validators.required ] ],
-              htl_nombre_1    : [ split.nombre, [ Validators.required, Validators.pattern( this.namePattern ) ] ],
-              htl_apellido_1  : [ split.apellido, [ Validators.required, Validators.pattern( this.namePattern ) ] ]
-            })
-          }),
-          pax:          [adultos + juniors + menores, [ Validators.required ] ]
-        }))
+            pax:          [adultos + juniors + menores, [ Validators.required ] ]
+          }))
 
-        if( curr['habSelected']['summarySearch']['isPaq'] ){
-          (this.rsvForm.get('data.hab' + i + '.hotel.item') as UntypedFormGroup).addControl('isPaq', new UntypedFormControl(1, Validators.required ));
+          if( curr['habSelected']['summarySearch']['isPaq'] ){
+            (this.rsvForm.get('data.hab' + i + '.hotel.item') as UntypedFormGroup).addControl('isPaq', new UntypedFormControl(1, Validators.required ));
+          }
+
+          
+          for( let x = 2; x <= pax; x++ ){
+            (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_nombre_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
+            (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_apellido_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
+          }
         }
 
+        this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').valueChanges.subscribe( x => { 
+          let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
+          this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
+        })
+
+        this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').valueChanges.subscribe( x => { 
+          let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
+          this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
+        })
         
-        for( let x = 2; x <= pax; x++ ){
-          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_nombre_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
-          (this.rsvForm.get('data.hab' + i + '.hotel.hotel') as UntypedFormGroup).addControl('htl_apellido_' + x, new UntypedFormControl('', Validators.pattern(this.namePattern)));
-        }
+        this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
+          this.fillTicket(x)
+        })
+
+        this.rsvForm.get('hasInsurance').valueChanges.subscribe( x => { 
+          this.fillTicket( this.rsvForm.get('zdTicket') )
+        })
       }
 
-      this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').valueChanges.subscribe( x => { 
-        let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
-        this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
-      })
+      // BUILD SEGUROS
+      this.buildInsurance( hData, user )
+      this.buildMonto( hData )
+      this.buildInsPaq( hData )
 
-      this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').valueChanges.subscribe( x => { 
-        let name = this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_nombre_1').value + ' ' + this.rsvForm.get('data.hab' + i + '.hotel.hotel.htl_apellido_1').value
-        this.rsvForm.get('data.hab' + i + '.hotel.hotel.titular').setValue( name )
-      })
-      
-      this.rsvForm.get('zdTicket').valueChanges.subscribe( x => { 
-        this.fillTicket(x)
-      })
-
-      this.rsvForm.get('hasInsurance').valueChanges.subscribe( x => { 
-        this.fillTicket( this.rsvForm.get('zdTicket') )
-      })
-    }
-
-    // BUILD SEGUROS
-    this.buildInsurance( hData, user )
-    this.buildMonto( hData )
-    this.buildInsPaq( hData )
+      console.log( 'end building' )
+      resolve( true )
+    })
+    
 
     // console.log( this.rsvForm.value )
+  }
+
+  buildTotal(){
+    this.totalAmmount = 0
+
+    let data = this.rsvForm.get('data').value
+
+    for( let h in data ){
+      let hab = this.rsvForm.get('data').value[h]
+      for( let i in hab ){
+        let item = hab[i]
+        if( item['monto'] ){
+          this.totalAmmount += +(item['monto']['monto'])
+        }
+      }
+    }
   }
 
   fillTicket( x ){
@@ -212,7 +243,13 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     
     for( let i = 1; i <= curr['habSelected']['summarySearch']['habs']; i++ ){
       let insPaq = curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq'] ? true : false
-      let lvPaq = insPaq ? curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']['lnumber'] : 1
+
+      console.log(i, hData['selectedLevel'], hData['hotel']['habs']['porHabitacion']['hab'+i]['total']['pqLevel_'+hData['selectedLevel']]['level'])
+      // if( hData['hotel']['habs']['porHabitacion']['hab'+i]['total']['pqLevel_'+hData['selectedLevel']]['level'] == 'N/A'){
+      //   insPaq = false
+      // }
+
+      let lvPaq = insPaq ? curr['habSelected']['hotel']['habs']['porHabitacion']['hab' + i]['insPaq']['lnumber'] : hData['selectedLevel']
       let level = {
         code: hGpo['code' + lvPaq],
         name: hGpo['l' + lvPaq + '_name'],
@@ -244,7 +281,8 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
 
       if( this.totalsIndex.indexOf('data.hab' + i + '.hotel.monto.monto') == -1 ){
         this.totalsIndex.push('data.hab' + i + '.hotel.monto.monto')
-        this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value)
+        console.log(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value, this.rsvForm)
+        // this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value)
         console.log('Total Ammount: ', this.totalAmmount, 'data.hab' + i + '.hotel.monto.monto', +(this.rsvForm.get('data.hab' + i + '.hotel.monto.monto').value))
       }
     }
@@ -312,10 +350,13 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
             }),
           }));
 
-          if( this.totalsIndex.indexOf('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto') == -1 ){
-            this.totalsIndex.push('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto')
-            this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value)
-            console.log('Total Ammount: ', this.totalAmmount, 'data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto',+(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value))
+          if( hData['hotel']['habs']['porHabitacion']['hab'+i]['total']['pqLevel_'+hData['selectedLevel']]['level'] != 'N/A'){
+            console.log(hData['hotel']['habs']['porHabitacion']['hab'+i]['total']['pqLevel_'+hData['selectedLevel']]['level'])
+            if( this.totalsIndex.indexOf('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto') == -1 ){
+              this.totalsIndex.push('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto')
+              // this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value)
+              console.log('Total Ammount: ', this.totalAmmount, 'data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto',+(this.rsvForm.get('data.hab' + i + '.insurance_inclusion_' + z + '.monto.monto').value))
+            }
           }
 
         }
@@ -381,8 +422,10 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
 
         if( this.totalsIndex.indexOf('data.hab' + i + '.insurance.monto.monto') == -1 ){
           this.totalsIndex.push('data.hab' + i + '.insurance.monto.monto')
-          this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value)
-          console.log('Total Ammount: ', this.totalAmmount,'data.hab' + i + '.insurance.monto.monto', +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value))
+          // if( hData['hotel']['habs']['porHabitacion']['hab'+i]['total']['pqLevel_'+hData['selectedLevel']]['level'] != 'N/A'){
+            // this.totalAmmount += +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value)
+            console.log('Total Ammount: ', this.totalAmmount,'data.hab' + i + '.insurance.monto.monto', +(this.rsvForm.get('data.hab' + i + '.insurance.monto.monto').value))
+          // }
         }
 
       }
@@ -394,11 +437,18 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     return moment(dt).format(f)
   }
 
-  chgLevel( l, d ){
-    this.levelSelected['selected'] = l
-    this.levelSelected['data'] = d
+  chgLevel( l, d, f = false ){
 
-    this.buildMonto()
+    if( !f ){
+      this.levelSelected['selected'] = l
+      this.levelSelected['data'] = d
+  
+      this.buildMonto()
+    }else{
+      console.log( 'emit', this.zdUserSelected )
+      this.done.emit( { recalc: true, level: l, user: this.zdUserSelected } )
+    }
+
   }
 
   setLevelsData( d ){
@@ -433,7 +483,7 @@ export class HotelCheckoutComponent implements OnChanges, AfterViewInit {
     
     for( let x = bestLv; x > this.levelSelected.selected; x-- ){
       if( this.levelsData['n' + x]['active'] == 1 ){
-        this.chgLevel( x, this.levelsData['n' + x])
+        this.chgLevel( x, this.levelsData['n' + x], true)
         return true
       }
     }

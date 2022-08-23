@@ -1,0 +1,127 @@
+<div class="container-fluid px-5 row">
+   <div class="col-9">
+       <ng-container *ngFor="let c of cotizacion">
+   
+           <mat-card class="mat-elevation-z0 my-2 summary" style="padding-right: 60px" [ngClass]="{'bg-selected': c['selectedForQuote']}" [style.width.%]="100" *ngIf="!hotelBreak(c['hotel'])">
+               <mat-card-header class="py-2 hotelTitle">
+                   <mat-card-title class="my-0">
+                       <div>
+                           <p class="m-0 upper" style="font-size: medium;"><b>{{ c['hotelName'] }}</b> <span style="font-weight: 300;">&nbsp;/ {{ c['habName'] }} ({{ c['habCode'] }})</span></p>
+                       </div>
+                   </mat-card-title>
+   
+               </mat-card-header>
+               <mat-card-content class="pt-2">
+                   <ng-container *ngFor="let block of c['habs']['porHabitacion']['hab1']['dateBlocks']; index as x">
+   
+                       <mat-card class="mat-elevation-z0 my-2 dateBlock pb-0 pe-0" [style.width.%]="100">
+                           <mat-card-header class="py-2" style="margin-top: -34px; background-color: white;">
+                               <mat-card-title class="my-0">
+                                   <div>
+                                       <p class="m-0 upper" style="font-size: small; color: darkorange">{{ block['dateStart'] }} - {{ lastNight( block['dateEnd'] ) }}</p>
+                                   </div>
+                               </mat-card-title>
+               
+                           </mat-card-header>
+   
+                           
+                           <div class="container d-flex justify-content-between align-items-center flex-wrap px-0 mx-0">
+   
+                               <ng-container *ngFor="let hab of c['habs']['porHabitacion'] | keys; index as i">
+                                   <div class="my-2 text-center align-items-center px-0" style="width:22%">
+   
+                                       <div class="hotelTitle container px-2 text-start" style="font-size: smaller">Hab. {{ i == 0 ? 'Sencilla' : ( i == 1 ? 'Doble' : ( i == 2 ? 'Triple' : 'Cuadruple' ) ) }}</div>
+   
+                                       <div mat-line class="d-flex justify-content-end mx-auto" *ngIf="_com.pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab ) != 0" [style.width.px]="175">
+                                           <span class="me-auto">{{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }} pax</span>
+                                           <span><b>{{ _com.hotelVal(  c['habs']['porHabitacion'][hab]['dateBlocks'][x]['n1'], c['tipoCambio'] ) | currency:'USD':'symbol-narrow':'.2-2' }}</b></span>
+                                           <!-- <span><b>{{ _com.pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab )  | currency:'USD':'symbol-narrow':'.2-2' }} p/n </b></span> -->
+                                           <span class="d-none d-sm-inline ms-2"><b>{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</b></span>
+                                       </div>
+                                       <div mat-line style="color: lightgrey" class="d-flex justify-content-end mx-auto" *ngIf="_com.pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab ) == 0" [style.width.px]="175">
+                                           <span class="me-auto">{{ c['habs']['porHabitacion'][hab]['occ']['adultos'] }} pax</span>
+                                           <span><b>N/A</b></span>
+                                           <span class="d-none d-sm-inline ms-2"><b>{{ _com.hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</b></span>
+                                       </div>
+                                       <div class="mt-3 mx-auto d-flex justify-content-between" *ngIf="!_com.hotelSearch.get('isQuote').value && _com.pricePN( c['habs']['porHabitacion'][hab], c['tipoCambio'], hab ) != 0" [style.width.px]="150" >
+                                           <mat-form-field class="" appearance="fill" [style.width.px]="60">
+                                               <mat-label>Habs</mat-label>
+                                               <input matInput type="number" min="0" step="1" autocomplete="off" #qHabs>
+                                           </mat-form-field>
+   
+                                           <div>
+                                               <button mat-mini-fab color="add" type="button" (click)="addCart( c, hab, qHabs.value, block['selectedStart'], block['selectedNoches'], x )"><mat-icon>add_shopping_cart</mat-icon></button>
+                                           </div>
+   
+                                       </div>
+                                       
+                                   </div>
+                               </ng-container>
+                               
+                               
+                           </div>
+                       <div class="container d-flex flex-wrap justify-content-center" *ngIf="!_com.hotelSearch.get('isQuote').value">
+                           <!-- INICIO -->
+                           <mat-form-field class="mx-3 mb-2" appearance="outline" [style.width.px]="160">
+                               <mat-label>Inicio</mat-label>
+                               <input matInput readonly [matDatepicker]="hbDtSt" (dateChange)="valEnd(block, $event)" [(ngModel)]="block['selectedStart']" [min]="mmnt(block, 'min')" [max]="mmnt(block, 'max')"  autocomplete="off">
+                               <mat-datepicker-toggle matSuffix [for]="hbDtSt"></mat-datepicker-toggle>
+                               <mat-datepicker #hbDtSt disabled="false"></mat-datepicker>
+                           </mat-form-field>
+   
+                           <mat-form-field class="" appearance="outline" [style.width.px]="90">
+                               <mat-label>Noches</mat-label>
+                               <input matInput type="number" min="1" [max]="maxNights(block)" step="1" [(ngModel)]="block['selectedNoches']" (change)="chgNights(block, $event)"  autocomplete="off">
+                           </mat-form-field>
+                           
+                           <!-- FIN -->
+                           <mat-form-field class="mx-3 mb-2" appearance="outline" [style.width.px]="160">
+                               <mat-label>Fin</mat-label> 
+                               <input matInput readonly [matDatepicker]="hbDtEnd" [(ngModel)]="block['selectedEnd']" autocomplete="off" readonly disabled>
+                               <mat-datepicker-toggle matSuffix [for]="hbDtEnd"></mat-datepicker-toggle>
+                               <mat-datepicker #hbDtEnd disabled="true"></mat-datepicker>
+                           </mat-form-field>
+                       </div>
+   
+                       </mat-card>
+   
+   
+                       <mat-divider></mat-divider>
+   
+                   </ng-container>
+                   <div class="itemCartButton">
+                        <button mat-fab color="primary" >
+                        <mat-icon>shopping_cart</mat-icon>
+                        </button>
+                    </div>
+               </mat-card-content>
+   
+               <mat-card-footer>
+                   <div class="container text-end my-2">
+                       <p *ngIf="c['habs']['porHabitacion']['hab1']['errors']['dispo']">
+                           <b class="text-danger">Cierre de fechas: </b>{{ c['habs']['porHabitacion']['hab1']['errors']['dispo'] }}
+                       </p>
+                       <p *ngIf="!c['habs']['porHabitacion']['hab1']['errors']['dispo']">
+                           <b class="text-success">Fechas Disponibles</b>
+                       </p>
+                       <p *ngIf="c['habs']['porHabitacion']['hab1']['errors']['sinTarifaFecha']">
+                           <b class="text-danger">No existen tarifas cargadas</b> para estas fechas: {{ c['habs']['porHabitacion']['hab1']['errors']['sinTarifaFecha'] }}
+                       </p>
+                   </div>
+               </mat-card-footer>
+   
+           </mat-card>
+   
+       </ng-container>
+
+       <div class="container d-flex justify-content-end">
+           <app-send-room [data]="cotizacion" [oportunidad]="oportunidad"></app-send-room>
+       </div>
+       
+   </div> 
+   <div class="col-3 sumary">
+    Carrito
+   </div>
+</div>
+
+<pre>{{ cart | json }}</pre>

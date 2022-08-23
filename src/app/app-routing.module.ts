@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ComercialRoutingModule } from './comercial/comercial.routing';
 
 import { MainRoutingModule } from './components/main-view/main-view.routing';
+import { GruposRoutingModule } from './grupos/grupos.routing';
 
 import { NotAllowedComponent } from './pages/not-allowed/not-allowed.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
@@ -23,6 +24,7 @@ const routes: Routes = [
     MainRoutingModule, 
     PublicRoutingModule,
     ComercialRoutingModule,
+    GruposRoutingModule,
 
   ],
   exports: [RouterModule]

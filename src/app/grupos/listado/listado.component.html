@@ -1,0 +1,92 @@
+<div class="container">
+
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+        <mat-form-field appearance="standard" class="px-2">
+            <mat-label>Filtrar</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Referencia" #filterInput>
+        </mat-form-field>
+
+        <div>
+            <button mat-flat-button color="primary"><mat-icon>add</mat-icon> NUEVA OPORTUNIDAD</button>
+        </div>
+    </div>
+    
+
+
+    <mat-tab-group mat-align-tabs="start">
+        <mat-tab label="LISTA DE OPORTUNIDADES">
+            <table mat-table [dataSource]="dataSource" class="" [style.width.%]="100" matSort>
+
+                <ng-container matColumnDef="tipo" [sticky]="false" sticky>
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Tipo</b></th>
+                    <td mat-cell *matCellDef="let link" class="text-center"> {{link.tipo}} </td>
+                </ng-container>
+        
+                <ng-container matColumnDef="Hotel_evento__c" [sticky]="false">
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Hotel</b></th>
+                    <td mat-cell *matCellDef="let link"> {{ link.Hotel_evento__c }} </td>
+                </ng-container>
+        
+                <ng-container matColumnDef="Name" [sticky]="false">
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Nombre del Grupo</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.Name }}</td>
+                </ng-container>
+                    
+                <ng-container matColumnDef="inicio" [sticky]="false">
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Fecha Estancia</b></th>
+                    <td mat-cell *matCellDef="let link" class="text-center"> {{link.inicio }} </td>
+                </ng-container>
+        
+                <ng-container matColumnDef="Observaciones__c" [sticky]="false">
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Notas</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.Observaciones__c  }} </td>
+                </ng-container>
+        
+                <ng-container matColumnDef="StageName" [sticky]="false">
+                    <th mat-header-cell style="text-align: center!important"  *matHeaderCellDef mat-sort-header><b>Etapa</b></th>
+                    <td mat-cell *matCellDef="let link" class="text-center"> {{link.StageName }}</td>
+                </ng-container>
+        
+                <ng-container matColumnDef="Acciones" [sticky]="false" stickyEnd>
+                    <th mat-header-cell style="text-align: center!important" *matHeaderCellDef><b>Acciones</b></th>
+                    <td mat-cell *matCellDef="let link" [style.width.px]="440"> 
+        
+                        <div class="p-1 d-flex flex-wrap justify-content-end align-items-center">
+                            <div class="me-auto p-1"><button mat-stroked-button color="primary"><mat-icon>visibility</mat-icon> Ver Cotizaciones</button></div>
+                            <div class="mx-1 p-1"><button mat-stroked-button color="primary"><mat-icon>edit</mat-icon> Editar</button></div>
+                            <div class="mx-1 p-1"><button mat-stroked-button color="primary"><mat-icon>add</mat-icon> Cotizar</button></div>
+                        </div>
+        
+                    </td>
+                </ng-container>
+        
+                <!-- <ng-container matColumnDef="filler">
+                    <th mat-header-cell *matHeaderCellDef> Filler header cell </th>
+                    <td mat-cell *matCellDef="let element"> Filler data cell </td>
+                    <td mat-footer-cell *matFooterCellDef> Filler footer cell </td>
+                </ng-container> -->
+        
+                <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+        
+                <tr mat-row  *matRowDef="let row; columns: displayColumns;"></tr>
+        
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4"><span *ngIf="filterInput.value != ''">No hay informaciòn que coincida con "{{filterInput.value}}"</span></td>
+                </tr>
+        
+            </table>
+            
+            <mat-paginator [pageSizeOptions]="[10, 20, 50]"
+                showFirstLastButtons 
+                aria-label="Selecciona la pagina">
+            </mat-paginator>
+        </mat-tab>
+        <mat-tab label="COTIZACIONES PASADAS">Content 2</mat-tab>
+    </mat-tab-group>
+
+    
+
+    
+</div>

@@ -1,0 +1,40 @@
+.card-room{
+    width: 100%;
+}
+
+.bg-selected{
+    background-color: #d7faf8!important;
+}
+
+.upper{
+    text-transform: uppercase;
+}
+
+.hotelTitle{
+    background-color: #ececec;
+    border-radius: 7px;
+}
+
+:host ::ng-deep .mat-add {
+    background-color: #15ab13;
+    color: #fff;
+  }
+
+  ::ng-deep .mat-card.summary{
+
+    border-radius: 5px !important;
+    border: 1px solid #f3f3f3;
+   }
+
+  ::ng-deep .mat-card.dateBlock{
+    width: 100%;
+    border: 2px solid orange;
+    border-right: 0px;
+}
+
+.itemCartButton{
+    position: absolute;
+    left: calc(100% - 27px);
+    top: 38%;
+    zoom: 0.7;
+}
