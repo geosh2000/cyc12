@@ -10,6 +10,7 @@ import { reverse } from 'dns';
 import * as moment from 'moment';
 import { OrderPipe } from 'ngx-order-pipe';
 import { ApiService, ComercialService, InitService } from 'src/app/services/service.index';
+import Swal from 'sweetalert2';
 
 class userOps {
   Bodas: []
@@ -106,6 +107,51 @@ export class ListadoComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  searchById( id ){
+
+    Swal.fire({
+      title: '<strong>Obteniendo detalles de la oportunidad</strong>',
+      icon: 'info',
+      text: 'Espera un momento',
+      showCloseButton: false,
+      showCancelButton: false,
+      showConfirmButton: false
+    })
+
+    Swal.showLoading()
+
+    this._api.restfulPost( { opportunityId: id }, 'Sf/searchOportunity' )
+                .subscribe( res => {
+
+                  if( res['data'].length == 0 ){
+
+                    Swal.fire({
+                      title: '<strong>Sin Resultados</strong>',
+                      icon: 'warning',
+                      text: 'No se encontró la oportunidad seleccionada. Verifica con tu supervisor',
+                      showCloseButton: false,
+                      showCancelButton: false,
+                      showConfirmButton: true,
+                      focusConfirm: true
+                    })
+
+                    return
+                  }
+
+                  console.log( res )
+                  // this.createOpEditForm( res['data'] )
+                  this.router.navigateByUrl('/grupos/cotizar', { state: res['data'] });
+                  Swal.close()
+
+                }, err => {
+                  
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
 }

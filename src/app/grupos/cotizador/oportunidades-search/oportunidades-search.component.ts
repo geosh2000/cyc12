@@ -45,6 +45,7 @@ declare var jQuery: any;
 export class OportunidadesSearchComponent implements OnInit {
 
   @Input() visible: boolean
+  @Input() op = []
   @Output() opReady = new EventEmitter
   @Output() dateChange = new EventEmitter
 
@@ -320,6 +321,12 @@ export class OportunidadesSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCollections()
+
+    console.log( this.op )
+
+    if( this.op[0] ){
+      this.createOpEditForm(this.op[0])
+    }
   }
 
   getCollections(){
@@ -361,6 +368,41 @@ export class OportunidadesSearchComponent implements OnInit {
       this.opportunitySearch.get('fechaInicio').setValue( sel.subtract(30, 'days').format('YYYY/MM/DD') )
       this.opportunitySearch.get('fechaFin').setValue( sel.add(60, 'days').format('YYYY/MM/DD') )
     })
+  }
+
+  searchById( id ){
+    this._api.restfulPost( { opportunityId: id }, 'Sf/searchOportunity' )
+                .subscribe( res => {
+
+                  this.loading['searchop'] = false;
+
+                  if( res['data'].length == 0 ){
+
+                    Swal.fire({
+                      title: '<strong>Sin Resultados</strong>',
+                      icon: 'warning',
+                      text: 'No se encontró la oportunidad seleccionada. Verifica con tu supervisor',
+                      showCloseButton: false,
+                      showCancelButton: false,
+                      showConfirmButton: true,
+                      focusConfirm: true
+                    })
+
+                    return
+                  }
+
+                  console.log( res )
+                  this.createOpEditForm( res['data'] )
+                  Swal.close()
+
+                }, err => {
+                  this.loading['searchop'] = false;
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
   searchOp(){
@@ -552,6 +594,7 @@ export class OportunidadesSearchComponent implements OnInit {
 
   async createOpEditForm( o = {}, t = 'get' ){
 
+    console.log(o)
     return new Promise( async ( resolve ) => {
 
      if( (o['TipoRegistroNombre'] ?? null) == null ){

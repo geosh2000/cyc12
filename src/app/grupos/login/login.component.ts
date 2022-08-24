@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
             
             // this.onNoClick()
 
-            this._route.navigateByUrl('/grupos')
+            this._route.navigateByUrl('/grupos',res['data'])
             this._init.getPreferences( 'comercial-' )
 
         }

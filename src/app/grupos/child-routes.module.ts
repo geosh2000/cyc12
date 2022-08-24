@@ -12,6 +12,7 @@ const childRoutes: Routes = [
           { path: '', component: ListadoComponent , data: { title: 'Oasis Comercial - Listado' }},
           { path: 'home', component: HomeGruposComponent , data: { title: 'Oasis Comercial - Home' }},
           { path: 'cotizar', component: CotizadorComponent , data: { title: 'Oasis Comercial - Cotizador' }},
+          { path: 'cotizar/:opData', component: CotizadorComponent , data: { title: 'Oasis Comercial - Cotizador' }},
           // { path: 'cotizador', component: CotizadorComercialComponent , data: { title: 'Comercial - Cotizador' }}
       ]
   },

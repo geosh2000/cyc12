@@ -13,8 +13,8 @@ import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 import { Moment } from 'moment-timezone';
 import { OportunidadesSearchComponent } from './oportunidades-search/oportunidades-search.component';
 import { DisplayOptionsComponent } from './display-options/display-options.component';
@@ -77,13 +77,14 @@ export class CotizadorComponent implements OnInit, OnDestroy {
   collections = {} 
   
 
-  comercial$: Subscription
+  op = {}
   
   constructor( 
           public _api: ApiService, 
           public _init: InitService, 
           public _com: ComercialService,
           public dialog: MatDialog,
+          public activatedRoute: ActivatedRoute,
           private fb: UntypedFormBuilder,
           private sanitization:DomSanitizer,
           private router:Router,
@@ -97,9 +98,16 @@ export class CotizadorComponent implements OnInit, OnDestroy {
 
       this.getCollections()
 
+      this.op = this.router.getCurrentNavigation().extras['state'] ?? []
+      console.log(this.op)
+
     }
 
   ngOnInit(): void {
+
+    // if( this.op[0] ){
+    //   this.opp.createOpEditForm( this.op[0] )
+    // }
 
     this._com.cart = []
 
@@ -153,6 +161,8 @@ export class CotizadorComponent implements OnInit, OnDestroy {
   async comercialSetFilters( e ){
 
     if( !e ){ return false }
+
+    console.log( this.opp )
     
     let tipo = this.opp.opportunityForm.get('TipoRegistroNombre').value.toLowerCase()
     // SET FILTERS GROUPS
