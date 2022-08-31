@@ -28,3 +28,21 @@
   background-color: #15ab13;
   color: #fff;
 }
+
+:host ::ng-deep .mat-expansion-panel-body {
+  padding: 0 0px 16px!important;
+}
+
+.text-mat-primary{
+  color: #673ab7;
+}
+
+.upper{
+  text-transform: uppercase;
+}
+
+.cart-container{
+  border: solid 1px #f3f3f3;
+  border-radius: 7px;
+  background-color: white;
+}

@@ -3,7 +3,10 @@
         <div class="col-xs-12 col-md-6 text-center">
             <ng-container  *ngIf="rsvForm.get('data')">
                 <h2 class="mb-0"><b>{{ rsvForm.get('data.xfer.xfer.tourName').value }} ({{ rsvData.habSelected.summarySearch.grupo }})</b></h2>
-                <h4 class="mb-1">Unidad: {{ rsvForm.get('data.xfer.xfer.name').value }}</h4>
+                <h4 class="mb-1">Unidad: {{ rsvForm.get('data.xfer.xfer.name').value }} para 
+                    {{  rsvForm.get('data.xfer.xfer.adults').value }} adultos || 
+                    {{  rsvForm.get('data.xfer.xfer.children').value }} niños || 
+                    {{  rsvForm.get('data.xfer.xfer.babies').value }} bebés</h4>
                 <mat-divider class="mb-2"></mat-divider>
                 <div>
                     <div class="align-items-center">
@@ -18,27 +21,34 @@
                         <!-- <ng-container *ngIf="rsvData['habSelected']['traslado']['info']['llegada']"> -->
                             <div class="col-xs-12 col-md-2 text-end" >Llegada:</div>
                             <div class="col-xs-12 col-md-4 text-start">
-                                <p><mat-icon>place</mat-icon>: {{ rsvForm.get('data.xfer.xfer.origin_text').value }}</p>
-                                <p><mat-icon>event</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_date').value }}</p>
-                                <p><mat-icon>schedule</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_hour').value }} hrs.</p>
-                                <p><mat-icon>flight_land</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_flight').value }}</p>
+                                <p class="mb-0"><mat-icon>place</mat-icon>: {{ rsvForm.get('data.xfer.xfer.origin_text').value }}</p>
+                                <p class="mb-0"><mat-icon>event</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_date').value }}</p>
+                                <p class="mb-0"><mat-icon>schedule</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_hour').value }} hrs.</p>
+                                <p class="mb-0"><mat-icon>flight_land</mat-icon>: {{ rsvForm.get('data.xfer.xfer.llegada_flight').value }}</p>
                             </div>
                             <!-- </ng-container>
                                 <ng-container *ngIf="rsvData['habSelected']['traslado']['info']['salida']"> -->
                             <div class="col-xs-12 col-md-2 text-end">Salida:</div>
                             <div class="col-xs-12 col-md-4 text-start">
-                                <p><mat-icon>place</mat-icon>: {{ rsvForm.get('data.xfer.xfer.destination_text').value }}</p>
-                                <p><mat-icon>event</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_date').value }}</p>
-                                <p><mat-icon>schedule</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_hour').value }} hrs.</p>
-                                <p><mat-icon>flight_land</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_flight').value }}</p>
-                                <p><mat-icon>airport_shuttle</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_pickup').value }} hrs</p>
+                                <p class="mb-0"><mat-icon>place</mat-icon>: {{ rsvForm.get('data.xfer.xfer.destination_text').value }}</p>
+                                <p class="mb-0"><mat-icon>event</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_date').value }}</p>
+                                <p class="mb-0"><mat-icon>schedule</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_hour').value }} hrs.</p>
+                                <p class="mb-0"><mat-icon>flight_land</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_flight').value }}</p>
+                                <p class="mb-0"><mat-icon>airport_shuttle</mat-icon>: {{ rsvForm.get('data.xfer.xfer.salida_pickup').value }} hrs</p>
                             </div>
-                            <div class="col-12 text-center">
-                                <mat-icon>family_restroom</mat-icon>:&nbsp;
-                                {{  rsvForm.get('data.xfer.xfer.adults').value }} adultos || 
-                                {{  rsvForm.get('data.xfer.xfer.children').value }} niños || 
-                                {{  rsvForm.get('data.xfer.xfer.babies').value }} bebés
-                            </div>
+                            <form [formGroup]="rsvForm" formGroupName="data">
+                                <div class="col-12 text-center" formGroupName="xfer" *ngIf="multipleItemsFlag">
+                                    <mat-form-field appearance="outline" formGroupName="item">
+                                        <mat-label>Habitación Padre</mat-label>
+                                        <mat-select formControlName="parentItem" >
+                                            <mat-option>Selecciona...</mat-option>
+                                            <mat-option *ngFor="let item of mlData" [value]="item['itemId']">
+                                                {{ item.itemLocatorId }} - {{ item.tipoServicio }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </form>
                             
 
                     </div>

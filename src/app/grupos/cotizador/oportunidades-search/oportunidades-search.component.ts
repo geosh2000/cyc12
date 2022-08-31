@@ -325,7 +325,7 @@ export class OportunidadesSearchComponent implements OnInit {
     console.log( this.op )
 
     if( this.op[0] ){
-      this.createOpEditForm(this.op[0])
+      // this.createOpEditForm(this.op[0])
     }
   }
 
@@ -629,7 +629,7 @@ export class OportunidadesSearchComponent implements OnInit {
 
       }
 
-      this.opReady.emit( true )
+      // this.opReady.emit( true )
 
       resolve( true )
     })

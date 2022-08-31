@@ -5,7 +5,6 @@ import { ApiService, HelpersService, InitService } from 'src/app/services/servic
 
 import * as moment from 'moment-timezone';
 import Swal from 'sweetalert2';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import html2canvas from 'html2canvas';
 
@@ -19,6 +18,7 @@ export class CartCheckoutDialog implements OnChanges, AfterViewInit {
   @Output() done = new EventEmitter
 
   @Input() rsvData = {}
+  @Input() dates = []
 
   rsvForm = this.fb.group({})
 
@@ -44,16 +44,12 @@ export class CartCheckoutDialog implements OnChanges, AfterViewInit {
             private fb: UntypedFormBuilder,
             private _api: ApiService,
             public _init: InitService,
-            public _h: HelpersService,
-            public dialogRef: MatDialogRef<CartCheckoutDialog>,
-            @Inject(MAT_DIALOG_DATA) public data
+            public _h: HelpersService
           ) { 
             
   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
+
   
   ngAfterViewInit(){
 
@@ -63,7 +59,11 @@ export class CartCheckoutDialog implements OnChanges, AfterViewInit {
   }
 
   save(){
-    this.dialogRef.close( this.data['form'] )
+    // this.dialogRef.close( this.data['form'] )
+  }
+
+  lastNight( e ){
+    return moment( e ).add(1,'days').format('YYYY-MM-DD')
   }
 
   createImg( el ){
@@ -87,7 +87,7 @@ export class CartCheckoutDialog implements OnChanges, AfterViewInit {
   }
 
   submit(){
-    this.dialogRef.close( true )
+    // this.dialogRef.close( true )
   }
 
 

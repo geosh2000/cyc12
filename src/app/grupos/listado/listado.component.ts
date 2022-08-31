@@ -11,6 +11,7 @@ import * as moment from 'moment';
 import { OrderPipe } from 'ngx-order-pipe';
 import { ApiService, ComercialService, InitService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
+import { OportunidadesSearchComponent } from '../cotizador/oportunidades-search/oportunidades-search.component';
 
 class userOps {
   Bodas: []
@@ -25,6 +26,8 @@ class userOps {
 })
 export class ListadoComponent implements OnInit {
 
+  @ViewChild( OportunidadesSearchComponent, { static: false } ) opp: OportunidadesSearchComponent;
+  
   @ViewChild( MatPaginator ) paginator: MatPaginator;
   @ViewChild( MatSort ) sort: MatSort;
 
@@ -33,6 +36,8 @@ export class ListadoComponent implements OnInit {
   // Table
   displayColumns = []
   dataSource = new MatTableDataSource([])
+
+  loading = {}
 
   constructor(public _api: ApiService, 
               public _init: InitService, 
@@ -49,7 +54,7 @@ export class ListadoComponent implements OnInit {
         'Hotel_evento__c',
         'Name',
         'inicio',
-        'Observaciones__c',
+        'contactMail',
         'StageName',
         'Acciones'
       ]
@@ -64,8 +69,12 @@ export class ListadoComponent implements OnInit {
 
   getUserOportunities(){
 
+    this.loading['getOps'] = true
+
     this._api.restfulPost( '', 'Sf/searchUserOportunities' )
                 .subscribe( res => {
+
+                  this.loading['getOps'] = false
 
                   this.userOportunities = res['data']
 
@@ -77,6 +86,7 @@ export class ListadoComponent implements OnInit {
                       op['tipo'] = t
                       op['inicioTxt'] = moment(op['Fecha_inicio_estancia__c'] == null ? op['OA_Fecha_Boda__c'] : op['Fecha_inicio_estancia__c']).format('YYYYMMDD')
                       op['inicio'] = moment(op['Fecha_inicio_estancia__c'] == null ? op['OA_Fecha_Boda__c'] : op['Fecha_inicio_estancia__c']).format('YYYY-MM-DD')
+                      op['contactMail'] = op['OpportunityContactRoles']['done'] ? op['OpportunityContactRoles']['records'][0]['Contact']['Email'] : '';
                       ops.push( op )
                     }
                   }
@@ -91,6 +101,8 @@ export class ListadoComponent implements OnInit {
                   console.log(this.dataSource)
 
                 }, err => {
+
+                  this.loading['getOps'] = false
                   this.userOportunities = new userOps
                   const error = err.error;
                   this._init.snackbar('error', error.msg, 'Cerrar')

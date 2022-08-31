@@ -150,24 +150,24 @@ export class DisplayOptionsComponent implements OnInit {
     })
   }
 
-  checkOutDialog( cart = this._com.cart ){
-    const dialogRef = this.dialog.open( CartCheckoutDialog, {
-      maxWidth: '80vw',
-      data: cart
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      // console.log('The dialog was closed', result);
-
-      if( typeof result == 'undefined' ){
-        // this.extraInfo['grupo']['insuranceIncluded'] = true;
-      }else{
-        if( result ){
-          this._send.buildQuote( this._com.cart )
-        }
-      }
-    });
-  }
+  // checkOutDialog( cart = this._com.cart ){
+  //   const dialogRef = this.dialog.open( CartCheckoutDialog, {
+  //     maxWidth: '80vw',
+  //     data: cart
+  //   });
+// 
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     // console.log('The dialog was closed', result);
+// 
+  //     if( typeof result == 'undefined' ){
+  //       // this.extraInfo['grupo']['insuranceIncluded'] = true;
+  //     }else{
+  //       if( result ){
+  //         this._send.buildQuote( this._com.cart )
+  //       }
+  //     }
+  //   });
+  // }
 
   
 

@@ -12,11 +12,7 @@ import 'moment/locale/es-mx';
 import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
-import { Observable, Subscription } from 'rxjs';
-import { Moment } from 'moment-timezone';
-import { OportunidadesSearchComponent } from './oportunidades-search/oportunidades-search.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayOptionsComponent } from './display-options/display-options.component';
 
 export const MY_FORMATS = {
@@ -30,8 +26,6 @@ export const MY_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
-
-declare var jQuery: any;
 
 @Component({
   selector: 'app-cotizador',
@@ -49,7 +43,6 @@ declare var jQuery: any;
 })
 export class CotizadorComponent implements OnInit, OnDestroy {
 
-  @ViewChild( OportunidadesSearchComponent, { static: false } ) opp: OportunidadesSearchComponent;
   @ViewChild( DisplayOptionsComponent, { static: false } ) dsp: DisplayOptionsComponent;
 
   @Output() rsv = new EventEmitter<any>()
@@ -75,6 +68,256 @@ export class CotizadorComponent implements OnInit, OnDestroy {
   cotizacion = []
   selectedOp = {} 
   collections = {} 
+
+  opportunityForm: UntypedFormGroup
+
+  opCtrlProps = {
+    "TipoRegistroNombre":    {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'TipoDeOportunidad',  default: ''  },
+          type: 'select',     
+          displayText:'Tipo de Registro',             
+          listName: 'sf_tipoReg' 
+        },
+    "TipoRegistroId":        {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'TipoRegistroId',  default: ''  },
+          type: 'text',       
+          displayText:'TipoRegistroId',               
+        },
+    "TipoDeCuenta":          {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'TipoDeCuenta',  default: 'Grupos'  },
+          type: 'text',       
+          displayText:'Tipo de Cuenta',               
+        },
+    "SocioComercialNombre":  {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'SocioComercialNombre',  default: ''  },
+          type: 'text',       
+          displayText:'Nombre Socio Comercial',       
+        },
+    "SocioComercialId":      {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'SocioComercialId',  default: ''  },
+          type: 'text',       
+          displayText:'SocioComercialId',             
+        },
+    "PropietarioNombre":     {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'PropietarioNombre', default: ''  },
+          type: 'text',       
+          displayText:'Coordinador',                  
+        },
+    "Propietario":           {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'Propietario', default: ''  },
+          type: 'text',       
+          displayText:'Propietario',                  
+        },
+    "Mercado":               {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Mercado', default: ''  },
+          type: 'select',     
+          displayText:'Mercado',                      
+          listName: 'sf_mercado' 
+        },
+    "HotelEvento":           {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'HotelEvento', default: ''  },
+          type: 'select',     
+          displayText:'Hotel del evento',             
+          listName: 'sf_hoteles' 
+        },
+    "OrigenProspecto":       {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { active: true, shown: false,  bodas: true,  grupos: true,    map: 'OrigenProspecto', default: 'Cotizador'  },
+          type: 'text',       
+          displayText:'Origen del Prospecto',         
+        },
+    "Observaciones":         {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Observaciones', default: ''  },
+          type: 'text',       
+          displayText:'Observaciones',                
+        },
+    "NoPax":                 {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NoPax', default: ''  },
+          type: 'number',     
+          displayText:'No. Pax',                      
+        },
+    "Nombre":                {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Nombre',  default: ''  },
+          type: 'text',       
+          displayText:'Nombre',                       
+        },
+    "idOportunidad":         {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'idOportunidad', default: ''  },
+          type: 'text',       
+          displayText:'idOportunidad',                
+        },
+    "Idioma":                {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Idioma',  default: ''  },
+          type: 'select',     
+          displayText:'Idioma',                       
+          listName: 'sf_idioma' 
+        },
+    "FechaCierre":           {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: false, },
+          create:            { active: true, shown: true,   bodas: true,  grupos: true,    map: 'FechaCierre', default: ''  },
+          type: 'date',       
+          displayText:'Fecha de Cierre',              
+        },
+    "Etapa":                 {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: false, bodas: true,  grupos: true,     map: 'Etapa', default: 'Inicio'  },
+          type: 'text',       
+          displayText:'Etapa',                        
+        },
+    "Divisa":                {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'Divisa',  default: ''  },
+          type: 'select',     
+          displayText:'Divisa',                       
+          listName: 'sf_currency' 
+        },
+    "CuentaId":              {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'CuentaId',  default: ''  },
+          type: 'text',       
+          displayText:'CuentaId',                     
+        },
+    "contactId":             {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: false, shown: false, bodas: true,  grupos: true,     map: 'contactoId', default: ''  },
+          type: 'text',       
+          email: true,
+          displayText:'Correo Contacto (id)',                    
+        },
+    "accountId":             {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { shown: false,  bodas: true,  grupos: true,     map: 'accountId', default: ''  },
+          type: 'text',       
+          displayText:'accountId',                    
+        },
+    "FechaBoda":             {
+          get:               { shown: true, bodas: true,  grupos: false,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: false,     map: 'FechaBoda', default: ''  },
+          type: 'date',       
+          displayText:'Fecha de Boda',                
+        },
+    "FechaInicioEstancia":   {
+          get:               { shown: true, bodas: false,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: false,  grupos: true,     map: 'FechaInicioEstancia', default: ''  },
+          type: 'date',       
+          displayText:'Fecha de Inicio',              
+        },
+    "FechaFinEstancia":      {
+          get:               { shown: true, bodas: false,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: false,  grupos: true,     map: 'FechaFinEstancia',  default: ''  },
+          type: 'date',       
+          displayText:'Fecha de Fin',                 
+        },
+    "NombreAccount":         {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: false, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NombreAccount', default: ''  },
+          type: 'text',       
+          displayText:'Nombre de Cuenta',             
+        },
+    "TelefonoAccount":       {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TelefonoAccount', default: ''  },
+          type: 'text',       
+          displayText:'Telefono de Cuenta',           
+        },
+    "EmailAccount":          {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EmailAccount',  default: ''  },
+          type: 'text',       
+          email: true,
+          displayText:'Email de Cuenta',              
+        },
+    "NacionalidadAccount":   {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NacionalidadAccount', default: ''  },
+          type: 'select',     
+          displayText:'Nacionalidad de Cuenta',       
+          listName: 'sf_nacionalidad' 
+        },
+    "CalleAccount":          {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CalleAccount',  default: ''  },
+          type: 'text',       
+          displayText:'Calle de Cuenta',              
+        },
+    "CodigoPostalAccount":   {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CodigoPostalAccount', default: ''  },
+          type: 'text',       
+          displayText:'Codigo Postal de Cuenta',      
+        },
+    "CiudadAccount":         {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'CiudadAccount', default: ''  },
+          type: 'text',       
+          displayText:'Ciudad de Cuenta',             
+        },
+    "EstadoAccount":         {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EstadoAccount', default: ''  },
+          type: 'text',       
+          displayText:'Estado de Cuenta',             
+        },
+    "paisAccount":           {
+          get:               { shown: false,  bodas: true,  grupos: true,    readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'paisAccount', default: ''  },
+          type: 'select',     
+          displayText:'Pais de Cuenta',               
+          listName: 'sf_pais' 
+        },
+    "NombreContact":         {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NombreContact', default: ''  },
+          type: 'text',       
+          displayText:'Nombre del Contacto',          
+        },
+    "ApellidosContact":      {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'ApellidosContact',  default: ''  },
+          type: 'text',       
+          displayText:'Apellidos del Contacto',       
+        },
+    "TelefonoContact":       {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'TelefonoContact', default: ''  },
+          type: 'text',       
+          displayText:'Telefono del Contacto',        
+        },
+    "EmailContact":          {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'EmailContact',  default: ''  },
+          type: 'text',       
+          email: true,
+          displayText:'Email del Contacto',           
+        },
+    "NacionalidadContact":   {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'NacionalidadContact', default: ''  },
+          type: 'select',     
+          displayText:'Nacionalidad del Contacto',    
+          listName: 'sf_pais' 
+        },
+    "cargoContact":          {
+          get:               { shown: true, bodas: true,  grupos: true,     readonly: true, },
+          create:            { active: true, shown: true, bodas: true,  grupos: true,     map: 'cargoContact',  default: ''  },
+          type: 'text',       
+          displayText:'Cargo del Contacto',           
+        },
+  }
   
 
   op = {}
@@ -103,11 +346,7 @@ export class CotizadorComponent implements OnInit, OnDestroy {
 
     }
 
-  ngOnInit(): void {
-
-    // if( this.op[0] ){
-    //   this.opp.createOpEditForm( this.op[0] )
-    // }
+  async ngOnInit() {
 
     this._com.cart = []
 
@@ -124,9 +363,91 @@ export class CotizadorComponent implements OnInit, OnDestroy {
     
     this._com.summarySearch = this._com.hotelSearch.value
 
+    if( this.op[0] ){
+      await this.createOpEditForm( this.op[0] )
+      this.comercialSetFilters( true )
+    }else{
+      this._init.snackbar('error', 'Sin Oportunidad', 'No se eligió ninguna oportunidad')
+      this.router.navigateByUrl('/grupos');
+    }
+
+
   }
 
   ngOnDestroy(): void {
+    
+  }
+
+  async askForType(){
+
+    return new Promise( async ( val ) => {
+      const { value: result } =  await Swal.fire({
+        title: 'Elige el tipo de oportunidad',
+        input: 'select',
+        inputOptions: {
+          Bodas: 'Boda',
+          Grupos: 'Grupo'
+        },
+        inputPlaceholder: 'Elige un tipo',
+        showCancelButton: true,
+        // inputValidator: (value) => {
+        //   return new Promise((resolve) => {
+        //     if (value != '') {
+        //       resolve( value )
+        //     } else {
+        //       resolve('Debes elegir un tipo de oportunidad')
+        //     }
+        //   })
+        // }
+      })
+    
+      if ( result ) {
+        val( result )
+      }else{
+        val ( false )
+      }
+    })
+    
+  }
+
+  async createOpEditForm( o = {}, t = 'get' ){
+
+    console.log(o)
+    return new Promise( async ( resolve ) => {
+
+     if( (o['TipoRegistroNombre'] ?? null) == null ){
+       o['TipoRegistroNombre'] = await this.askForType()
+
+        if( !o['TipoRegistroNombre'] ){
+          this.dialog.closeAll()
+        }
+      }
+
+      this.opportunityForm =  this.fb.group({})
+
+      for( let ctrl in this.opCtrlProps ){
+
+        let c = this.opCtrlProps[ctrl]
+
+        let val = c[t]['required'] ? [ Validators.required ] : []
+
+        if( c['email'] ){
+          val.push( Validators.email )
+        }
+
+        if( c[t][o['TipoRegistroNombre'].toLowerCase()] ){
+          if( t == 'get' || t == 'create' && c[t]['active'] ){
+            if( c['type'] == 'date' ){
+              this.opportunityForm.addControl( ctrl, new UntypedFormControl({ value: o[ctrl] ? moment(o[ctrl], 'YYYY-M-DD').tz('America/Bogota') : null,     disabled: t == 'get' ? c['get']['readonly'] : !c['create']['shown'] }, val ))
+            }else{
+              this.opportunityForm.addControl( ctrl, new UntypedFormControl({ value: t == 'get' ? (o[ctrl] ?? null) : (ctrl == 'TipoRegistroNombre'? o['TipoRegistroNombre'] : c['create']['default']),     disabled: t == 'get' ? c['get']['readonly'] : (!c['create']['shown'])  }, val ))
+            }
+          }
+        }
+
+      }
+      resolve( true )
+    })
     
   }
 
@@ -162,9 +483,7 @@ export class CotizadorComponent implements OnInit, OnDestroy {
 
     if( !e ){ return false }
 
-    console.log( this.opp )
-    
-    let tipo = this.opp.opportunityForm.get('TipoRegistroNombre').value.toLowerCase()
+    let tipo = this.opportunityForm.get('TipoRegistroNombre').value.toLowerCase()
     // SET FILTERS GROUPS
     let grupoTfa = {
       gpoTitle: tipo,
@@ -178,10 +497,10 @@ export class CotizadorComponent implements OnInit, OnDestroy {
     this._com.hotelSearch.get('grupo').setValue( grupoTfa )
 
     // SET DATES
-    let inicio = moment( this.opp.opportunityForm.get( tipo == 'grupos' ? 'FechaInicioEstancia' : 'FechaBoda').value.format('YYYY/MM/DD') )
+    let inicio = moment(this.opportunityForm.get( tipo == 'grupos' ? 'FechaInicioEstancia' : 'FechaBoda').value.format('YYYY/MM/DD') )
     this._com.hotelSearch.get('inicio').setValue( inicio )
 
-    let fin = this.opp.opportunityForm.get( tipo == 'grupos' ? 'FechaFinEstancia' : 'FechaBoda').value
+    let fin =this.opportunityForm.get( tipo == 'grupos' ? 'FechaFinEstancia' : 'FechaBoda').value
     this._com.hotelSearch.get('fin').setValue( tipo == 'grupos' ? fin : fin.add(1,'days') )
 
     // SET HABS
@@ -218,19 +537,19 @@ export class CotizadorComponent implements OnInit, OnDestroy {
         inicio.setErrors({ inicioPasado: true })
       }
 
-      if( this.opp && this.opp.opportunityForm ){
-        if(  this.opp.opportunityForm.get('FechaBoda') ){
-          let inicioBoda = this.opp.opportunityForm.get('FechaBoda').value.subtract(15,'days')
-          let finBoda = this.opp.opportunityForm.get('FechaBoda').value.add(15,'days')
+      if( this.opportunityForm ){
+        if( this.opportunityForm.get('FechaBoda') ){
+          let inicioBoda =this.opportunityForm.get('FechaBoda').value.subtract(15,'days')
+          let finBoda =this.opportunityForm.get('FechaBoda').value.add(15,'days')
           if(  inicio.value < inicioBoda ){
             inicio.setErrors({ inicioMenorOportunidad: true })
           }
           
-          if(  inicio.value > this.opp.opportunityForm.get('FechaBoda').value ){
+          if(  inicio.value >this.opportunityForm.get('FechaBoda').value ){
             inicio.setErrors({ inicioMayorOportunidad: true })
           }
           
-          if(  fin.value < this.opp.opportunityForm.get('FechaBoda').value ){
+          if(  fin.value <this.opportunityForm.get('FechaBoda').value ){
             fin.setErrors({ finMenorOportunidad: true })
           }
           
@@ -239,9 +558,9 @@ export class CotizadorComponent implements OnInit, OnDestroy {
           }
         }
         
-        if(  this.opp.opportunityForm.get('FechaInicioEstancia') ){
-          let inicioGrupo = this.opp.opportunityForm.get('FechaInicioEstancia')
-          let finGrupo = this.opp.opportunityForm.get('FechaFinEstancia')
+        if( this.opportunityForm.get('FechaInicioEstancia') ){
+          let inicioGrupo =this.opportunityForm.get('FechaInicioEstancia')
+          let finGrupo =this.opportunityForm.get('FechaFinEstancia')
   
           if(  inicio.value < inicioGrupo ){
             inicio.setErrors({ inicioMenorOportunidad: true })

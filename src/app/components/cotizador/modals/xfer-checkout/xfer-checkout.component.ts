@@ -20,6 +20,8 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
 
   rsvForm: UntypedFormGroup = this.fb.group({ isUsd: [''] })
   namesForm: UntypedFormGroup = this.fb.group({ pax1: ['', Validators.required ] })
+  mlData = []
+  multipleItemsFlag = false
 
   namePattern = "^[A-Za-záéíóúÁÉÍÓÚ]+([\\s]{1}[A-Za-záéíóúÁÉÍÓÚ]+)*$"
 
@@ -49,14 +51,17 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  buildForm( curr ){
+  async buildForm( curr ){
+
+    this.mlData = []
 
     let sum = this.rsvData['habSelected']['summarySearch']
     let tr = this.rsvData['habSelected']['traslado']
     let usd = sum['isUSD']
 
-    let user = curr['formRsv']['zdUser']
-    let split = curr['formRsv']['splitNames']
+    let form = curr['formRsv']
+    let user = form['zdUser']
+    let split = form['splitNames']
 
     this._validate.createForm( this.rsvData, user );
 
@@ -135,6 +140,7 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
           itemType:     [{ value: 11,  disabled: false }, [ Validators.required ] ],
           isQuote:      [{ value: 1,  disabled: false }, [ Validators.required ] ],
           zdTicket:     [{ value: '',  disabled: false } ],
+          parentItem:   [{ value: '',  disabled: false }, form['isNew'] ? [] : [ Validators.required ] ],
         }),
         monto:    this.fb.group({
           tipoCambio:     [{ value: +(usd ? 1 : ( tr.mxn_rate / tr.usd_rate ) ).toFixed(2),  disabled: false }, [ Validators.required ] ],
@@ -163,6 +169,67 @@ export class XferCheckoutComponent implements AfterViewInit, OnChanges {
     })
 
     this.buildNameForm( +(tr.adults) + +(tr.babies) + +(tr.children))
+
+    if( !form['isNew'] ){
+      let ml = form['selectedData']['masterloc']['masterlocatorid']
+      let mlGet = await this.getLoc( ml )
+      if( mlGet ){
+        let flag = false
+        for( let item of this.mlData ){
+          if( item['itemType'] == 1 && item['isCancel'] == 0 ){
+            flag = true
+            break
+          }
+        }
+
+        if( !flag ){ this.setIndependent() }
+
+        this.multipleItemsFlag = flag
+      }
+    }else{
+      this.setIndependent()
+    }
+  }
+
+  setIndependent(){
+    this.rsvForm.get('data.xfer.item.parentItem').setValue( null )
+    this.rsvForm.get('data.xfer.item.parentItem').clearValidators();
+    this.rsvForm.get('data.xfer.item.parentItem').updateValueAndValidity();
+  }
+  
+  getLoc( ml ){
+    
+    this.mlData = []
+
+    return new Promise( (resolve) => {
+
+      this._api.restfulGet( ml, 'Rsv/manage2Loc' )
+                  .subscribe( res => {
+  
+                    let data = []
+  
+                    for( let i of res['data']['items'] ){
+                      if( i['isCancel'] == 0 && i['itemType'] == 1 ){
+                        data.push( i )
+                      }
+                    }
+  
+                      this.mlData = data
+  
+                      console.log( res['data'] )
+
+                      resolve (true)
+  
+                  }, err => {
+  
+                    const error = err.error;
+                    console.error(err.statusText, error.msg);
+                    this._init.snackbar('error', err.statusText, error.msg )
+  
+                    resolve (false)
+  
+                  });
+    });
 
   }
 

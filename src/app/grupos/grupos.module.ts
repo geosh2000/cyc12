@@ -43,6 +43,7 @@ import { DisplayOptionsComponent } from './cotizador/display-options/display-opt
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { CartCheckoutDialog } from './cotizador/display-options/cart-checkout/cart-checkout.dialog';
 
 
 
@@ -58,6 +59,7 @@ import { MatSortModule } from '@angular/material/sort';
     OportunidadesSearchComponent,
     OportunidadesCreateDialog,
     DisplayOptionsComponent,
+    CartCheckoutDialog
   ],
   exports: [
     GruposComponent,

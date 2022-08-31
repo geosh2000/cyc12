@@ -50,7 +50,7 @@
     <mat-card class="mt-3 px-0" *ngIf="!loading['cotizar'] && cotizacion.length > 0">
 
         <!-- OPCIONES PARA COMERCIAL -->
-        <display-options [cotizacion]="cotizacion" [oportunidad]="opp.opportunityForm" *ngIf="isComercial"></display-options>
+        <display-options [cotizacion]="cotizacion" [oportunidad]="opportunityForm" *ngIf="isComercial"></display-options>
 
     </mat-card>
     
@@ -58,15 +58,15 @@
 
     
 
-    <div style="position: fixed; bottom: 40px; right: 40px;">
+   <!-- <div style="position: fixed; bottom: 40px; right: 40px;">
         <button mat-fab color="primary" [matBadge]="_com.cart.length" [matBadgeHidden]="_com.cart.length == 0" matBadgeColor="accent" (click)="dsp.checkOutDialog(_com.cart)">
           <mat-icon>shopping_cart</mat-icon>
         </button>
-    </div>
+    </div> -->
 
 </div>
 
-<oportunidades-search (dateChange)="changeSearchDate($event)" (opReady)="comercialSetFilters( $event )" [visible]="isComercial" [op]="op"></oportunidades-search>
+
 
 
 

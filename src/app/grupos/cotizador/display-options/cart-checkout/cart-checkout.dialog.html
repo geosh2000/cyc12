@@ -1,23 +1,37 @@
-<div class="container" style="background-color: white" #sumTable>
-    <table class="table table-sm table-bordered table-stripped" *ngIf="data.length > 0">
-        <thead>
-            <tr> 
-                <th *ngFor="let field of data[0] | keys">{{ field }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let row of data">
-                <td class="text-center" *ngFor="let col of row | keys">
-                    <span [ngSwitch]="col">
-                        <span *ngSwitchCase="'Tarifa'">{{ row[col] | currency:'USD':'symbol-narrow':'.2-2' }}</span>
-                        <span *ngSwitchDefault>{{ row[col] }}</span>
-                    </span>
-                    
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div class="mt-2 p-2 container cart-container" style="background-color: white; max-width: 290px!important">
+    <h4 class="text-mat-primary upper"><b>Carrito</b></h4>
+
+    <div class="my-2 mx-0 p-0">
+        <mat-accordion multi>
+            <mat-expansion-panel class="mat-elevation-z0" expanded *ngFor="let d of dates; index as i">
+                <mat-expansion-panel-header class="px-1" style="background-color: #673ab7; height: 25px;" >
+                    <mat-panel-title style="color: white;">
+                        <mat-icon class="me-2">calendar_month</mat-icon> {{ d['dateStart'] }} - {{ lastNight( d['dateEnd'] ) }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+            
+                <mat-expansion-panel-content class="mat-elevation-z0">
+                    <div class="px-2 py-1 my-2" style="background: aliceblue; border-radius: 12px;">
+                        <h3 class="upper mb-1"><b>grand oasis cancun</b></h3>
+                        <div class="d-flex justify-content-start align-items-center mb-1">
+                            <button style="zoom: 0.4;" mat-mini-fab color="warn"><mat-icon>close</mat-icon></button><span class="upper">&nbsp;standard</span>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-center mb-1">
+                            <button style="zoom: 0.4;" mat-mini-fab color="warn"><mat-icon>close</mat-icon></button><span class="upper">&nbsp;grand ocean view</span>
+                        </div>
+                    </div>
+                </mat-expansion-panel-content>
+          
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+    <div class="container d-flex flex-wrap justify-content-between px-0" >
+
+        <div><button mat-stroked-button color="primary" class="py-1 px-3 upper">Vaciar</button></div>
+        <div><button mat-flat-button color="primary" class="py-1 px-3 upper">Generar Cotización</button></div>
+
+    </div>
+    
 </div>
 
-<button mat-raised-button (click)="createImg(sumTable)">Img</button>
-<button mat-raised-button color="primary" (click)="submit()">Crear</button>

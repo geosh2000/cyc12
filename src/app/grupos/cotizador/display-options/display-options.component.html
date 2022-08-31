@@ -119,9 +119,8 @@
        </div>
        
    </div> 
-   <div class="col-3 sumary">
-    Carrito
+   <div class="col-3 sumary" *ngIf="cotizacion[0]">
+        <cart-checkout [dates]="cotizacion[0]['habs']['porHabitacion']['hab1']['dateBlocks']"></cart-checkout>
    </div>
 </div>
 
-<pre>{{ cart | json }}</pre>

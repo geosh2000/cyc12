@@ -1,9 +1,44 @@
 
 
 <form [formGroup]="data.form">
-    <mat-card>
-        <mat-card-content>
+    <mat-card style="max-height: 80vh; overflow: auto">
+        <mat-card-content> 
 
+            <div class="mx-0 mb-2 p-1 category-title">Datos de la cuenta</div>
+            <mat-card class="mb-2 d-flex flex-wrap justify-content-between">
+
+                    <mat-form-field appearance="outline"> 
+                        <mat-label>Nombre de Cuenta</mat-label>
+                        <input matInput formControlName="NombreAccount" autocomplete="off">
+                        <mat-error *ngIf="data.form.controls['NombreAccount'].invalid">Errores en este campo</mat-error>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline"> 
+                        <mat-label>Email de Cuenta</mat-label>
+                        <input matInput formControlName="EmailAccount" autocomplete="off">
+                        <mat-error *ngIf="data.form.controls['EmailAccount'].invalid">Errores en este campo</mat-error>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline"> 
+                        <mat-label>Telefono de Cuenta</mat-label>
+                        <input matInput formControlName="TelefonoAccount" autocomplete="off">
+                        <mat-error *ngIf="data.form.controls['TelefonoAccount'].invalid">Errores en este campo</mat-error>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                        <mat-label>Pais de la Cuenta</mat-label>
+                        <mat-select formControlName="NacionalidadAccount">
+                            <mat-option [value]="o['value']" *ngFor="let o of data['collections']['sf_nacionalidad']">{{ o['label'] }}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="data.form.controls['NacionalidadAccount'].invalid">Errores en este campo</mat-error>
+                    </mat-form-field>
+
+            </mat-card>
+            <div class="mx-0 mb-2 p-1 category-title">Datos del contacto</div>
+            <mat-card class="mb-2"></mat-card>
+            <div class="mx-0 mb-2 p-1 category-title">Datos del grupo</div>
+            <mat-card class="mb-2"></mat-card>
+            
         <div class="container d-flex flex-wrap justify-content-between" [style.width.%]="80">
         
                 <ng-container *ngFor="let c of data.form.controls | keys"> 

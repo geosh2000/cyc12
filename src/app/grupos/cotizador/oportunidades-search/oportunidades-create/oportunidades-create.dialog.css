@@ -28,3 +28,21 @@
   background-color: #15ab13;
   color: #fff;
 }
+
+.text-mat-primary{
+  color: #673ab7;
+}
+
+.upper{
+  text-transform: uppercase;
+}
+
+.category-title{
+  text-transform: uppercase;  
+  color: #673ab7;
+  background-color: #e0ccfc;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 900;
+  padding-left: 15px!important;
+}
