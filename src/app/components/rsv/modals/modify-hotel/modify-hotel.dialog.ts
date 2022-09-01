@@ -203,7 +203,7 @@ export class ModifyHotelDialog implements OnInit {
 
     console.log(i)
 
-    if( i['changes']['selectedRoom']['occ'].indexOf( i['change ']['selectedOcc'] )  === -1  ){
+    if( i['changes']['selectedRoom']['occ'].indexOf( i['changes']['selectedOcc'] )  === -1  ){
       Swal.fire('Error en ocupación','No se puede cotizar esta ocupación, cotiza de manera manual','error')
       return false
     }

@@ -126,11 +126,11 @@
                 </div>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
-                    (click)="_cp.viewPricesLoad(i)"
-                    *ngIf="i['itemType'] == 1 && i['isCancel'] == 0 && i['isOpen'] == 0"
+                    (click)="setRounded(i)"
+                    *ngIf="_init.checkSingleCredential('rsv_set_ph') &&  i['montoSaldoTotal']<=.02 && i['montoSaldoTotal']>0 && i['isCancel'] == 0 && i['isOpen'] == 0"
                     [disabled]=" _api.isLoading | async">
-                    <mat-icon>request_quote</mat-icon>
-                    &nbsp;Ver Precios
+                    <mat-icon>currency_exchange</mat-icon>
+                    &nbsp;Redondear
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"

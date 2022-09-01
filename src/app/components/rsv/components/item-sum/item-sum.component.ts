@@ -232,6 +232,22 @@ export class ItemSumComponent implements OnInit {
                   });
     }
 
+    setRounded( i ){
+      this._api.restfulPut( { itemId: i['itemId'] }, 'Rsv/editMontoRound' )
+                      .subscribe( res => {
+      
+                        this.reload.emit( this.data['master']['masterlocatorid'] )
+                      
+                        
+                      }, err => {
+                        
+                        const error = err.error;
+                        this._init.snackbar( 'error', error.msg, err.status );
+                        console.error(err.statusText, error.msg);
+                        Swal.close()
+                      });
+    }
+
     resetConfirm( f , i = {} ){
       if( !f ){
 
