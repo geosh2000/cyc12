@@ -13,6 +13,7 @@ import { OrderPipe } from 'ngx-order-pipe';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
 import { PackageBuilderComponent } from './package-builder/package-builder.component';
+import { PackageBuilderV2Component } from './package-builder-v2/package-builder-v2.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -44,7 +45,8 @@ declare var jQuery: any;
 })
 export class CotizaHotelComponent implements OnInit {
 
-  @ViewChild( PackageBuilderComponent, { static: false } ) pkg: PackageBuilderComponent;
+  @ViewChild( PackageBuilderComponent, { static: false } ) pkg2: PackageBuilderComponent;
+  @ViewChild( PackageBuilderV2Component, { static: false } ) pkg: PackageBuilderV2Component;
   
   @Output() rsv = new EventEmitter<any>()
   @Input() data: any;
@@ -349,6 +351,8 @@ export class CotizaHotelComponent implements OnInit {
                       totalIns[1] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['seguro'])
                       totalDif[0] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['montoPaq']) - parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteMXN']['montoMinimo'])
                       totalDif[1] += parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['montoPaq']) - parseFloat(i['habs']['porHabitacion'][h]['paq']['paqueteUSD']['montoMinimo'])
+
+
                     }
 
                     i['habs']['totalPaqs'] = {
@@ -388,9 +392,9 @@ export class CotizaHotelComponent implements OnInit {
                     }
                   }
 
-                  
+                    
 
-                  // console.log(result)
+                   console.log(result)
                   // console.log(this.extraInfo)
                   this.cotizacion = result
 

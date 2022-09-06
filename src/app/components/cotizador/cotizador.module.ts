@@ -47,6 +47,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { PackageBuilderComponent } from './hotel/package-builder/package-builder.component';
+import { PackageBuilderV2Component } from './hotel/package-builder-v2/package-builder-v2.component';
 
 
 
@@ -65,7 +66,8 @@ import { PackageBuilderComponent } from './hotel/package-builder/package-builder
     TourCheckoutComponent,
     SendQuoteComponent,
     ValidateTicketComponent,
-    PackageBuilderComponent 
+    PackageBuilderComponent,
+    PackageBuilderV2Component
   ],
   exports: [
     CotizadorComponent,
@@ -81,7 +83,8 @@ import { PackageBuilderComponent } from './hotel/package-builder/package-builder
     TourCheckoutComponent,
     SendQuoteComponent,
     ValidateTicketComponent,
-    PackageBuilderComponent
+    PackageBuilderComponent,
+    PackageBuilderV2Component
   ],
   imports: [    
     OrderModule,

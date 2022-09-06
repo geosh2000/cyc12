@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ApiService, HelpersService, InitService } from 'src/app/services/service.index';
+import { ApiService, AvalonService, HelpersService, InitService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
 
 import { EditZdDialog } from '../../modals/edit-zd-dialog/edit-zd-dialog';
@@ -22,6 +22,7 @@ export class LocSumComponent implements OnInit {
 
   @Output() reload = new EventEmitter
   @Output() reloadHistory = new EventEmitter
+  @Output() avalon = new EventEmitter
 
   loading = {}
 
@@ -33,6 +34,7 @@ export class LocSumComponent implements OnInit {
     public _init: InitService,
     public _h: HelpersService,
     private _api: ApiService,
+    private _avalon: AvalonService,
     public domSanitizer: DomSanitizer,
     public dialog: MatDialog
   ) { }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
+import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
 import { ReportingComponent } from './reporting.component';
 
 const childRoutes: Routes = [
@@ -16,6 +17,12 @@ const childRoutes: Routes = [
     component: ReportingComponent ,
     canActivate: [ AuthGuard ],
     data: { title: 'Seguros Pendientes de Captura', role: 'rsv_reset_confirm', reporte: 'segurosPendientes' } 
+  },
+  { 
+    path: 'exportAvalon', 
+    component: ExportarAvalonComponent ,
+    canActivate: [ AuthGuard ],
+    data: { title: 'Reservas para exportar a Avalon', role: 'rsv_reset_confirm', reporte: 'avalonPendientes' } 
   },
 ]
 

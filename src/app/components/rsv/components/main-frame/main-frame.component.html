@@ -126,7 +126,7 @@
                             <hr class="hrItems">
 
                             <!-- DETALLE DE ITEMS -->
-                            <app-item-sum [hideInsXld]="hideInsXld" [data]="data" (reload)="reload.emit( data['master']['masterlocatorid'] )" (reloadHistory)="getHistory()"></app-item-sum>
+                            <app-item-sum [hideInsXld]="hideInsXld" [data]="data" (avalon)="avalonRegister( $event )" (reload)="reload.emit( data['master']['masterlocatorid'] )" (reloadHistory)="getHistory()"></app-item-sum>
                             <hr class="hrItems">
 
                             <!-- RESUMEN CON TOTALES -->
@@ -166,7 +166,7 @@
 
             <!-- SUMMARY -->
             <div class="ps-2" style="width: 280px;">
-                <app-loc-sum [data]="data" [(hideInsXld)]="hideInsXld" (reloadHistory)="getHistory()" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-loc-sum>
+                <app-loc-sum [data]="data" [(hideInsXld)]="hideInsXld" (avalon)="avalonRegister( $event )" (reloadHistory)="getHistory()" (reload)="reload.emit( data['master']['masterlocatorid'] )"></app-loc-sum>
             </div>
 
         </div>

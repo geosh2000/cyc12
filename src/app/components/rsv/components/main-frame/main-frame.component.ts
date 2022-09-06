@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChil
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrderPipe } from 'ngx-order-pipe';
-import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
+import { ApiService, AvalonService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import { ChangeCreatorDialog } from '../../modals/change-creator/change-creator-dialog';
 import { expand } from 'src/app/shared/animations';
 
@@ -59,6 +59,7 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
     public domSanitizer: DomSanitizer,
     public _init: InitService,
     public _api: ApiService,
+    private _avalon: AvalonService,
     private orderPipe: OrderPipe,
     public _h: HelpersService,
     private _zh: ZonaHorariaService,
@@ -246,6 +247,74 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
                   }, err => {
                     this.loading['cTransfer'] = false;
 
+                    const error = err.error;
+                    this._init.snackbar( 'error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+
+                  });
+    }
+
+    avalonRegister( ml ){
+
+      Swal.fire({
+        title: 'Generando XML...',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+
+      this._api.xmlGet( ml + '/xml', 'Avalon/getRsvArr' )
+                  .subscribe( res => {
+
+                      this.postToAvalon( res )
+
+                  }, err => {
+
+                    const error = err.error;
+                    this._init.snackbar( 'error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+
+                  });
+    }
+
+    postToAvalon( xml ){
+      Swal.fire({
+        title: 'Enviando XML a Avalon...',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+      this._avalon.xmlPost( xml, 'postReservation' )
+              .subscribe( res => {
+
+                
+                this.uploadAvalonConfirmations( res )
+
+              }, err => {
+
+                const error = err.error;
+                this._init.snackbar( 'error', 'No se pudo conectar con Avalon', err.status );
+                console.error(err.statusText);
+
+              });
+    }
+
+    uploadAvalonConfirmations( conf ){
+
+      Swal.fire({
+        title: 'Guardando confirmaciones de Avalon en CYC...',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+
+      this._api.restfulPut( conf, 'Rsv/saveAvalonConfirmation' )
+                  .subscribe( res => {
+
+                    Swal.close()
+                    this._init.snackbar('success', 'Confirmados', res['msg'] );
+                    this.reload.emit( this.data['master']['masterlocatorid'] )
+
+                  }, err => {
+
+                    Swal.close()
                     const error = err.error;
                     this._init.snackbar( 'error', error.msg, err.status );
                     console.error(err.statusText, error.msg);

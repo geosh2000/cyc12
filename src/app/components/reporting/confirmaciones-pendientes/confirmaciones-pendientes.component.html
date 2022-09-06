@@ -172,7 +172,11 @@
                                                 <mat-form-field appearance="outline">
                                                     <input matInput type="text" placeholder="confirmacion cielo" style="width: 200px" autocomplete="off" #confInput> 
                                                 </mat-form-field>
-                                                <button mat-raised-button class="table-button" color="primary" (click)="confirm(true, r,confInput.value)" [disabled]="confInput.value == ''">Confirmar</button>
+                                                <div>
+                                                    <button mat-raised-button class="table-button" color="primary" (click)="confirm(true, r,confInput.value)" [disabled]="confInput.value == ''">Confirmar</button>
+                                                    <br>
+                                                    <button mat-raised-button class="table-button" color="accent" (click)="avalonRegister(r)">Exportar a Avalon</button>
+                                                </div>
                                             </ng-container>
                                             <ng-container *ngIf="r['loading']">
                                                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>

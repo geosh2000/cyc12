@@ -1,0 +1,11 @@
+.text-mat-primary{
+    color: #673ab7;
+}
+
+.item{
+    width: 255px;
+}
+
+:host ::ng-deep .mat-card-header-text {
+    width: 100%;
+}

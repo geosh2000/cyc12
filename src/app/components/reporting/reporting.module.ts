@@ -34,6 +34,7 @@ import { SegurosPendientesCapturaComponent } from './seguros-pendientes-captura/
 import { BlankReportComponent } from './blank-report/blank-report.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
 
 
 
@@ -45,6 +46,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ReportingComponent,
     ConfirmacionesPendientesComponent,
     SegurosPendientesCapturaComponent,
+    ExportarAvalonComponent,
   ],
   exports: [
     ReportingDirective,
@@ -53,6 +55,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ReportingComponent,
     ConfirmacionesPendientesComponent,
     SegurosPendientesCapturaComponent,
+    ExportarAvalonComponent,
   ],
   imports: [    
     OrderModule,

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
-import { ApiService, HelpersService, InitService, WebSocketService } from 'src/app/services/service.index';
+import { ApiService, AvalonService, HelpersService, InitService, WebSocketService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
 import 'moment/locale/es-mx';
@@ -25,7 +25,8 @@ export class ConfirmacionesPendientesComponent implements OnInit, OnDestroy {
     private _api: ApiService, 
     public _h: HelpersService, 
     public _init: InitService,
-    private _ws: WebSocketService
+    private _ws: WebSocketService,
+    private _avalon: AvalonService
     ) { 
     moment.locale('es-mx');
 
@@ -167,6 +168,78 @@ export class ConfirmacionesPendientesComponent implements OnInit, OnDestroy {
   goToLoc( r ){
     let loc = r['itemLocatorId'].substr(0,6)
     window.open("https://cyc-oasishoteles.com/#/rsv2/" + loc)
+  }
+
+  avalonRegister( r ){
+
+    let ml = r['itemlocatorid']
+
+    Swal.fire({
+      title: 'Generando XML...',
+      allowOutsideClick: false,
+      })
+    Swal.showLoading()
+
+    this._api.xmlGet( ml + '/xml', 'Avalon/getRsvArr' )
+                .subscribe( res => {
+
+                    this.postToAvalon( res, r )
+
+                }, err => {
+
+                  const error = err.error;
+                  this._init.snackbar( 'error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
+  }
+
+  postToAvalon( xml, r ){
+    Swal.fire({
+      title: 'Enviando XML a Avalon...',
+      allowOutsideClick: false,
+      })
+    Swal.showLoading()
+    this._avalon.xmlPost( xml, 'postReservation' )
+            .subscribe( res => {
+
+              
+              this.uploadAvalonConfirmations( res, r )
+
+            }, err => {
+
+              const error = err.error;
+              this._init.snackbar( 'error', error.msg, err.status );
+              console.error(err.statusText, error.msg);
+
+            });
+  }
+
+  uploadAvalonConfirmations( conf, r ){
+
+    Swal.fire({
+      title: 'Guardando confirmaciones de Avalon en CYC...',
+      allowOutsideClick: false,
+      })
+    Swal.showLoading()
+
+    this._api.restfulPut( conf, 'Rsv/saveAvalonConfirmation' )
+                .subscribe( res => {
+
+                  Swal.close()
+                  this._init.snackbar('success', 'Confirmados', res['msg'] );
+                  r['confirmed'] = true
+                  r['confirmation'] = 'Confirmada en AVALON'
+                  r['userConfirm'] = 'sistema'
+
+                }, err => {
+
+                  Swal.close()
+                  const error = err.error;
+                  this._init.snackbar( 'error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
 }

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment-timezone';
-import { ApiService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
+import { ApiService, AvalonService, GlobalServicesService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
 import { CancelHotelDialogComponent } from '../../modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
 import { ShowItemPaymentsDialog } from '../../modals/show-item-payments-dialog/show-item-payments-dialog';
@@ -17,6 +17,7 @@ export class ItemSumComponent implements OnInit {
   @Input() data = {}
   @Output() reload = new EventEmitter
   @Output() reloadHistory = new EventEmitter
+  @Output() avalon = new EventEmitter
 
   loading = {}
 
@@ -25,7 +26,9 @@ export class ItemSumComponent implements OnInit {
     public _init: InitService,
     public _api: ApiService,
     public _h: HelpersService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public _avalon: AvalonService,
+    public _global: GlobalServicesService
     ) { }
 
   ngOnInit(): void {
@@ -49,6 +52,43 @@ export class ItemSumComponent implements OnInit {
 
 
   // **************************** APIS INICIO ****************************
+
+    
+    checkAvalon( l ){
+
+      Swal.fire({
+        title: 'Obteniendo información de este item en Avalon...',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+
+      let params = {
+        "Hotel": this._global.avalonMap.hoteles[ l['hotel'].toLowerCase() ],
+        "Localizador": l['itemLocatorId']
+      }
+
+      this._avalon.restfulGet( params, 'getReservation' )
+                  .subscribe( res => {
+
+                    Swal.fire(
+                      {
+                        title: "Información Obtenida de " + l['itemLocatorId'],
+                        html: `<pre>${ JSON.stringify( res ) }</pre>`,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        showCloseButton: true
+                      }
+                    )
+                  }, err => {
+
+                    Swal.close()
+
+                    const error = err.error;
+                    this._init.snackbar('error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+
+                  });
+    }
   
     manualInsEmit( i ){
       this.loading['manualEmit'] = true

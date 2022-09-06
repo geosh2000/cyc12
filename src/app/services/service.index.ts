@@ -11,5 +11,6 @@ export { AuthService } from './auth.service';
 export { WebSocketService } from './web-socket.service';
 export { HelpersService } from './helpers.service';
 export { ComercialService } from './comercial.service';
+export { AvalonService } from './avalon.service';
 // export { RrobinService } from './rrobin.service';
 

@@ -125,6 +125,15 @@
                     </button>
                 </div>
                 
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="accent"
+                    (click)="checkAvalon(i)"
+                    *ngIf="_init.checkSingleCredential('rsv_set_ph') &&  i['itemType'] == 1"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>currency_exchange</mat-icon>
+                    &nbsp;Avalon
+                </button>
+                <!-- AVALON -->
+                
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="setRounded(i)"
                     *ngIf="_init.checkSingleCredential('rsv_set_ph') &&  i['montoSaldoTotal']<=.02 && i['montoSaldoTotal']>0 && i['isCancel'] == 0 && i['isOpen'] == 0"

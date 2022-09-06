@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import * as Globals from '../globals';
 import { map, catchError, filter, share } from 'rxjs/operators'
 import { BehaviorSubject, Subject } from 'rxjs';
+import * as moment from 'moment';
 
 declare global {
   interface Window {
@@ -265,6 +266,32 @@ export class ApiService {
     });
 
     return this.http.get( urlOK.changingThisBreaksApplicationSecurity, { headers } )
+        .pipe(
+           map( res => res ),
+           filter( res => {
+            if( res['msg'] && res['msg']  == 'Token Expired' ){
+              
+              this.tokenCheck.next( false )
+              return false
+            }else{
+              return true
+            }
+          })
+        )
+  }
+  
+  xmlGet( id, apiRoute ){
+
+    let currentUser = JSON.parse(localStorage.getItem( this.app + 'currentUser'));
+    let url = `${ this.apiRestful }${ apiRoute }/${ id }?token=${currentUser ? currentUser.token : 'noToken'}&gid=${currentUser ? currentUser.hcInfo.idGrupo : '-1'}&usn=${currentUser ? currentUser.username : 'noUser'}&usid=${currentUser ? currentUser.hcInfo.id : 'noId'}&zdId=${currentUser ? currentUser.hcInfo.zdId : 'noId'}&localIp=${this.localIp}&timestamp=${ moment().format('x')}`
+
+    let urlOK = this.transform( url )
+
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+
+    return this.http.get( urlOK.changingThisBreaksApplicationSecurity, { headers, responseType: 'text' } )
         .pipe(
            map( res => res ),
            filter( res => {

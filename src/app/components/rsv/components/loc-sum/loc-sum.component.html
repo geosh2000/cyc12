@@ -98,6 +98,11 @@
 <hr>
 
 <!-- RESUMEN ESTA RSVA -->
+
+<div class="d-flex justify-content-start align-items-center">
+    <div class="clientConcept"><b>Confirmar:</b></div>
+    <div class="clientInfo"><button style="zoom: 0.8" mat-button color="primary" (click)="avalon.emit(data['master']['masterlocatorid'])"><mat-icon>app_registration</mat-icon> Confirmar</button></div>
+</div>
 <div class="d-flex justify-content-start align-items-center">
     <div class="clientConcept"><b>Llegada:</b></div>
     <div class="clientInfo">{{ _h.formatDate(data['master']['llegada'], 'DD MMM YYYY') }}</div>
