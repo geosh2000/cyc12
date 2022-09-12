@@ -72,6 +72,8 @@ export class ExportarAvalonComponent implements OnInit {
 
                 }, err => {
 
+                  Swal.close()
+
                   const error = err.error;
                   this._init.snackbar( 'error', error.msg, err.status );
                   console.error(err.statusText, error.msg);
@@ -92,6 +94,8 @@ export class ExportarAvalonComponent implements OnInit {
               this.uploadAvalonConfirmations( res, i, mlFlag )
 
             }, err => {
+
+              Swal.close()
 
               const error = err.error;
               this._init.snackbar( 'error', error.msg, err.status );
@@ -115,7 +119,7 @@ export class ExportarAvalonComponent implements OnInit {
                   this._init.snackbar('success', 'Confirmados', res['msg'] );
                   
                   if( mlFlag ){
-                    this.removeML( i['masterlocatorid'])
+                    this.removeML( i['masterlocatorid'], mlFlag)
                   }else{
                     this.removeItem( i )
                   }
@@ -145,10 +149,15 @@ export class ExportarAvalonComponent implements OnInit {
     this.removeML( i['masterlocatorid'] )
   }
 
-  removeML( ml ){
-    if( this.pendientes[ml].length == 0 ){
+  removeML( ml, f= false){
+    console.log('remove ' + ml)
+    if( this.pendientes[ml].length == 0 || f){
       delete this.pendientes[ml]
     }
+  }
+
+  getPendCount(){
+    return Object.keys( this.pendientes ).length
   }
 
 }

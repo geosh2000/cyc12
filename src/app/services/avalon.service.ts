@@ -21,14 +21,25 @@ export class AvalonService {
   serverTest:boolean = false
   apiKey: 'db6a5e1fdc5f4612a39466ba073ef72fbee48be2b30d402c8c8b0a14c31264a6'
   portTest:string = ':81'
-  baseUrl:string = 'http://avalon.oasishoteles.ohr'
+  // baseUrl:string = 'http://avalon.oasishoteles.ohr'
+  baseUrl:string = 'https://avalon-prod-alb-836657652.us-east-1.elb.amazonaws.com'
   apiRoute:string = '/AWWebAPI/api/aw/'
   // apiUrl:string = `http://avalon.oasishoteles.ohr:81/AWWebAPI/api/aw/`;
   apiUrl:string = '';
 
   methods = {
-    'getReservation': { dir: 'awa', method: 'GetAWAReservation' },
+    'getReservation': { dir: 'oasis', method: 'GetReservations' },
     'postReservation': { dir: 'oasis', method: 'PostReservation' },
+  }
+
+  globals = {
+    estados: {
+      '0': 'Confirmado',
+      '1': 'En casa',
+      '2': 'Checkout',
+      '3': 'NoShow',
+      '4': 'Cancelada',
+    }
   }
 
   constructor(
@@ -109,10 +120,17 @@ export class AvalonService {
     
     let urlOK = this.transform( url )
 
-    let headers = new HttpHeaders();
-    headers.set('Content-Type', 'application/json').set('x-api-key', this.apiKey)
+    let headers = new HttpHeaders()
+    .set("x-api-key", "db6a5e1fdc5f4612a39466ba073ef72fbee48be2b30d402c8c8b0a14c31264a6")
+    .set("Content-Type", "application/xml")
 
-    return this.http.get( urlOK.changingThisBreaksApplicationSecurity, { headers } )
+    let requestOptions = {
+      method: 'GET',
+      headers: headers,
+      redirect: 'follow'
+    };
+
+    return this.http.get( urlOK.changingThisBreaksApplicationSecurity, requestOptions )
         .pipe(
            map( res => res ),
         )

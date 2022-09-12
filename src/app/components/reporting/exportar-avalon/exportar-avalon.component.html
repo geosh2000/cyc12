@@ -1,11 +1,15 @@
-<div class="container mt-4">
+<div class="container-fluid mt-4">
 
-    <button mat-raised-button color="primary" (click)="getPending()" [disabled]="_api.isLoading | async">Reload</button>
+    <div class="'container-fluid d-flex justify-content-around">
+        <button mat-raised-button color="primary" (click)="getPending()" [disabled]="_api.isLoading | async">Reload</button>
+        <span>Quedan: {{ getPendCount() }} mls</span>
+    </div>
 
-    <div class="container mt-5 d-flex flex-wrap justify-content-between">
+
+    <div class="container-fluid mt-5 d-flex flex-wrap justify-content-between">
         <mat-card class="mb-3 mat-elevation-z5"  *ngFor="let ml of pendientes | keys">
             <mat-card-header style="width: 100%">
-                <mat-card-title class="text-mat-primary d-flex justify-content-around">Master: {{ ml }} <button mat-flat-button (click)="avalonRegister( pendientes[ml][0], true )" color="accent">Export ML</button></mat-card-title>
+                <mat-card-title class="text-mat-primary d-flex justify-content-around"><button mat-flat-button (click)="avalonRegister( pendientes[ml][0], true )" color="accent">Export ML</button>Master: {{ ml }} </mat-card-title>
             </mat-card-header>
             <div class="container d-flex flex-wrap justify-content-around">
                 <mat-card class="item mx-3 my-2 mat-elevation-z2" *ngFor="let i of pendientes[ml]">
@@ -33,6 +37,7 @@
                                 <mat-chip color="primary" selected *ngIf="i['tipo'] == 'New'">{{ i['tipo'] }}</mat-chip>
                                 <mat-chip color="accent" selected *ngIf="i['tipo'] == 'Xld'">{{ i['tipo'] }}</mat-chip>
                                 <mat-chip color="warn" selected *ngIf="i['tipo'] == 'Mod'">{{ i['tipo'] }}</mat-chip>
+                                <mat-chip color="warn" *ngIf="i['tipo'] == 'Export'">{{ i['tipo'] }}</mat-chip>
                             </mat-chip-list>
                             </div>
                         </mat-list-item>

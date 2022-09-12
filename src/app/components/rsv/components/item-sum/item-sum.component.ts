@@ -64,21 +64,29 @@ export class ItemSumComponent implements OnInit {
 
       let params = {
         "Hotel": this._global.avalonMap.hoteles[ l['hotel'].toLowerCase() ],
-        "Localizador": l['itemLocatorId']
+        "Localizador": l['itemLocatorId'],
+        "NoFiltrarEstado": '' 
       }
 
       this._avalon.restfulGet( params, 'getReservation' )
                   .subscribe( res => {
 
-                    Swal.fire(
-                      {
-                        title: "Información Obtenida de " + l['itemLocatorId'],
-                        html: `<pre>${ JSON.stringify( res ) }</pre>`,
-                        showConfirmButton: false,
-                        showCancelButton: false,
-                        showCloseButton: true
-                      }
-                    )
+                    if( res['LSReserva'].length > 0 ){
+                      Swal.fire(
+                        {
+                          title: "Información Obtenida de " + l['itemLocatorId'],
+                          html: `<pre>${ JSON.stringify( res ) }</pre>
+                                <br><br>Estado: ${ this._avalon.globals.estados[res['LSReserva'][0]['LSReservaDetalle'][0]['Estado']]}`,
+                          showConfirmButton: false,
+                          showCancelButton: false,
+                          showCloseButton: true
+                        }
+                      )
+                    }else{
+                      Swal.close()
+                      this._init.snackbar('error', 'No se encontraron reservas en Avalon', 'Error' );
+                    }
+
                   }, err => {
 
                     Swal.close()

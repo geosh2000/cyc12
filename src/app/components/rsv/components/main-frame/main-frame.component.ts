@@ -269,6 +269,7 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
 
                   }, err => {
 
+                    Swal.close()
                     const error = err.error;
                     this._init.snackbar( 'error', error.msg, err.status );
                     console.error(err.statusText, error.msg);
@@ -290,6 +291,7 @@ export class MainFrameComponent implements OnInit, AfterViewInit {
 
               }, err => {
 
+                Swal.close()
                 const error = err.error;
                 this._init.snackbar( 'error', 'No se pudo conectar con Avalon', err.status );
                 console.error(err.statusText);

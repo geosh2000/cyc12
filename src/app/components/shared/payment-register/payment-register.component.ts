@@ -5,6 +5,7 @@ import { UntypedFormGroup, UntypedFormControl, Validators, FormBuilder } from '@
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { NavigationEnd, Router } from '@angular/router';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-payment-register',
@@ -171,7 +172,14 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
   opValidation(){
     this.loading['saving'] = true
 
-    this._api.restfulPut( { operacion: this.newPayment.controls['operacion'].value}, 'Lists/opExists' )
+    let prefix = ''
+    if( this.newPayment.controls['proveedor'].value == 'RB' || this.newPayment.controls['proveedor'].value == 'Central' ){
+      prefix = moment().format('YYYY') + '-'
+    }
+
+    let op = prefix + this.newPayment.controls['operacion'].value
+
+    this._api.restfulPut( { operacion: op}, 'Lists/opExists' )
                 .subscribe( res => {
 
                   let data = res['data']
@@ -180,7 +188,7 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
                     this.loading['saving'] = false;
 
                     if( this.newPayment.controls['proveedor'].value != 'CXC' ){
-                      this.build('Voucher '+ this.newPayment.controls['operacion'].value, this.newPayment.controls['operacion'].value, 'voucher_'+this.newPayment.controls['operacion'].value)
+                      this.build('Voucher '+ op, op, 'voucher_'+op)
                       this.submit()
                     }else{
                       this.sendPayment()
