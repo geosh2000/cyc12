@@ -36,7 +36,7 @@
                                 <span [matTooltip]="'Confirmación: ' + i['confirm']" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-warning" *ngIf="i['tipoPago'] == 'PDT'">PDT</span>
 
                                 <!-- STATUS CIELO -->
-                                <span [ngSwitch]="i['cieloStatus']" [matTooltip]="'Status CIELO: ' + i['cieloStatus']" [matTooltipPosition]="'above'" *ngIf="i['itemType']==1">
+                                <span [ngSwitch]="i['cieloStatus'].toLowerCase()" [matTooltip]="'Status CIELO: ' + i['cieloStatus']" [matTooltipPosition]="'above'" *ngIf="i['itemType']==1">
                                     <span class="badge-status badge rounded-pill bg-danger" *ngSwitchCase="'c'">C</span>
                                     <span class="badge-status badge rounded-pill bg-warning" *ngSwitchCase="'n'">N</span>
                                     <span class="badge-status badge rounded-pill bg-success" *ngSwitchCase="'b'">B</span>

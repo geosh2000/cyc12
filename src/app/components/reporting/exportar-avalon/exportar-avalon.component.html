@@ -1,7 +1,15 @@
 <div class="container-fluid mt-4">
 
     <div class="'container-fluid d-flex justify-content-around">
-        <button mat-raised-button color="primary" (click)="getPending()" [disabled]="_api.isLoading | async">Reload</button>
+        <div class="text-center">
+            <button class="mx-auto mb-2" mat-raised-button color="primary" (click)="getPending( reportType )" [disabled]="_api.isLoading | async">Reload</button><br>
+            <mat-radio-group aria-label="Tipo de Pendientes" [(ngModel)]="reportType">
+                <mat-radio-button value="2">Confirmables</mat-radio-button>
+                <mat-radio-button class="ms-2" value="0">Hoy y Mañana</mat-radio-button>
+                <mat-radio-button class="ms-2" value="1">Futuras sin Exportar</mat-radio-button>
+            </mat-radio-group>
+        </div>
+        <button mat-flat-button (click)="exportAll()" color="accent">Export All</button>
         <span>Quedan: {{ getPendCount() }} mls</span>
     </div>
 
@@ -9,7 +17,15 @@
     <div class="container-fluid mt-5 d-flex flex-wrap justify-content-between">
         <mat-card class="mb-3 mat-elevation-z5"  *ngFor="let ml of pendientes | keys">
             <mat-card-header style="width: 100%">
-                <mat-card-title class="text-mat-primary d-flex justify-content-around"><button mat-flat-button (click)="avalonRegister( pendientes[ml][0], true )" color="accent">Export ML</button>Master: {{ ml }} </mat-card-title>
+                <mat-card-title class="text-mat-primary d-flex justify-content-around">
+                    <button mat-flat-button (click)="avalonRegister( pendientes[ml][0], true )" color="accent">Export ML</button>
+                    <div class="d-flex justify-content-end align-items-center">
+                        Master: {{ ml }} 
+                        <button mat-icon-button color="primary" (click)="goToLoc( ml )">
+                            <mat-icon>open_in_new</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-title>
             </mat-card-header>
             <div class="container d-flex flex-wrap justify-content-around">
                 <mat-card class="item mx-3 my-2 mat-elevation-z2" *ngFor="let i of pendientes[ml]">
@@ -51,5 +67,9 @@
             </div>
         </mat-card>
     </div>
+
+    <hr>
+
+    <pre>{{ errorExport | json }}</pre>
 
 </div>

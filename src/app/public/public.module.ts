@@ -12,15 +12,20 @@ import { FormsModule } from '@angular/forms';
 import { DomSeguroPipe } from '../pipes/dom-seguro.pipe';
 import { PublicManageModule } from './public-manage/public-manage.module';
 import { SharedModule } from '../shared/shared.module';
+import { VoucherReviewComponent } from './voucher-review/voucher-review.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 @NgModule({
   declarations: [
     DoPaymentComponent,
     DomSeguroPipe,
+    VoucherReviewComponent,
   ],
   exports: [
     DoPaymentComponent,
+    VoucherReviewComponent,
   ],
   imports: [
     CommonModule,
@@ -34,7 +39,9 @@ import { SharedModule } from '../shared/shared.module';
     MatSlideToggleModule,
     MatIconModule,
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
   ] 
 })
 export class PublicModule { }

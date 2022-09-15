@@ -1,0 +1,98 @@
+<div class="mt-2 container d-flex justify-content-center">
+    <p>
+        <mat-form-field appearance="outline" [style.width.px]="350">
+          <mat-label>Reservación</mat-label>
+          <input required matInput placeholder="Confirmacion" (keyup.enter)="getPayments(localizador)"  #localizador>
+          <button mat-icon-button (click)="getPayments( localizador )" matSuffix>
+            <mat-icon matSuffix>search</mat-icon>
+          </button>
+          <mat-hint>Ingresa la confirmación de Avalon</mat-hint>
+        </mat-form-field>
+    </p>
+</div>
+
+<div class="container d-block mb-3">
+
+    <!-- TABLA DE PAGOS -->
+    <ng-container *ngIf="searchFlag">
+        <div class="text-center"><h1>{{ confirmacion }}</h1></div><br>
+
+        <div class="alert alert-warning" role="alert" *ngIf="pagos.length == 0">
+            No se encontraron pagos relacionados a esta reserva
+        </div>
+        <table class="table table-sm table-bordered table-hover table-striped text-sm" style="font-size: 11px;" *ngIf="pagos.length > 0">
+            <thead>
+                <tr>
+                    <th class="text-center" *ngFor="let t of pagos[0] | keys">{{ t }}</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr  style="vertical-align: middle;" *ngFor="let p of pagos" [ngClass]="{'text-danger': p['monto'] < 0}">
+
+                    <td class="text-center" *ngFor="let c of p | keys">
+                        <span *ngIf="c != 'link'">{{ p[c] }}</span>
+                        <!-- <pre *ngIf="c == 'link'">{{ p[c] | json }}</pre> -->
+                        <span *ngIf="c == 'link'">
+                            <ng-container *ngFor="let l of p[c]; index as in">
+                                <a target="_blank" [href]="l['link']">[{{ in + 1 }}]</a>&nbsp;
+                            </ng-container>
+                        </span>
+                    </td>
+                    
+                </tr>
+            </tbody>
+        </table>
+
+
+        <hr><br>
+        <div class="text-center"><h1>Trazo de los cobros</h1></div>
+        
+        <ng-container *ngFor="let acc of trace | keys">
+            <br>
+            
+            <p class="text-sm">
+                <b>OPERACION: {{ acc }}: &nbsp;&nbsp;&nbsp;</b>
+                <b>{{ accountSum[acc]['tipo'] }}</b> en <b>{{ accountSum[acc]['complejo'] }}</b> || 
+                <b>montoCobrado:</b> <span class='text-success'>{{ accountSum[acc]['montoCobro'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span> || 
+                <b>montoAplicado:</b> <span class='text-success'>{{ accountSum[acc]['montoUsado'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span> || 
+                <b>sin usar:</b> <span class='text-primary'>{{ accountSum[acc]['cuentaAnticipos'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span> || 
+                <b>pendiente de reembolso:</b> <span class='text-danger'>{{ accountSum[acc]['pendienteReembolsar'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span> || 
+                <b>reembolsado:</b> <span class='text-danger'>{{ accountSum[acc]['montoReembolsado'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span>
+            </p>
+            <br>
+            <table class="table table-sm table-bordered table-hover table-striped text-sm" style="font-size: 11px;" *ngIf="trace[acc].length > 0">
+                <thead>
+                    <tr>
+                        <th class="text-center" *ngFor="let t of trace[acc][0] | keys">{{ t }}</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  style="vertical-align: middle;" *ngFor="let p of trace[acc]" [ngClass]="{'text-danger': p['monto'] < 0}">
+    
+                        <td class="text-center" *ngFor="let c of p | keys">
+                            <span *ngIf="c != 'link'">{{ p[c] }}</span>
+                            <!-- <pre *ngIf="c == 'link'">{{ p[c] | json }}</pre> -->
+                            <span *ngIf="c == 'link'">
+                                <ng-container *ngFor="let l of p[c]; index as in">
+                                    <a target="_blank" [href]="l['link']">[{{ in + 1 }}]</a>&nbsp;
+                                </ng-container>
+                            </span>
+                        </td>
+                        <td>
+                            <button mat-icon-button color="primary" (click)="goToLoc( p['Avalon'] )">
+                                <mat-icon>open_in_new</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </ng-container>
+
+    </ng-container>
+
+</div>
+
+

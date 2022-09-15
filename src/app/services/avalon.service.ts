@@ -21,8 +21,9 @@ export class AvalonService {
   serverTest:boolean = false
   apiKey: 'db6a5e1fdc5f4612a39466ba073ef72fbee48be2b30d402c8c8b0a14c31264a6'
   portTest:string = ':81'
-  // baseUrl:string = 'http://avalon.oasishoteles.ohr'
-  baseUrl:string = 'https://avalon-prod-alb-836657652.us-east-1.elb.amazonaws.com'
+  // baseUrl:string = 'https://avalon.oasishoteles.ohr'
+  // baseUrl:string = 'https://avalon-prod-alb-836657652.us-east-1.elb.amazonaws.com'
+  baseUrl:string = 'https://avalon.oasishoteles.com'
   apiRoute:string = '/AWWebAPI/api/aw/'
   // apiUrl:string = `http://avalon.oasishoteles.ohr:81/AWWebAPI/api/aw/`;
   apiUrl:string = '';
@@ -30,6 +31,7 @@ export class AvalonService {
   methods = {
     'getReservation': { dir: 'oasis', method: 'GetReservations' },
     'postReservation': { dir: 'oasis', method: 'PostReservation' },
+    'postPayment': { dir: 'oasis', method: 'PostReceivables' },
   }
 
   globals = {
@@ -39,6 +41,13 @@ export class AvalonService {
       '2': 'Checkout',
       '3': 'NoShow',
       '4': 'Cancelada',
+    },
+    estados_min: {
+      '0': 'R',
+      '1': 'B',
+      '2': 'O',
+      '3': 'N',
+      '4': 'C',
     }
   }
 
@@ -78,15 +87,23 @@ export class AvalonService {
   restfulPost( params, apiRoute ){
 
     let url = `${ this.apiUrl }${ this.getRoute( apiRoute ) }`
-    let headers = new HttpHeaders();
-    headers.set('Content-Type', 'application/json').set('x-api-key', this.apiKey)
+
+    let headers = new HttpHeaders()
+    .set("x-api-key", "db6a5e1fdc5f4612a39466ba073ef72fbee48be2b30d402c8c8b0a14c31264a6")
+    .set("Content-Type", "application/json")
+
+    let requestOptions = {
+      // method: 'POST',
+      headers: headers,
+      redirect: 'follow'
+    };
 
     let urlOK = this.transform( url )
 
     let body = JSON.stringify( params );
 
 
-    return this.http.post( urlOK.changingThisBreaksApplicationSecurity, body, { headers } )
+    return this.http.post( urlOK.changingThisBreaksApplicationSecurity, body, requestOptions )
         .pipe(
            map( res => res )
         )

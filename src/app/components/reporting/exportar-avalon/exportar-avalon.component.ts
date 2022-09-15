@@ -1,4 +1,6 @@
+import { IfStmt } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { count } from 'console';
 import { ApiService, AvalonService, HelpersService, InitService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
@@ -11,19 +13,25 @@ import Swal from 'sweetalert2';
 export class ExportarAvalonComponent implements OnInit {
 
   pendientes = []
+  errorExport = {}
+  flagExportAll = false
+  reportType = "2"
 
   constructor( 
     public _api: ApiService, 
     public _h: HelpersService, 
     public _init: InitService,
-    private _avalon: AvalonService
+    private _avalon: AvalonService,
+    private router: Router
    ) { }
 
   ngOnInit(): void {
     this.getPending()
   }
 
-  getPending(){
+  getPending( t = "2" ){
+
+    this.errorExport = {}
 
     Swal.fire(
       {
@@ -38,7 +46,7 @@ export class ExportarAvalonComponent implements OnInit {
 
     Swal.showLoading()
 
-    this._api.restfulGet( '', 'Rsv/avalonExportables' )
+    this._api.restfulGet( t, 'Rsv/avalonExportables' )
                 .subscribe( res => {
 
                   Swal.close()
@@ -57,7 +65,7 @@ export class ExportarAvalonComponent implements OnInit {
 
   avalonRegister( i, mlFlag = false ){
 
-    let ml = mlFlag ? i['masterlocatorid'] : i['itemlocatorid']
+    let ml = mlFlag ? i['masterlocatorid'] : i['itemLocatorId']
 
     Swal.fire({
       title: 'Generando XML...',
@@ -72,6 +80,7 @@ export class ExportarAvalonComponent implements OnInit {
 
                 }, err => {
 
+                  this.flagExportAll = false
                   Swal.close()
 
                   const error = err.error;
@@ -96,7 +105,7 @@ export class ExportarAvalonComponent implements OnInit {
             }, err => {
 
               Swal.close()
-
+              this.flagExportAll = false
               const error = err.error;
               this._init.snackbar( 'error', error.msg, err.status );
               console.error(err.statusText, error.msg);
@@ -113,19 +122,31 @@ export class ExportarAvalonComponent implements OnInit {
     Swal.showLoading()
 
     this._api.restfulPut( conf, 'Rsv/saveAvalonConfirmation' )
-                .subscribe( res => {
+                .subscribe( async res => {
 
                   Swal.close()
                   this._init.snackbar('success', 'Confirmados', res['msg'] );
                   
                   if( mlFlag ){
-                    this.removeML( i['masterlocatorid'], mlFlag)
+                    await this.removeML( i['masterlocatorid'], mlFlag)
+                    if( this.flagExportAll ){
+                      this.exportAll()
+                    }
                   }else{
                     this.removeItem( i )
                   }
 
-                }, err => {
+                }, async err => {
 
+                  if( mlFlag ){
+                    this.errorExport[i['masterlocatorid']] = this.pendientes[i['masterlocatorid']]
+                    await this.removeML( i['masterlocatorid'], mlFlag)
+                    if( this.flagExportAll ){
+                      this.exportAll()
+                    }
+                  }
+
+                  // this.flagExportAll = false
                   Swal.close()
                   const error = err.error;
                   this._init.snackbar( 'error', error.msg, err.status );
@@ -150,14 +171,42 @@ export class ExportarAvalonComponent implements OnInit {
   }
 
   removeML( ml, f= false){
-    console.log('remove ' + ml)
-    if( this.pendientes[ml].length == 0 || f){
-      delete this.pendientes[ml]
-    }
+
+    return new Promise(resolve => {
+      console.log('remove ' + ml)
+      if( this.pendientes[ml].length == 0 || f){
+        delete this.pendientes[ml]
+        resolve( true )
+      }
+    })
   }
 
   getPendCount(){
     return Object.keys( this.pendientes ).length
+  }
+
+  exportAll(){
+    this.flagExportAll = true 
+    let ml = ''
+
+    if( Object.keys( this.pendientes ).length == 0 ){
+      this._init.snackbar('success', 'Exito', 'Todos los localizadores se han enviado con exito')
+      return false
+    }
+
+    for( let l in this.pendientes ){
+      ml = l
+      continue
+    }
+    
+    this.avalonRegister( this.pendientes[ml][0], true )
+  }
+
+  goToLoc( r ){
+    let newRelativeUrl = this.router.createUrlTree(['rsv',r]);
+    let baseUrl = window.location.href.replace(this.router.url, '');
+
+    window.open(baseUrl + newRelativeUrl, '_blank');
   }
 
 }

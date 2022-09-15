@@ -65,27 +65,59 @@ export class ItemSumComponent implements OnInit {
       let params = {
         "Hotel": this._global.avalonMap.hoteles[ l['hotel'].toLowerCase() ],
         "Localizador": l['itemLocatorId'],
-        "NoFiltrarEstado": '' 
+        "NoFiltrarEstado": 'true' 
       }
 
       this._avalon.restfulGet( params, 'getReservation' )
                   .subscribe( res => {
 
                     if( res['LSReserva'].length > 0 ){
-                      Swal.fire(
-                        {
-                          title: "Información Obtenida de " + l['itemLocatorId'],
-                          html: `<pre>${ JSON.stringify( res ) }</pre>
-                                <br><br>Estado: ${ this._avalon.globals.estados[res['LSReserva'][0]['LSReservaDetalle'][0]['Estado']]}`,
-                          showConfirmButton: false,
-                          showCancelButton: false,
-                          showCloseButton: true
-                        }
-                      )
+
+                      this.updateHotelStatus( l, res['LSReserva'][0]['LSReservaDetalle'][0]['Estado'], res['LSReserva'][0]['LSReservaDetalle'][0] )
+
                     }else{
                       Swal.close()
                       this._init.snackbar('error', 'No se encontraron reservas en Avalon', 'Error' );
                     }
+
+                  }, err => {
+
+                    Swal.close()
+
+                    const error = err.error;
+                    this._init.snackbar('error', error.msg, err.status );
+                    console.error(err.statusText, error.msg);
+
+                  });
+    }
+
+    updateHotelStatus( l, s, r ){
+      Swal.fire({
+        title: 'Actualizando status en CYC a ' + this._avalon.globals.estados[s] + '... ',
+        allowOutsideClick: false,
+        })
+      Swal.showLoading()
+
+      let params = {
+        "itemId": l['itemId'],
+        "status": this._avalon.globals.estados_min[s]
+      }
+
+      this._api.restfulPut( params, 'Rsv/updateRsvAvalonStatus' )
+                  .subscribe( res => {
+
+                    Swal.close()
+                    l['cieloStatus'] = params['status']
+                    Swal.fire(
+                      {
+                        title: "Información Obtenida de " + l['itemLocatorId'],
+                        html: `<pre>${ JSON.stringify(r) }</pre>
+                              <br><br>Estado: ${ this._avalon.globals.estados[s]}`,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        showCloseButton: true
+                      }
+                    )
 
                   }, err => {
 
