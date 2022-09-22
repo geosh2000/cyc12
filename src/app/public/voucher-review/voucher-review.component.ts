@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ActivationEnd, Router } from '@angular/router';
+import { lstat } from 'fs';
 import { filter, map } from 'rxjs/operators';
-import { ApiService, InitService } from 'src/app/services/service.index';
+import { ApiService, AvalonService, GlobalServicesService, InitService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -17,10 +18,13 @@ export class VoucherReviewComponent implements OnInit {
   accounts = []
   searchFlag = false
   confirmacion = ''
+  gotten = false
 
   constructor( public _api: ApiService,
               public _init: InitService,
               private router: Router,
+              private _global: GlobalServicesService,
+              private _avalon: AvalonService,
               private activatedRoute: ActivatedRoute ) { 
 
                 this.router.events
@@ -63,13 +67,14 @@ export class VoucherReviewComponent implements OnInit {
                   Swal.close()
 
                   const error = err.error;
-                  Swal.fire('ERROR',  error.msg, 'error' );
+                  // Swal.fire('ERROR',  error.msg, 'error' );
+                  this.checkAvalon( l.value )
                   console.error(err.statusText, error.msg);
 
                 });
   }
 
-  getPayments( l ){
+  getPayments( l, rb = false ){
 
     if( l.value == '' ){
       Swal.fire('ERROR', 'Indica un numero de confirmacion', 'error');
@@ -81,12 +86,21 @@ export class VoucherReviewComponent implements OnInit {
     this.accounts = []
     this.accountSum = {}
     this.confirmacion = l.value
+    this.gotten = false
 
     this.searchFlag = true 
-    Swal.fire('Buscando Pagos', l.value, 'info')
+    Swal.fire('Buscando Pagos', rb ? l : l.value, 'info')
     Swal.showLoading()
 
-    this._api.restfulPut( { conf: l.value, pack: true }, 'Rsv/getItemPayments' )
+    let params = { pack: true }
+
+    if( rb ){
+      params['ref'] = l
+    }else{
+      params['conf'] = l.value
+    }
+
+    this._api.restfulPut( params, 'Rsv/getItemPayments' )
                 .subscribe( res => {
 
                   for( let ac of res['data'] ){
@@ -103,7 +117,8 @@ export class VoucherReviewComponent implements OnInit {
                   Swal.close()
 
                   const error = err.error;
-                  Swal.fire('ERROR',  error.msg, 'error' );
+                  // Swal.fire('ERROR',  error.msg, 'error' );
+                  this.checkAvalon( l.value )
                   console.error(err.statusText, error.msg);
 
                 });
@@ -144,12 +159,84 @@ export class VoucherReviewComponent implements OnInit {
 
                 });
   }
+  
+  getRbVouchers( l ){
+
+    Swal.fire('Obteniendo pagos de Roiback', '', 'info')
+    Swal.showLoading()
+
+    this._api.restfulPut( { conf: l }, 'Rsv/getRbVouchers' )
+                .subscribe( res => {
+
+                  Swal.close()
+                  let trace = {}
+                  for( let t of res['data'] ){
+                    if( trace[t['operacion']] ){
+                      trace[t['operacion']].push(t)
+                    }else{
+                      this.gotten = true
+                      trace[t['operacion']] = [ t ]
+                    }
+                  }
+                  
+
+                  this.trace = trace
+                  console.log( this.trace )
+
+                }, err => {
+                  Swal.close()
+
+                  const error = err.error;
+                  Swal.fire('ERROR',  error.msg, 'error' );
+                  console.error(err.statusText, error.msg);
+
+                });
+  }
 
   goToLoc( r ){
     let newRelativeUrl = this.router.createUrlTree(['getVouchers',r]);
     let baseUrl = window.location.href.replace(this.router.url, '');
 
     window.open(baseUrl + newRelativeUrl, '_blank');
+  }
+
+  checkAvalon( l ){
+
+    Swal.fire({
+      title: 'Obteniendo información de este item en Avalon...',
+      allowOutsideClick: false,
+      })
+    Swal.showLoading()
+
+    let params = {
+      "Hotel": this._global.avalonMap.hoteles[ l.substring(0,3).toLowerCase() ],
+      "Localizador": l,
+      "NoFiltrarEstado": 'true' 
+    }
+
+    this._avalon.restfulGet( params, 'getReservation' )
+                .subscribe( res => {
+
+                  if( res['LSReserva'] && res['LSReserva'].length > 0 ){
+
+                    this.getRbVouchers( res['LSReserva'][0]['Localizador'] )
+                    console.log( res['LSReserva'] )
+
+                  }else{
+                    this._init.snackbar('error', 'No se encontraron reservas en Avalon', 'Error' );
+                  }
+
+                  Swal.close()
+
+                }, err => {
+
+                  Swal.close()
+
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, err.status );
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
 }

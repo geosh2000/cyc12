@@ -15,30 +15,36 @@
 
     <!-- TABLA DE PAGOS -->
     <ng-container *ngIf="searchFlag">
-        <div class="text-center"><h1>{{ confirmacion }}</h1></div><br>
+        <div class="text-center upper"><h1>{{ confirmacion }}</h1></div><br>
+        <div class="text-center upper" *ngIf="pagos.length > 0"><h4><b>Notas actualizadas:</b><span style="color: blue"> {{ pagos[0]['itemData']['notasSugeridas'] }}</span></h4></div><br>
 
-        <div class="alert alert-warning" role="alert" *ngIf="pagos.length == 0">
+        <div class="alert alert-warning" role="alert" *ngIf="pagos.length == 0 && !gotten">
             No se encontraron pagos relacionados a esta reserva
         </div>
         <table class="table table-sm table-bordered table-hover table-striped text-sm" style="font-size: 11px;" *ngIf="pagos.length > 0">
             <thead>
                 <tr>
-                    <th class="text-center" *ngFor="let t of pagos[0] | keys">{{ t }}</th>
+                    <ng-container *ngFor="let t of pagos[0]">
+                        <th class="text-center" *ngIf="t != 'itemData'">{{ t }}</th>
+                    </ng-container>
+                    
                     
                 </tr>
             </thead>
             <tbody>
                 <tr  style="vertical-align: middle;" *ngFor="let p of pagos" [ngClass]="{'text-danger': p['monto'] < 0}">
 
-                    <td class="text-center" *ngFor="let c of p | keys">
-                        <span *ngIf="c != 'link'">{{ p[c] }}</span>
-                        <!-- <pre *ngIf="c == 'link'">{{ p[c] | json }}</pre> -->
-                        <span *ngIf="c == 'link'">
-                            <ng-container *ngFor="let l of p[c]; index as in">
-                                <a target="_blank" [href]="l['link']">[{{ in + 1 }}]</a>&nbsp;
-                            </ng-container>
-                        </span>
-                    </td>
+                    <ng-container *ngFor="let c of p | keys">
+                        <td class="text-center" *ngIf="c != 'itemData'">
+                            <span *ngIf="c != 'link'">{{ p[c] }}</span>
+                            <!-- <pre *ngIf="c == 'link'">{{ p[c] | json }}</pre> -->
+                            <span *ngIf="c == 'link'">
+                                <ng-container *ngFor="let l of p[c]; index as in">
+                                    <a target="_blank" [href]="l['link']">[{{ in + 1 }}]</a>&nbsp;
+                                </ng-container>
+                            </span>
+                        </td>
+                    </ng-container>
                     
                 </tr>
             </tbody>
@@ -51,7 +57,7 @@
         <ng-container *ngFor="let acc of trace | keys">
             <br>
             
-            <p class="text-sm">
+            <p class="text-sm" *ngIf="accountSum[acc]">
                 <b>OPERACION: {{ acc }}: &nbsp;&nbsp;&nbsp;</b>
                 <b>{{ accountSum[acc]['tipo'] }}</b> en <b>{{ accountSum[acc]['complejo'] }}</b> || 
                 <b>montoCobrado:</b> <span class='text-success'>{{ accountSum[acc]['montoCobro'] | currency:'MXN':'symbol-narrow':'.2-2' }}</span> || 

@@ -98,6 +98,9 @@
 
             <!-- <app-edit-monto-parcial [i]="i" (openDates)="openOD(i)" (confSent)="getHistory(mlTicket)" (saveMonto)="saveMonto( $event )" (saveName)="saveName( $event )" (uplImg)="uplImg($event)"></app-edit-monto-parcial> -->
             
+            <!-- INFO HOTELES -->
+            <item-hoteles [i]="i" *ngIf="i['itemType'] == 1"></item-hoteles>
+
             <!-- NOTAS HOTELES -->
             <ng-container *ngIf="i['itemType'] == 1">
                 <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">

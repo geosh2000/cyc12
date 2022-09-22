@@ -49,6 +49,7 @@ import { MainFrameComponent } from './components/main-frame/main-frame.component
 import { GenerateAuthFileComponent } from './generate-auth-file/generate-auth-file.component';
 import { ItemBlockSumComponent } from './components/item-block-sum/item-block-sum.component';
 import { CancelHotelDialogComponent } from './modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
+import { ItemHotelesComponent } from './components/item-sum/hoteles/hoteles.component';
 
 
 
@@ -63,6 +64,7 @@ import { CancelHotelDialogComponent } from './modals/cancel-hotel-dialog/cancel-
     MainFrameComponent,
     ItemSumComponent,
     LocSumComponent,
+    ItemHotelesComponent,
 
     PagosDialog,
     ChangeCreatorDialog,
@@ -85,6 +87,7 @@ import { CancelHotelDialogComponent } from './modals/cancel-hotel-dialog/cancel-
     MainFrameComponent,
     ItemSumComponent,
     LocSumComponent,
+    ItemHotelesComponent,
 
     PagosDialog,
     ChangeCreatorDialog,

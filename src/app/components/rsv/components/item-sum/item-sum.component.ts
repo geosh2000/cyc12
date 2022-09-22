@@ -73,6 +73,13 @@ export class ItemSumComponent implements OnInit {
 
                     if( res['LSReserva'].length > 0 ){
 
+                      for( let r of res['LSReserva'][0]['LSReservaDetalle'] ){
+                        if( r['Estado'] == 1 || r['Estado'] == 0 || r['Estado'] == 2 ){
+                          this.updateHotelStatus( l, r['Estado'], r )
+                          return
+                        }
+                      }
+                      
                       this.updateHotelStatus( l, res['LSReserva'][0]['LSReservaDetalle'][0]['Estado'], res['LSReserva'][0]['LSReservaDetalle'][0] )
 
                     }else{
