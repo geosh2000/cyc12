@@ -22,7 +22,7 @@
 
                                 <!-- CONFIRMACION -->
                                 <p style="font-size: smaller;">
-                                    {{ i['isQuote'] == 1 && !_h.isVigente(i['vigencia']) ? 'Expirada' : i['confirm'] }}
+                                    {{ i['isQuote'] == 1 && !_h.isVigente(i['vigencia'] && i['confirmOK'] == null) ? 'Expirada' : i['confirm'] }}
                                 </p>
                                 <ng-container *ngIf="i['confirmOK'] != null && i['confirmOK'] != i['confirm']">
                                     <p style="font-size: xx-small; line-height: 8px;">({{ i['confirmOK'] }})</p>
@@ -53,7 +53,7 @@
                                 
                                 <!-- Bed Preference -->
                                 <span [matTooltip]="'Preferencia de camas ' + ( i['bedPreference'] == 'Dobule Beds' ? 'Dobles' : 'King' )" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-beds" *ngIf="i['itemType'] == 1">
-                                    {{ i['bedPreference'] == 'Dobule Beds' ? 'D' : 'K' }}
+                                    {{ i['bedPreference'] == 'Doubule Beds' ? 'D' : 'K' }}
                                 </span>
 
                             </div>
@@ -179,7 +179,7 @@
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
                     (click)="cancelItem(i)"
-                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && i['itemType'] != '15' && i['isCancel'] == 0"
+                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && (_init.checkSingleCredential('allmighty') || (i['itemType'] != '15' && i['pkgActive'] == '1')) && (_init.checkSingleCredential('allmighty') || i['isCancel'] == 0)"
                     [disabled]=" _api.isLoading | async">
                     <mat-icon>remove_circle</mat-icon>
                     &nbsp;Cancelar

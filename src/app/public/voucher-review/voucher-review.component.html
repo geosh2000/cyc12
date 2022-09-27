@@ -24,11 +24,9 @@
         <table class="table table-sm table-bordered table-hover table-striped text-sm" style="font-size: 11px;" *ngIf="pagos.length > 0">
             <thead>
                 <tr>
-                    <ng-container *ngFor="let t of pagos[0]">
+                    <ng-container *ngFor="let t of pagos[0] | keys">
                         <th class="text-center" *ngIf="t != 'itemData'">{{ t }}</th>
                     </ng-container>
-                    
-                    
                 </tr>
             </thead>
             <tbody>

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment-timezone';
 import { ApiService, AvalonService, GlobalServicesService, HelpersService, InitService, ZonaHorariaService } from 'src/app/services/service.index';
 import Swal from 'sweetalert2';
+import { CancelAssistDialogComponent } from '../../modals/cancel-assist-dialog/cancel-assist-dialog.component';
 import { CancelHotelDialogComponent } from '../../modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
 import { ShowItemPaymentsDialog } from '../../modals/show-item-payments-dialog/show-item-payments-dialog';
 
@@ -39,6 +40,9 @@ export class ItemSumComponent implements OnInit {
     switch( d['itemType'] ){
       case '1':
         this.cancelHotel(d)
+        break
+      case '15':
+        this.cancelAssist(d)
         break
       default:
         return false
@@ -512,6 +516,21 @@ export class ItemSumComponent implements OnInit {
 
     cancelHotel( d:any = null ): void {
       const dialogRef = this.dialog.open(CancelHotelDialogComponent, {
+        data: { item: d, all: this.data['items']},
+        disableClose: true,
+        width: '600px',
+        maxHeight: '90vh'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if( result == true ){
+          this.reload.emit( this.data['master']['masterlocatorid'] )
+        }
+      });
+    }
+
+    cancelAssist( d:any = null ): void {
+      const dialogRef = this.dialog.open(CancelAssistDialogComponent, {
         data: { item: d, all: this.data['items']},
         disableClose: true,
         width: '600px',

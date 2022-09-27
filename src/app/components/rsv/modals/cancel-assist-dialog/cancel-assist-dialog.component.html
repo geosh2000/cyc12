@@ -1,0 +1,54 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Confirmar Cancelación item de seguro {{ item['itemLocatorId'] }}</mat-card-title>
+        <mat-card-subtitle>Políticas de Cancelación</mat-card-subtitle>
+    </mat-card-header> 
+
+    <mat-list>
+
+
+
+        <mat-list-item role="listitem" class="py-2" style="height: auto!important" color>
+            <div class="container d-flex justify-content-between" style="background-color: brown;">
+                <div style="color: white"><b>Penalidad Seleccionada</b><br><span style="font-size: smaller;">(Incluye hospedaje, seguros y paquetes)</span></div>
+                <div style="color: white">
+                    {{ penalidadTotal(item) | currency:'MXN':'symbol-narrow':'.2-2' }}
+                </div>
+            </div>
+        </mat-list-item>
+        <mat-list-item role="listitem" class="py-2" style="height: auto!important" color>
+            <div class="container d-flex justify-content-between" style="background-color: rgb(52, 165, 42);">
+                <div style="color: white"><b>Monto a Devolver</b></div>
+                <div style="color: white">
+                    {{ montoReembolso(item) | currency:'MXN':'symbol-narrow':'.2-2' }}
+                </div>
+            </div>
+        </mat-list-item>
+        
+        <ng-container *ngIf="montoReembolso(item) >= 0">
+            <mat-list-item role="listitem">
+                <div class="container d-flex justify-content-between">
+                    <div class="text-primary"><b>Tipo de Operacion</b></div>
+                    <div style="font-size: smaller;">
+                        <mat-radio-group aria-label="Tipo de Operacion" [(ngModel)]="item['xldType']">
+                            <mat-radio-button class="mx-2" value="traspaso">Traspaso</mat-radio-button>
+                            <mat-radio-button value="reembolso">Reembolso</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-list>
+        <!-- <pre>{{ xldPolicy | json }}</pre> -->
+ 
+    <mat-card-actions>
+        <div class="container d-flex justify-content-end">
+            <button mat-raised-button class="ms-2" (click)="onNoClick()" [disabled]="_api.isLoading | async">Cerrar</button>
+            <button mat-raised-button class="ms-2" color="warn" (click)="sendCancellation()" [disabled]="item['xldType'] == null || montoReembolso(item) < 0 || (this.item['isQuote'] == 1 && this.item['isConfirmable'] == 1) || (_api.isLoading | async)">Aplicar Cancelacion</button>
+        </div>
+    </mat-card-actions>
+    <mat-card-footer>
+        <mat-progress-bar mode="buffer" *ngIf="_api.isLoading | async"></mat-progress-bar>
+    </mat-card-footer>
+</mat-card>

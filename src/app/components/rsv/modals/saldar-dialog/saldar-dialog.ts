@@ -81,7 +81,7 @@ export class SaldarDialog implements OnInit {
       // console.log(i['itemLocatorId'], i['montoSaldoTotal'], i['montoSaldoTotal'] > 0)
       // console.log(i['itemLocatorId'], i['grupo'], i['grupo'] != 'ohr')
 
-      if( (i['confirm'] != null || ((i['itemType'] == 1 && this._h.isVigente(i['vigencia'])) || i['itemType'] != 1))  && i['isCancel'] == 0 && i['montoSaldoTotal'] > 0 && i['grupo'] != 'ohr' ){
+      if( (i['confirmOK'] != null || ((i['itemType'] == 1 && this._h.isVigente(i['vigencia'])) || i['itemType'] != 1))  && i['isCancel'] == 0 && i['montoSaldoTotal'] > 0 && i['grupo'] != 'ohr' ){
 
         i['montoAllPaid'] = this._h.moneyInts( this._h.moneyCents(i['montoPagado']) + this._h.moneyCents(i['montoEnValidacion']) )
         i['montoParcialOriginal'] = i['montoParcial']
