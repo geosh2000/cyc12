@@ -199,7 +199,7 @@
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="danger"
                     (click)="cancelItem(i)"
-                    *ngIf="_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10' && (_init.checkSingleCredential('allmighty') || (i['itemType'] != '15' && i['pkgActive'] == '1')) && (_init.checkSingleCredential('allmighty') || i['isCancel'] == 0)"
+                    *ngIf="(_init.checkSingleCredential('app_cotizador') && i['itemType'] != '10') || (_init.checkSingleCredential('allmighty') || (i['itemType'] != '15' && i['pkgActive'] == '1')) || (_init.checkSingleCredential('allmighty') || i['isCancel'] == 0)"
                     [disabled]=" _api.isLoading | async">
                     <mat-icon>remove_circle</mat-icon>
                     &nbsp;Cancelar
