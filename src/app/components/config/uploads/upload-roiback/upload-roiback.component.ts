@@ -79,7 +79,7 @@ export class UploadRoibackComponent implements OnInit {
           'paquetes'    : tr['Paquetes'],
           'pais'        : tr['País'],
           'tfa'         : tr['Tarifas'],
-          'orid'        : tr['Número de socio'],
+          'orid'        : tr['Número de socio'] ?? tr['Usuario registrado (id)'],
           'habitaciones': '[]',
           'tours'       : '[]',
           'traslados'   : '[]'

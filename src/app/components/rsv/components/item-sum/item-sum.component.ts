@@ -302,6 +302,29 @@ export class ItemSumComponent implements OnInit {
       })
 
     }
+
+    editNotes( i, notes ){
+      i['noteEditFlagLoad'] = true
+
+      this._api.restfulPut( { itemId: i['itemId'], notes, og: i['notas'] }, 'Rsv/changeNotes' )
+                      .subscribe( res => {
+      
+                        i['notas'] = notes
+                        i['noteEditFlag'] = false
+                        i['noteEditFlagLoad'] = false
+                        this.reloadHistory.emit( true )
+                        
+                        
+                      }, err => {
+                        
+                        i['noteEditFlag'] = false
+                        i['noteEditFlagLoad'] = false
+                        const error = err.error;
+                        this._init.snackbar( 'error', error.msg, err.status );
+                        console.error(err.statusText, error.msg);
+                        Swal.close()
+                      });
+    }
   
     setNR( i, f ){
       this.loading['setNR'] = true

@@ -22,7 +22,7 @@
 
                                 <!-- CONFIRMACION -->
                                 <p style="font-size: smaller;">
-                                    {{ i['isQuote'] == 1 && !_h.isVigente(i['vigencia'] && i['confirmOK'] == null) ? 'Expirada' : i['confirm'] }}
+                                    {{ i['isQuote'] == 1 && !_h.isVigente(i['vigencia']) ? 'Expirada' : i['confirm'] }}
                                 </p>
                                 <ng-container *ngIf="i['confirmOK'] != null && i['confirmOK'] != i['confirm']">
                                     <p style="font-size: xx-small; line-height: 8px;">({{ i['confirmOK'] }})</p>
@@ -53,7 +53,7 @@
                                 
                                 <!-- Bed Preference -->
                                 <span [matTooltip]="'Preferencia de camas ' + ( i['bedPreference'] == 'Dobule Beds' ? 'Dobles' : 'King' )" [matTooltipPosition]="'above'" class="badge-status badge rounded-pill bg-beds" *ngIf="i['itemType'] == 1">
-                                    {{ i['bedPreference'] == 'Doubule Beds' ? 'D' : 'K' }}
+                                    {{ i['bedPreference'] == 'Double Beds' ? 'D' : 'K' }}
                                 </span>
 
                             </div>
@@ -109,8 +109,28 @@
                 <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">
                     <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas Sugeridas: </span><span class="clientInfo">{{ i['notasSugeridas'] }}</span></div>
                 </div>
-                <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">
-                    <div class="me-auto"><span class="productConceptXL" [style.width.px]="390">Notas: </span><span class="clientInfo">{{ i['notas'] }}</span></div>
+                <div class="container" *ngIf="i['itemType'] == 1">
+                    <div class="me-auto" *ngIf="i['noteEditFlagLoad']">
+                        <mat-progress-bar mode="buffer"></mat-progress-bar>
+                    </div>
+                    <div class="me-auto" *ngIf="!i['noteEditFlagLoad']"><span class="productConceptXL" [style.width.px]="390">Notas: </span>
+                        <span class="clientInfo" *ngIf="!i['noteEditFlag']">{{ i['notas'] }}</span>
+                        <span class="clientInfo" *ngIf="i['noteEditFlag']">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Notas Hotel</mat-label>
+                                <input matInput [value]="i['notas']" placeholder="Placeholder" #notes>
+                            </mat-form-field>
+                            <button mat-icon-button color="warn" (click)="i['noteEditFlag'] = false" aria-label="edit notes button" *ngIf="i['noteEditFlag']">
+                                <mat-icon style="zoom: 0.8">cancel</mat-icon>
+                            </button>
+                            <button mat-icon-button color="successButton" (click)="editNotes( i, notes.value )" aria-label="edit notes button" *ngIf="i['noteEditFlag']">
+                                <mat-icon style="zoom: 0.8">check_circle</mat-icon>
+                            </button>
+                        </span>
+                        <button mat-icon-button color="primary" (click)="i['noteEditFlag'] = true" aria-label="edit notes button" *ngIf="!i['noteEditFlag']">
+                            <mat-icon style="zoom: 0.8">edit</mat-icon>
+                        </button>
+                    </div>
                 </div>
             </ng-container>
 

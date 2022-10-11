@@ -284,40 +284,67 @@ export class ModifyHotelDialog implements OnInit {
       menores: parseInt(i['changes']['selectedOcc'].substr(4,1))
     }
 
-    let llegada = i['changes']['llegada'] != moment(i['llegada'])
+    let llegada = i['changes']['llegada'].format('YYYY-MM-DD') != moment(i['llegada']).format('YYYY-MM-DD')
     let noches = i['changes']['nights'] > parseInt(i['htlNoches'])
     let paqs = ((parseInt(i['changes']['nights']) + 1) / 8) > i['pkgItems']['items']
     let pax = (occ['adultos'] + occ['juniors'] + occ['menores']) > (parseInt(i['adultos']) + parseInt(i['juniors']) + parseInt(i['menores']))
     let menores = (occ['juniors'] + occ['menores']) > (parseInt(i['juniors']) + parseInt(i['menores']))
     let paxAc = ((occ['adultos'] + occ['juniors'] + occ['menores']) > 4 ? 4 : (occ['adultos'] + occ['juniors'] + occ['menores'])) > i['pkgItems']['pkgInsPax'][i['pkgItems']['pkgInsPax'].length - 1]
+    let confirmed = i['confirmOK'] != null
+
+    let params = {
+      llegada,
+      noches,
+      paqs,
+      pax,
+      menores,
+      paxAc,
+      confirmed, 
+      changes: i['changes'],
+      og: i,
+      chgLlegada: i['changes']['llegada'].format('YYYY-MM-DD'),
+      ogLlegada: moment(i['llegada']).format('YYYY-MM-DD')
+    }
+
+    console.log( params )
 
     if( llegada ){
+
+      if( confirmed ){ return [true, true] }
+
       if( paqs ){ return [true, true] }
-      else{
+      if( pax ){
+          if( paxAc ){
+            if( menores ){ return [false, true] }
+            return [true, true] 
+          }
+      } 
+
+      return [false, true]
+
+    }
+    
+    if( noches ){
+
+      if( paqs ){ return [true, true] } 
         if( pax ){
           if( paxAc ){
-            if( menores ){ return [false, true] }else{ return [true, true] }
-          }else{ return [true, false] }
-        }else{ return [true, false] }
-      }
-    }else{
-      if( noches ){
-        if( paqs ){ return [true, true] }
-        else{
-          if( pax ){
-            if( paxAc ){
-              if( menores ){ return [false, true] }else{ return [true, true] }
-            }else{ return [true, false] }
-          }else{ return [true, false] }
+            if( menores ){ return [false, true] }
+            return [true, true]
+          }
         }
-      }else{
-        if( pax ){
-          if( paxAc ){
-            if( menores ){ return [false, true] }else{ return [true, true] }
-          }else{ return [true, false] }
-        }else{ return [true, false] }
+
+      return [true, false]
+    }
+      
+    if( pax ){
+      if( paxAc ){
+        if( menores ){ return [false, true] }
+        return [true, true] 
       }
     }
+
+    return [true, false] 
 
   }
 
