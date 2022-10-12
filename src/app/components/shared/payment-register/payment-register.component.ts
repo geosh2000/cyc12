@@ -245,9 +245,13 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
     this.loading['saving'] = true;
 
     this._api.restfulPut( this.newPayment.value, 'Rsv/regPayment' )
-                .subscribe( res => {
+                .subscribe( async res => {
 
                   this.loading['saving'] = false;
+
+                  if( this.newPayment.get('payment_tpv').value == 'Roiback' ){
+                    await this.updateAvalonNotes()
+                  }
 
                   if( res['data'] ){
                     this._init.snackbar( 'success', res['msg'], 'Guardado' )
@@ -264,6 +268,37 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
                   console.error(err.statusText, error.msg);
 
                 });
+  }
+
+  updateAvalonNotes(){
+    return new Promise ( resolve => {
+
+      Swal.fire({
+        title: `<strong>Actualizando notas en Avalon</strong>`,
+        focusConfirm: false,
+        showCancelButton: false
+      })
+  
+      Swal.showLoading()
+
+      this._api.restfulGet( 'confirm/' + this.newPayment.get('referencia').value + '/post', 'Avalon/roibackToAvalon/' )
+                .subscribe( res => {
+
+                  Swal.close()
+
+                  resolve( true )
+
+                }, err => {
+
+                  Swal.close()
+                  const error = err.error;
+                  this._init.snackbar( 'error', error.msg, err.status + ' // No se guardaron notas en avalon' );
+                  console.error(err.statusText, error.msg);
+                  resolve( false )
+
+                });
+
+    })
   }
 
 }
