@@ -249,7 +249,7 @@ export class PaymentRegisterComponent implements OnInit, OnDestroy {
 
                   this.loading['saving'] = false;
 
-                  if( this.newPayment.get('payment_tpv').value == 'Roiback' ){
+                  if( this.newPayment.get('tipo').value == 'Roiback' ){
                     await this.updateAvalonNotes()
                   }
 

@@ -58,7 +58,7 @@ export class ItemSumComponent implements OnInit {
   // **************************** APIS INICIO ****************************
 
     
-    checkAvalon( l ){
+    checkAvalon( l, loc = true, conf = null ){
 
       Swal.fire({
         title: 'Obteniendo información de este item en Avalon...',
@@ -68,22 +68,36 @@ export class ItemSumComponent implements OnInit {
 
       let params = {
         "Hotel": this._global.avalonMap.hoteles[ l['hotel'].toLowerCase() ],
-        "Localizador": l['itemLocatorId'],
+        // "Localizador": l['itemLocatorId'],
+        "Localizador": loc ? l['itemLocatorId'] : conf,
         "NoFiltrarEstado": 'true' 
       }
 
       this._avalon.restfulGet( params, 'getReservation' )
-                  .subscribe( res => {
+                  .subscribe( async res => {
+
+                    if( loc && res['LSReserva'][0]['EntidadNegocio'].substr(0,3) == 'CAL' && res['LSReserva'][0]['EntidadNegocio'].substr(12,2).toLowerCase() != l['moneda'].substr(0,2).toLowerCase() ){
+                      console.log( 'diferente entidad' )
+                      this.checkAvalon( l, false, res['LSReserva'][0]['IDReserva'] )
+                      return false
+                    }
 
                     if( res['LSReserva'].length > 0 ){
 
                       for( let r of res['LSReserva'][0]['LSReservaDetalle'] ){
                         if( r['Estado'] == 1 || r['Estado'] == 0 || r['Estado'] == 2 ){
                           this.updateHotelStatus( l, r['Estado'], r )
+                          if( !loc && l['confirmOK'] != conf ){
+                            await this.apiConfirm( l, res['LSReserva'][0]['IDReserva'])
+                          }
                           return
                         }
                       }
                       
+                      if( !loc && l['confirmOK'] != conf ){
+                        await this.apiConfirm( l, res['LSReserva'][0]['IDReserva'])
+                      }
+
                       this.updateHotelStatus( l, res['LSReserva'][0]['LSReservaDetalle'][0]['Estado'], res['LSReserva'][0]['LSReservaDetalle'][0] )
 
                     }else{
@@ -459,6 +473,12 @@ export class ItemSumComponent implements OnInit {
 
         return true
       }
+
+      return this.apiConfirm(i,c)
+
+    }
+
+    apiConfirm( i, c){
 
       return new Promise ( async resolve => {
         this.loading['confirm'] = true

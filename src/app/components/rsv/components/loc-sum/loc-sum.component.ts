@@ -48,7 +48,7 @@ export class LocSumComponent implements OnInit {
   }
 
   urlCopy( d ){
-    return `https://cyc-oasishoteles.com/api/rf/index.php/Rsv/verConfirmacion/${d['masterlocatorid']}/${encodeURIComponent(d['correoCliente'])}`
+    return `https://rsv.oasishoteles.com/api/rf/index.php/Rsv/verConfirmacion/${d['masterlocatorid']}/${encodeURIComponent(d['correoCliente'])}`
   }
 
   // **************************** APIS INICIO ****************************
