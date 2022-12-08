@@ -221,6 +221,14 @@
                     &nbsp;Set Pack
                 </button>
                 
+                <button class='ms-1 p-1' mat-stroked-button style="zoom: 0.8" color="success"
+                    (click)="addACPack(i)"
+                    *ngIf="i['itemType'] == '1' && i['montoEnValidacion'] == 0 && i['addACPack'] == 1"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>new_label</mat-icon>
+                    &nbsp;Add ACPack
+                </button>
+                
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="manualInsEmit(i['itemLocatorId'])"
                     *ngIf="_init.checkSingleCredential('allmighty') && i['isQuote']==0 && i['confirmOK'] == null && (i['itemType']==10 || i['itemType']==15)"

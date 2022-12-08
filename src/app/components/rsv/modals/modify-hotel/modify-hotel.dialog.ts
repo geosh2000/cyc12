@@ -384,6 +384,7 @@ export class ModifyHotelDialog implements OnInit {
       original: i,
       changes: {
         monto: i['changeQuote']['hotel']['newAmmount'],
+        neto:  i['changeQuote']['hotel']['netAmmount'],
         llegada: i['changes']['llegada'].format('YYYY-MM-DD'),
         salida: i['changes']['salida'],
         nights: i['changes']['nights'],
