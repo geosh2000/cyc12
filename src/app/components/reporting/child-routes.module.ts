@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
 import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
 import { ReportingComponent } from './reporting.component';
+import { RsvListComponent } from './rsv-list/rsv-list.component';
 
 const childRoutes: Routes = [
   { 
@@ -23,6 +24,12 @@ const childRoutes: Routes = [
     component: ExportarAvalonComponent ,
     canActivate: [ AuthGuard ],
     data: { title: 'Reservas para exportar a Avalon', role: 'rsv_reset_confirm', reporte: 'avalonPendientes' } 
+  },
+  { 
+    path: 'rsvList', 
+    component: RsvListComponent ,
+    canActivate: [ AuthGuard ],
+    data: { title: 'Reservas del CyC', role: 'rsv_reset_confirm', reporte: 'rsvList' } 
   },
 ]
 

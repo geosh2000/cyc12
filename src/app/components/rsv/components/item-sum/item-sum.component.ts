@@ -275,15 +275,77 @@ export class ItemSumComponent implements OnInit {
 
       })
     }
+
+    setORCort( i ){
   
-    setPH( i ){
+      Swal.fire({
+        title: 'Cortesia ORewards',
+        text: 'Deseas establecer el item ' + i['itemLocatorId'] + 'como Cortesia ORewards?',
+        showCancelButton: true,
+        confirmButtonText: "Confirmar Cortesia OR",
+        icon: 'question'
+      }).then( async (result) => {
+        if (result.isConfirmed) {
+          
+          Swal.fire({
+            title: `<strong>Consultando ORewards Status</strong>`,
+            focusConfirm: false,
+            showCancelButton: false,
+            showConfirmButton: false
+          })
+      
+          Swal.showLoading()
+      
+          this.loading['setPH'] = true
+
+          this._api.restfulPut( {'data': i}, 'Rsv/getCortData' )
+                      .subscribe( res => {
+      
+                        Swal.close()
+                        if( res['data']['nombre_del_nivel'].toLowerCase() != 'silver' ){
+                          let noches = res['data']['noches_gratis_disfrutadas'] == null ? 0 : parseInt(res['data']['noches_gratis_disfrutadas'])
+                          let free = 0
+                          switch( res['data']['nombre_del_nivel'].toLowerCase() ){
+                            case 'gold':
+                              free = 1;
+                              break;
+                            case 'platinum':
+                              free = 2
+                              break
+                          }
+
+                          if( noches < free && parseInt(i['htlNoches']) <= free - noches ){
+                            this.setPH(i, parseInt(i['htlNoches']))
+                            return true
+                          }
+                          Swal.fire('Usuario no valido','El cliente ingresado no cuenta con noches gratis. Noches usadas: ' + noches + ' // Noches por nivel:  ' + free,'error')
+                        }
+
+                        Swal.fire('Usuario no valido','El cliente ingresado es Silver y no cuenta con noches gratis','error')
+                        
+                        
+                      }, err => {
+                        this.loading['setPH'] = false;
+                        
+                        const error = err.error;
+                        this._init.snackbar( 'error', error.msg, err.status );
+                        console.error(err.statusText, error.msg);
+                        Swal.close()
+                      });
+        }
+      })
+
+    }
+  
+    setPH( i, freents = 0 ){
 
       let params = {
         original: i,
         new: {
           montoParcial: 0
         },
-        itemId: i['itemId']
+        itemId: i['itemId'],
+        freents
       }
   
       Swal.fire({

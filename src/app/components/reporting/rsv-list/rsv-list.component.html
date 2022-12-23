@@ -1,0 +1,66 @@
+<mat-card class="mx-5">
+    <mat-card-header>
+      <mat-card-title>Buscar</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="container d-flex flex-wrap justify-content-center">
+
+            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
+                <mat-label>Fecha de Creacion</mat-label>
+                <mat-date-range-input [rangePicker]="creacionPick">
+                    <input matStartDate readonly autocomplete="off" [(ngModel)]="dates['creacion']['inicio']" placeholder="Inicio">
+                    <input matEndDate   readonly autocomplete="off" [(ngModel)]="dates['creacion']['fin']" placeholder="Fin">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="creacionPick"></mat-datepicker-toggle>
+                <mat-date-range-picker #creacionPick></mat-date-range-picker>
+                <button mat-icon-button matSuffix *ngIf="dates['creacion']['inicio']" (click)="clearDate('creacion')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
+                <mat-label>Fecha de Llegada</mat-label>
+                <mat-date-range-input [rangePicker]="llegadaPick">
+                    <input matStartDate readonly autocomplete="off" [(ngModel)]="dates['llegada']['inicio']" placeholder="Inicio">
+                    <input matEndDate   readonly autocomplete="off" [(ngModel)]="dates['llegada']['fin']" placeholder="Fin">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="llegadaPick"></mat-datepicker-toggle>
+                <mat-date-range-picker #llegadaPick></mat-date-range-picker>
+                <button mat-icon-button matSuffix *ngIf="dates['llegada']['inicio']" (click)="clearDate('llegada')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="235">
+                <mat-label>Fecha de Salida</mat-label>
+                <mat-date-range-input [rangePicker]="salidaPick">
+                    <input matStartDate readonly autocomplete="off" [(ngModel)]="dates['salida']['inicio']" placeholder="Inicio">
+                    <input matEndDate   readonly autocomplete="off" [(ngModel)]="dates['salida']['fin']" placeholder="Fin">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="salidaPick"></mat-datepicker-toggle>
+                <mat-date-range-picker #salidaPick></mat-date-range-picker>
+                <button mat-icon-button matSuffix *ngIf="dates['salida']['inicio']" (click)="clearDate('salida')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+
+        </div>
+        <div  class="container d-flex justify-content-end">
+            <button class="ms-auto" mat-raised-button color="primary" (click)="search()">Buscar</button>
+        </div>
+    </mat-card-content>
+  </mat-card>
+  
+  <div class="container mt-3 p-1">
+
+ 
+      
+      
+
+  </div>
+
+  <p>List Length: {{ list.length }}</p>
+  <pre>{{ list[0] | json }}</pre>
+
+  <pre>{{ dates | json }}</pre>
+  <pre>{{ list | json }}</pre>

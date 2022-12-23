@@ -35,6 +35,7 @@ import { BlankReportComponent } from './blank-report/blank-report.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
+import { RsvListComponent } from './rsv-list/rsv-list.component';
 
 
 
@@ -47,6 +48,7 @@ import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.compo
     ConfirmacionesPendientesComponent,
     SegurosPendientesCapturaComponent,
     ExportarAvalonComponent,
+    RsvListComponent,
   ],
   exports: [
     ReportingDirective,
@@ -56,6 +58,7 @@ import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.compo
     ConfirmacionesPendientesComponent,
     SegurosPendientesCapturaComponent,
     ExportarAvalonComponent,
+    RsvListComponent,
   ],
   imports: [    
     OrderModule,

@@ -230,8 +230,16 @@
                 </button>
                 
                 <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
+                    (click)="setORCort(i)"
+                    *ngIf="i['mdo'] == 'COR' && i['isQuote'] == 1 && i['isCancel'] == 0"
+                    [disabled]=" _api.isLoading | async">
+                    <mat-icon>card_giftcard</mat-icon>
+                    &nbsp;Cortesia OR
+                </button>
+                
+                <button class='ms-1 p-1' mat-button style="zoom: 0.8" color="primary"
                     (click)="manualInsEmit(i['itemLocatorId'])"
-                    *ngIf="_init.checkSingleCredential('allmighty') && i['isQuote']==0 && i['confirmOK'] == null && (i['itemType']==10 || i['itemType']==15)"
+                    *ngIf="_init.checkSingleCredential('allmighty') && (i['isQuote']==0 || i['isConfirmable'] == 1) && i['confirmOK'] == null && (i['itemType']==10 || i['itemType']==15)"
                     [disabled]=" _api.isLoading | async">
                     <mat-icon>rocket_launch</mat-icon>
                     &nbsp;Emitir
