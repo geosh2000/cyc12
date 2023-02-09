@@ -213,7 +213,9 @@ export class ItemSumComponent implements OnInit {
 
     addACPack(i){
 
-      this._api.restfulPut( { itemId: i['itemId'] }, 'Rsv/addACPack' )
+      let route = i['addACPack'] == 1 ? 'addACPack' : 'addACPack50'
+
+      this._api.restfulPut( { itemId: i['itemId'] }, 'Rsv/' + route )
                   .subscribe( res => {
   
                     

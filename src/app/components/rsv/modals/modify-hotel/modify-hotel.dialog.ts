@@ -75,6 +75,8 @@ export class ModifyHotelDialog implements OnInit {
   filterHotels(){
     let hotels = []
 
+    console.log(this.data, this.hotelList)
+
     for( let i of this.data['items'] ){
       if( i['itemType'] == 1 ){
         i['changes'] = {
@@ -89,6 +91,10 @@ export class ModifyHotelDialog implements OnInit {
             i['changes']['selectedRoom'] = c
             continue
           }
+        }
+
+        if( !i['changes']['selectedRoom'] ){
+          i['changes']['selectedRoom'] = {}
         }
         i['original'] = JSON.parse(JSON.stringify(i))
         hotels.push(i)
