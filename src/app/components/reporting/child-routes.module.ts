@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/guard/auth.guard';
 import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
+import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.component';
 import { ReportingComponent } from './reporting.component';
 import { RsvListComponent } from './rsv-list/rsv-list.component';
 
@@ -30,6 +31,12 @@ const childRoutes: Routes = [
     component: RsvListComponent ,
     canActivate: [ AuthGuard ],
     data: { title: 'Reservas del CyC', role: 'rsv_reset_confirm', reporte: 'rsvList' } 
+  },
+  { 
+    path: 'pagosAvalon', 
+    component: PagosPendientesComponent ,
+    canActivate: [ AuthGuard ],
+    data: { title: 'Pagos para subir a Avalon', role: 'rsv_reset_confirm', reporte: 'pagosPendientesAvalon' } 
   },
 ]
 

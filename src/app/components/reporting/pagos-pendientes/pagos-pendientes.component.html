@@ -1,0 +1,41 @@
+<div class="meta">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="date" placeholder="Seleccionar fecha">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="getList()">Buscar</button>
+    <button mat-raised-button color="accent" (click)="processNext()">Procesar</button>
+  </div>
+  
+
+  <mat-list class="list mt-2">
+    <mat-list-item *ngFor="let item of items">
+      <div class="item container d-flex justify-content-start">
+        <div class="item-name">{{ item.name }} ({{ item.moneda }})</div>
+        <mat-spinner *ngIf="item.status === 'In Progress'" diameter="25"></mat-spinner>
+        <div *ngIf="item.status === 'Completed'" class="item-status">
+          <i class="fas fa-check-circle"></i> Completed
+        </div>
+        <div *ngIf="item.status === 'Pending'" class="item-pending">
+          <i class="fas fa-exclamation-circle"></i> Pending
+        </div>
+        <ng-container *ngIf="item.status === 'Error'" >
+          <div class="item-error">
+            <i class="fas fa-exclamation-circle"></i> Error
+          </div>
+          <div class="ms-2">
+            <button class="ms-2" mat-raised-button color="accent" (click)="showErrors(item)">Ver Errores</button>
+          </div>
+        </ng-container>
+        <div *ngIf="item.status != 'Pending' && item.status != 'In Progress'" class="ms-auto">
+          <button class="ms-2" mat-raised-button color="warn" (click)="showPayload(item)">Payload</button>
+        </div>
+        <div *ngIf="item.status != 'In Progress'" class="ms-auto">
+          <button class="ms-2" mat-raised-button color="primary" (click)="processPayment(item, true)">{{ item.status != 'Error' ? 'Upload' : 'Reintentar' }}</button>
+        </div>
+      </div>
+    </mat-list-item>
+  </mat-list>
+
+

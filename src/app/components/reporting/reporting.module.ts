@@ -36,6 +36,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
 import { RsvListComponent } from './rsv-list/rsv-list.component';
+import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.component';
 
 
 
@@ -49,6 +50,7 @@ import { RsvListComponent } from './rsv-list/rsv-list.component';
     SegurosPendientesCapturaComponent,
     ExportarAvalonComponent,
     RsvListComponent,
+    PagosPendientesComponent,
   ],
   exports: [
     ReportingDirective,
@@ -59,6 +61,7 @@ import { RsvListComponent } from './rsv-list/rsv-list.component';
     SegurosPendientesCapturaComponent,
     ExportarAvalonComponent,
     RsvListComponent,
+    PagosPendientesComponent,
   ],
   imports: [    
     OrderModule,
@@ -90,7 +93,7 @@ import { RsvListComponent } from './rsv-list/rsv-list.component';
     MatStepperModule,
     MatTooltipModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
     
   ]
 })
