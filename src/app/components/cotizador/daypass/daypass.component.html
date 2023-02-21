@@ -6,9 +6,9 @@
         <!-- FORM -->
         <form [formGroup]="daypassSearch">
             <mat-card-content>
-                <div class="container-fluid d-flex justify-content-between flex-wrap align-items-center">
+                <div class="container-fluid d-flex justify-content-center flex-wrap align-items-center">
 
-                    <div>
+                    <div class="mx-1">
                         <!-- FECHA -->
                         <mat-form-field class="mx-1 mb-2" appearance="outline" [style.width.px]="160">
                             <mat-label>Fecha</mat-label>
@@ -20,32 +20,11 @@
                         </mat-form-field>
                     </div>
 
-                    <!-- PAX -->
-                    <div class="d-flex justify-content-center flex-wrap">
-                        <div class="m-2 paxInput">
-                            <label for="vertical" class="text-center" style="display: block">Adultos</label>
-                            <p-inputNumber formControlName="adults" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10" (onInput)="chgOcc('adults',$event)"
-                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
-                            </p-inputNumber>
-                        </div>
-                        <div class="m-2 paxInput">
-                            <label for="vertical" class="text-center" style="display: block">Juniors</label>
-                            <p-inputNumber formControlName="juniors" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10"
-                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
-                            </p-inputNumber>
-                        </div>
-                        <div class="m-2 paxInput">
-                            <label for="vertical" class="text-center" style="display: block">Menores</label>
-                            <p-inputNumber formControlName="childs" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical" inputId="vertical" [min]="0" [max]="10"
-                            decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
-                            </p-inputNumber>
-                        </div>
-                    </div>
+                   
 
                     <!-- Switches -->
-                    <div class="ms-auto d-flex flex-wrap justify-content-end">
+                    <div class="mx-1 d-flex flex-wrap justify-content-end align-items-center">
                         <mat-slide-toggle class="mx-1 mb-2" formControlName="isUSD">USD</mat-slide-toggle>
-                        <mat-slide-toggle class="mx-1 mb-2" formControlName="isLocal">Locales</mat-slide-toggle>
                         <button mat-raised-button class="ms-3" color="primary" (click)="cotizar()" [disabled]="daypassSearch.invalid || loading['cotizar']">Cotizar</button>
                     </div>
 
@@ -58,16 +37,70 @@
 
         <!-- LOADER -->
         <mat-card-footer>
-            <mat-progress-bar mode="indeterminate" *ngIf="loading['cotizar']"></mat-progress-bar>
+            <mat-progress-bar mode="indeterminate" *ngIf="_api.isLoading | async"></mat-progress-bar>
         </mat-card-footer>
     </mat-card>
 
-    <mat-card>
-        HOLA
-        <pre> {{ daypassSearch.value | json }}
-        </pre><br>
-        <pre> {{ summarySearch | json }}
-        </pre>
-    </mat-card>
+    <div  class="fb-style-container container d-flex flex-wrap justify-content-start">
+          <div class="mx-2 p-2" *ngFor="let producto of cotizacion">
+            <mat-card>
+              <mat-card-title>{{ producto.dp_tipo }} ({{ producto.dpe_nombre }})</mat-card-title>
+              <mat-card-content>
+                <p>Hotel: <b>{{ producto.dp_hotel }}</b></p>
+                <p>{{ producto.dp_descripcion }}</p>
+                <div class="number-input-container align-items-center">
+                    <div class="my-0 me-auto">
+                        <p>Adultos: </p>
+                        <p>{{ ( this.daypassSearch.get('isUSD').value ? producto.dp_adulto_usd : producto.dp_adulto_mxn) | currency:'USD':'symbol-narrow':'.2-2' }} {{ this.daypassSearch.get('isUSD').value ? 'USD' : 'MXN' }}</p>
+                    </div>
+                    <button mat-icon-button color="primary" (click)="decrement( producto, 'adulto' )">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <input type="number" [(ngModel)]="producto['cantidad_adulto']" min="0" max="15" step="1" class="number-input" />
+                    <button mat-icon-button color="primary" (click)="increment( producto, 'adulto' )">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <div class="number-input-container align-items-center" *ngIf="producto['dp_junior_mxn'] || producto['dp_junior_usd']">
+                    <div class="my-0 me-auto">
+                        <p>Juniors: </p>
+                        <p>{{ ( this.daypassSearch.get('isUSD').value ? producto.dp_junior_usd : producto.dp_junior_mxn) | currency:'USD':'symbol-narrow':'.2-2' }} {{ this.daypassSearch.get('isUSD').value ? 'USD' : 'MXN' }}</p>
+                    </div>
+                    <button mat-icon-button color="primary" (click)="decrement( producto, 'junior' )">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <input type="number" [(ngModel)]="producto['cantidad_junior']" min="0" max="15" step="1" class="number-input" />
+                    <button mat-icon-button color="primary" (click)="increment( producto, 'junior' )">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <div class="number-input-container align-items-center" *ngIf="producto['dp_menor_mxn'] || producto['dp_menor_usd']">
+                    <div class="my-0 me-auto">
+                        <p>Menores: </p>
+                        <p>{{ ( this.daypassSearch.get('isUSD').value ? producto.dp_menor_usd : producto.dp_menor_mxn) | currency:'USD':'symbol-narrow':'.2-2' }} {{ this.daypassSearch.get('isUSD').value ? 'USD' : 'MXN' }}</p>
+                    </div>
+                    <button mat-icon-button color="primary" (click)="decrement( producto, 'menor' )">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <input type="number" [(ngModel)]="producto['cantidad_menor']" min="0" max="15" step="1" class="number-input" />
+                    <button mat-icon-button color="primary" (click)="increment( producto, 'menor' )">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+              </mat-card-content>
+              <mat-card-footer>
+                  <div class="p-3 container d-flex justify-content-between align-items-center">
+                    <h4 class="my-0"><b>Total: {{ ( this.daypassSearch.get('isUSD').value ? (producto.total_usd ?? 0) : (producto.total_mxn ?? 0) ) | currency:'USD':'symbol-narrow':'.2-2' }} {{ this.daypassSearch.get('isUSD').value ? 'USD' : 'MXN' }}</b></h4>
+                    <button mat-raised-button color="primary" (click)="reservar( producto )">Reservar</button>
+                  </div>
+              </mat-card-footer>
+            </mat-card>
+
+            <!-- <pre>{{ producto | json }}</pre> -->
+          </div>
+
+   
+      </div>
+      
 
 </div>

@@ -207,7 +207,7 @@
                                                     <div class="hotelImageResponsive d-inline d-sm-none" [style.background-image]="c['hotelUrl']"></div>
                                                     <div class="ms-4">
                                                         <p class="m-0"><b><span class="d-none d-sm-inline">{{ c['hotel'] }}</span> {{ c['habName'] }}</b></p>
-                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ hotelVal( c['habs']['total']['monto']['neta'], c['tipoCambio'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
+                                                        <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ hotelVal( c['habs']['total']['monto']['neta'], c ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p>
                                                         <!-- <p class="m-0 text-secondary fst-italic" *ngIf="!c['habs']['hasErrors']">Tfa Neta: {{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['total']['monto']['neta']['monto'] ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span></p> -->
                                                     </div>
                                                 </mat-panel-title>
@@ -221,7 +221,7 @@
                                                         </div>
                                                         <div mat-line class="col-6">
                                                             {{ c['tarifas'][ summarySearch['inicio'].format('YYYY-MM-DD') ]['n' + selectedLevel ]['name'] }}: 
-                                                            <b>{{ ( hotelVal( c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} 
+                                                            <b>{{ ( hotelVal( c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel], c ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} 
                                                             <!-- <b>{{ ((hotelSearch.get('isUSD').value ? 1 : c['tipoCambio']) * c['habs']['porHabitacion'][hab]['total']['n' + selectedLevel]['monto'] + ((extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * ((hotelSearch.get('isUSD').value ? 1 : extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['tipoCambio']) * extraInfo['seguros'][hab][summarySearch['nacionalidad']][summarySearch['cobertura']]['publico_ci']))) | currency:'USD':'symbol-narrow':'.2-2' }}  -->
                                                                 <span class="d-none d-sm-inline">
                                                                     {{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}
@@ -252,7 +252,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" [matTooltip]="(totalPN(c,1)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="warn" value="1" [disabled]="!c['habs']['total']['levels']['n1']['enabled']">
-                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n1'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n1'], c ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -266,7 +266,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="primary" selected [matTooltip]="(totalPN(c,2)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="2" [disabled]="!c['habs']['total']['levels']['n2']['enabled']">
-                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n2'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n2'], c ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -282,7 +282,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="accent" selected [matTooltip]="(totalPN(c,3)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="primary" value="3" [disabled]="!c['habs']['total']['levels']['n3']['enabled']">
-                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n3'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n3'], c ) + insVal()  ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>
@@ -296,7 +296,7 @@
                                                         <mat-chip-list class="mat-chip-list-stacked">
                                                             <mat-chip class="chips" color="warn" selected [matTooltip]="(totalPN(c,4)  | currency:'USD':'symbol-narrow':'.2-2') + ' p/n'">
                                                                 <mat-radio-button color="accent" value="4" [disabled]="!c['habs']['total']['levels']['n4']['enabled']">
-                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n4'], c['tipoCambio'] ) + insVal() ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
+                                                                    {{ ( hotelVal( c['habs']['total']['monto']['n4'], c ) + insVal()  ) | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ hotelSearch.get('isUSD').value ? 'USD' : 'MXN' }}</span>
                                                                 </mat-radio-button>
                                                             </mat-chip>
                                                         </mat-chip-list>

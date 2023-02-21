@@ -17,30 +17,32 @@ export class TalkWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             title: 'Desconectado'
           }
 
-  constructor( private _ws: WebSocketService, private _api: ApiService, private _init: InitService  ) { }
+  constructor( 
+    // private _ws: WebSocketService, 
+    private _api: ApiService, private _init: InitService  ) { }
 
   ngOnInit(): void {
 
-    this.talk$ = this._ws.talk().subscribe(
-      msg => {
+    // this.talk$ = this._ws.talk().subscribe(
+    //   msg => {
 
-        // console.log( 'status recibido', msg)
+    //     // console.log( 'status recibido', msg)
 
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    //     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-        if( !currentUser ){ return; }
+    //     if( !currentUser ){ return; }
         
-        if( currentUser.hcInfo.zdId == msg['zdId'] ){
-          console.log('Status: ' + msg['data']['status'] )
-          this.buildStatus(msg['data']['status'])
-        }
-      })
+    //     if( currentUser.hcInfo.zdId == msg['zdId'] ){
+    //       console.log('Status: ' + msg['data']['status'] )
+    //       this.buildStatus(msg['data']['status'])
+    //     }
+    //   })
 
     this.getStatus()    
   }
 
   ngOnDestroy(){
-    this.talk$.unsubscribe()
+    // this.talk$.unsubscribe()
   }
 
   ngAfterViewInit(): void {

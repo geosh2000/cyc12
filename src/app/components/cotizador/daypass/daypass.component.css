@@ -1,3 +1,74 @@
-.paxInput {
-    /* width: 100px; */
-}
+/* Estilos generales */
+.fb-style-container {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Estilos para las tarjetas */
+  .mat-card {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos para el título de la tarjeta */
+  .mat-card-title {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  /* Estilos para el contenido de la tarjeta */
+  .mat-card-content {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  /* Estilos para el pie de la tarjeta */
+  .mat-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid #E9EBEE;
+  }
+  
+  /* Estilos para el botón de reserva */
+  .mat-raised-button.mat-primary {
+    background-color: #4267B2;
+    color: #FFFFFF;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+  }
+  
+  .mat-raised-button.mat-primary:hover {
+    background-color: #3B5998;
+  }
+
+  .number-input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .number-input {
+    width: 50px;
+    margin: 0 10px;
+    text-align: center;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    height: auto;
+  }
+
+  .mat-input-element {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    height: auto;
+  }
+  
+  

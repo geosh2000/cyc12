@@ -62,6 +62,7 @@
                 <app-hotel-checkout (done)="onNoClick( $event )" [rsvData]="rsvData" [zdUserSelected]="{objSelected, editOptional, firstFormGroup, secondFormGroup, editForm}" *ngIf="data['type'] == 'hotel'"></app-hotel-checkout>
                 <app-xfer-checkout  (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'xfer'"></app-xfer-checkout>
                 <app-tour-checkout  (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'tour'"></app-tour-checkout>
+                <app-daypass-checkout  (done)="onNoClick()" [rsvData]="rsvData"  *ngIf="data['type'] == 'daypass'"></app-daypass-checkout>
                 <!-- <pre>{{ secondFormGroup.value | json }}</pre>
                 <hr>
                 FORM ({{ createRsv.valid ? 'VALIDO' : 'NO VALIDO' }})<br>

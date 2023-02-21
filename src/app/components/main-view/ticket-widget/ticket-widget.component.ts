@@ -17,23 +17,25 @@ export class TicketWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
             title: 'Desconectado'
           }
 
-  constructor( private _ws: WebSocketService, private _api: ApiService, private _init: InitService  ) { }
+  constructor( 
+    // private _ws: WebSocketService, 
+    private _api: ApiService, private _init: InitService  ) { }
 
   ngOnInit(): void {
 
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if( !currentUser ){ return; }
 
-    this.ticket$ = this._ws.ticket(currentUser.hcInfo.zdId).subscribe(
-      msg => {
+    // this.ticket$ = this._ws.ticket(currentUser.hcInfo.zdId).subscribe(
+    //   msg => {
 
-        console.log( 'status recibido', msg)
+    //     console.log( 'status recibido', msg)
 
-      })
+    //   })
   }
 
   ngOnDestroy(){
-    this.ticket$.unsubscribe()
+    // this.ticket$.unsubscribe()
   }
 
   ngAfterViewInit(): void {

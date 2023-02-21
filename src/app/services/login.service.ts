@@ -17,7 +17,9 @@ export class LoginService {
   co = new BehaviorSubject( null )
   tokSubs$
     
-  constructor( private _api:ApiService, private _init:InitService, private ws: WebSocketService, private router: Router ) { 
+  constructor( private _api:ApiService, private _init:InitService, 
+    // private ws: WebSocketService, 
+    private router: Router ) { 
     this.tokSubs$ = this._api.tokenCheck.asObservable()
       .subscribe(r => {
         if( !r ){
@@ -68,7 +70,7 @@ export class LoginService {
         localStorage.setItem(app + 'token', res['token'])
         localStorage.setItem(app + 'nombre', res['hcInfo']['Nombre_Corto'])
         console.log('run socket')
-        this.ws.cargarStorage()
+        // this.ws.cargarStorage()
         console.log('end run socket')
         this._init.getPreferences( app )
         this._init.agentName = res['hcInfo']['Nombre_Corto']

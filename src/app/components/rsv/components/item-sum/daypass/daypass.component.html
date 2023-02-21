@@ -1,0 +1,66 @@
+    <div class="container row mx-auto p-2">
+        <div class="col-4">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Hotel:</b></div>
+                <div class="clientInfo">{{ i['hotel'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Tipo:</b></div>
+                <div class="clientInfo">{{ i['grupo'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Evento:</b></div>
+                <div class="clientInfo">{{ i['categoria'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Tipo Tarifa:</b></div>
+                <div class="clientInfo">{{ i['isNR'] == 1 ? 'No Reembolsable' : 'Flexible' }}</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <ng-container *ngIf="i['isOpen'] == 0">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="productConcept"><b>Fecha:</b></div>
+                    <div class="clientInfo">{{ _h.formatDate(i['llegada'], 'DD MMM YYYY') }}</div>
+                </div>
+
+            </ng-container>
+            
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Adultos:</b></div>
+                <div class="clientInfo">{{ i['adultos'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Juniors:</b></div>
+                <div class="clientInfo">{{ i['juniors'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConcept"><b>Menores:</b></div>
+                <div class="clientInfo">{{ i['menores'] }}</div>
+            </div>
+            
+        </div>
+        <div class="col-4" *ngIf="i['isCancel'] != 1">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConceptXL"><b>Método:</b></div>
+                <div class="clientInfo">{{ i['isPagoHotel'] == 1 ? 'PH' : i['isParcial'] == 1 ? 'PP' : 'PT' }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConceptXL"><b>Promo:</b></div>
+                <div class="clientInfo">{{ i['promo'] }}</div>
+            </div>
+            <app-edit-prepay [i]="i" (saveMonto)="saveMontoFnc($event)"></app-edit-prepay>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConceptXL"><b>TSI:</b></div>
+                <div class="clientInfo">{{ ( i['monto'] / 1.19 ) | currency:'MXN':'symbol-narrow':'.2-2' }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConceptXL"><b>Status de pago:</b></div>
+                <div class="clientInfo">{{ i['tipoPago'] }}</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="productConceptXL"><b>Moneda:</b></div>
+                <div class="clientInfo">{{ i['moneda'] }}</div>
+            </div>
+        </div>
+    </div>

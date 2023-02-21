@@ -48,6 +48,7 @@ import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { PackageBuilderComponent } from './hotel/package-builder/package-builder.component';
 import { PackageBuilderV2Component } from './hotel/package-builder-v2/package-builder-v2.component';
+import { DaypassCheckoutComponent } from './modals/daypass-checkout/daypass-checkout.component';
 
 
 
@@ -67,7 +68,8 @@ import { PackageBuilderV2Component } from './hotel/package-builder-v2/package-bu
     SendQuoteComponent,
     ValidateTicketComponent,
     PackageBuilderComponent,
-    PackageBuilderV2Component
+    PackageBuilderV2Component,
+    DaypassCheckoutComponent
   ],
   exports: [
     CotizadorComponent,
@@ -84,7 +86,8 @@ import { PackageBuilderV2Component } from './hotel/package-builder-v2/package-bu
     SendQuoteComponent,
     ValidateTicketComponent,
     PackageBuilderComponent,
-    PackageBuilderV2Component
+    PackageBuilderV2Component,
+    DaypassCheckoutComponent
   ],
   imports: [    
     OrderModule,

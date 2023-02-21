@@ -51,6 +51,7 @@ import { ItemBlockSumComponent } from './components/item-block-sum/item-block-su
 import { CancelHotelDialogComponent } from './modals/cancel-hotel-dialog/cancel-hotel-dialog.component';
 import { ItemHotelesComponent } from './components/item-sum/hoteles/hoteles.component';
 import { CancelAssistDialogComponent } from './modals/cancel-assist-dialog/cancel-assist-dialog.component';
+import { ItemDaypassComponent } from './components/item-sum/daypass/daypass.component';
 
 
 
@@ -66,6 +67,7 @@ import { CancelAssistDialogComponent } from './modals/cancel-assist-dialog/cance
     ItemSumComponent,
     LocSumComponent,
     ItemHotelesComponent,
+    ItemDaypassComponent,
 
     PagosDialog,
     ChangeCreatorDialog,
@@ -90,6 +92,7 @@ import { CancelAssistDialogComponent } from './modals/cancel-assist-dialog/cance
     ItemSumComponent,
     LocSumComponent,
     ItemHotelesComponent,
+    ItemDaypassComponent,
 
     PagosDialog,
     ChangeCreatorDialog,

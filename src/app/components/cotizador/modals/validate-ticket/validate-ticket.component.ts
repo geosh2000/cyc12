@@ -345,7 +345,7 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
 
     // console.log('emit built')
     this.rsvFormChange.emit( this.rsvForm )
-
+    
     
   }
 

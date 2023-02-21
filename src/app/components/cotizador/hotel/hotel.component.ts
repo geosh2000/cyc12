@@ -924,17 +924,23 @@ export class CotizaHotelComponent implements OnInit {
     return (this.extraInfo['grupo']['insuranceIncluded'] ? 1 : 0) * (( this.hotelSearch.get('isUSD').value ? 1 : this.extraInfo['seguros']['total'][ this.summarySearch['nacionalidad']][ this.summarySearch['cobertura']]['tipoCambio']) * this.extraInfo['seguros']['total'][this.summarySearch['nacionalidad']][ this.summarySearch['cobertura']]['publico_ci'])
   }
 
-  hotelVal( m, t ){
+  hotelVal( m, c ){
 
-    // c['habs']['total']['monto'][l]['monto'] 
+    // Suplemento Springbreak
+    let suplemento = 0
+    let noches = this.summarySearch['fin'].diff(this.summarySearch['inicio'], 'days')
+    if( c['habCode'].toLowerCase() == 'smstsb' ){
+      console.log(c['habCode'], c)
+      suplemento = c['habs']['total']['pax'] * 75 * noches
+    }
 
     if( this.hotelSearch.get('isUSD').value ){
-      return m['monto']
+      return m['monto'] + suplemento
     }else{
       if( this.extraInfo['grupo']['fixedMxn'] == '1' ){
-        return m['monto_m']
+        return m['monto_m'] 
       }else{
-        return t * m['monto']
+        return c['tipoCambio'] * (m['monto'] + suplemento)
       }
     }
   }

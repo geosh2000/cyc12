@@ -101,6 +101,9 @@
             <!-- INFO HOTELES -->
             <item-hoteles [i]="i" *ngIf="i['itemType'] == 1"></item-hoteles>
 
+            <!-- INFO DAYPASS -->
+            <item-daypass [i]="i" *ngIf="i['itemType'] == 17"></item-daypass>
+
             <!-- NOTAS HOTELES -->
             <ng-container *ngIf="i['itemType'] == 1">
                 <div class="container d-flex justify-content-end" *ngIf="i['itemType'] == 1">

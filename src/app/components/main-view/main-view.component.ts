@@ -17,9 +17,9 @@ export class MainViewComponent implements OnInit, OnDestroy {
 
   constructor( public _init: InitService, 
     public _api: ApiService,
-    private _ws: WebSocketService,
+    // private _ws: WebSocketService,
     private router: Router,) { 
-      this._ws.cargarStorage()
+      // this._ws.cargarStorage()
 
       this.router.events
       .pipe(
@@ -41,11 +41,11 @@ export class MainViewComponent implements OnInit, OnDestroy {
         this._init.loadingRouteConfig = true;
       }
       if( val instanceof NavigationEnd || val instanceof ResolveEnd  ){
-        this._ws.setUrlWs( val.urlAfterRedirects + ' -- ' + window.navigator.userAgent )
+        // this._ws.setUrlWs( val.urlAfterRedirects + ' -- ' + window.navigator.userAgent )
         this._init.loadingRouteConfig = false;
       }
       if( val instanceof NavigationCancel  ){
-        this._ws.setUrlWs( val.url + ' -- ' + window.navigator.userAgent )
+        // this._ws.setUrlWs( val.url + ' -- ' + window.navigator.userAgent )
         this._init.loadingRouteConfig = false;
       }
     });

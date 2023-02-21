@@ -16,6 +16,7 @@ export class GlobalServicesService {
       'pyr': 'HT01',
       'gop': 'HT09',
       'opb': 'HT09',
+      'gsc': 'HT09',
       'smart': 'HT06',
       'sma': 'HT06',
       'oh': 'HT06',

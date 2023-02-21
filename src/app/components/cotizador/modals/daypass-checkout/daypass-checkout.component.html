@@ -1,0 +1,71 @@
+<form [formGroup]="rsvForm" (ngSubmit)="_validate.submitRsv()" #htmlForm ="ngForm">
+    <div class="continer mx-auto row align-items-center" style="max-width: 100vw; height: 55vh; overflow: auto;" *ngIf="rsvData['habSelected']">
+        <div class="col-xs-12 col-md-6 text-center">
+            <ng-container  *ngIf="rsvForm.get('data')">
+                <h2 class="mb-0"><b>{{ rsvData['habSelected']['daypass']['dp_tipo'] }} ({{ rsvData['habSelected']['daypass']['dpe_nombre'] }})</b></h2>
+
+                <mat-divider class="mb-2"></mat-divider>
+                <div>
+                    <div class="align-items-center">
+                        <p><b>Titular: </b>{{ rsvData['formRsv']['zdUser']['name'] }} (<mat-icon>emoji_events</mat-icon>{{ rsvData['formRsv']['orLevel'] }})</p>
+                        <p><b>Adultos: </b>{{ rsvData['habSelected']['daypass']['cantidad_adulto'] ?? 0 }}</p>
+                        <p><b>Juniors: </b>{{ rsvData['habSelected']['daypass']['cantidad_junior'] ?? 0 }}</p>
+                        <p><b>Menores: </b>{{ rsvData['habSelected']['daypass']['cantidad_menor'] ?? 0 }}</p>
+                    </div>
+    
+                </div>
+                <mat-divider class="my-3"></mat-divider>
+                <ng-container *ngIf="rsvForm.get('data.daypass.daypass').value">
+                
+                    <div class="d-flex flex-wrap justify-content-center align-items-center">
+                            <div class="me-2" >Fecha:</div>
+                            <div class="">
+                                <p class="mb-0"><mat-icon>event</mat-icon>: {{ rsvForm.get('data.daypass.daypass.fecha').value }}</p>
+                            </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <mat-divider class="mt-2"></mat-divider>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <app-validate-ticket (done)="doneEmit()" [(rsvForm)]="rsvForm" [item]="rsvForm" [user]="rsvData['formRsv']['isNew'] ? rsvData['userInfo']['user']['zdId'] : rsvData['userInfo']['masterloc']['zdUserId']"></app-validate-ticket>
+                </div>
+            </div>
+            
+
+        </div>
+        <div class="p-1 col-xs-12 col-md-6 text-center" style="max-height: 49vh; overflow: auto;"  *ngIf="rsvForm.get('data')">
+
+            <form [formGroup]="rsvForm" formGroupName="data">
+                <div class="container row" formGroupName="daypass">
+                    <div class="col-12" formGroupName="daypass">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Titular</mat-label>
+                            <input matInput formControlName="nombreTitular" autocomplete="off">
+                            <mat-error *ngIf="rsvForm.get('data.daypass.daypass.nombreTitular').invalid">{{ getErrorMessage('data.daypass.daypass.nombreTitular') }}</mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Notas</mat-label>
+                            <input matInput formControlName="notasHotel" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+            <div class="mt-2 col-12 text-center">
+                
+            </div>
+            <div class="mt-2 col-12 text-center" *ngIf="htmlForm.submitted && rsvForm.invalid">
+                <div class="d-block alert alert-danger" role="alert">
+                    Existen errores en la información.
+                    <button class="mx-auto" type="button" (click)="_validate.viewErrors()"  mat-button color="primary">Mas Detalles</button>    
+                </div>
+            </div>
+            <div class="mt-2 col-12 text-center"  *ngIf="rsvForm.get('data')">
+           
+                <button class="mx-auto" type="submit" [style.width.%]="95" mat-flat-button color="primary" >Reservar por  {{ rsvForm.get('data.daypass.monto.monto').value | currency:'USD':'symbol-narrow':'.2-2' }} <span class="d-none d-sm-inline">{{ rsvForm.get('data.daypass.monto.moneda').value }}</span></button>
+            </div>
+        </div>
+</form>
+

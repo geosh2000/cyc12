@@ -50,8 +50,10 @@ export class CotizaDaypassComponent implements OnInit {
   minDate = moment( moment().format('YYYY-MM-DD'))
   maxDate = moment(`${moment().add(1, 'years').format('YYYY')}-12-19`)
   
+  cotizacion = []
+
   constructor( 
-    private _api: ApiService, 
+    public _api: ApiService, 
     public _init: InitService, 
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
@@ -68,6 +70,19 @@ export class CotizaDaypassComponent implements OnInit {
   cotizar(){
     this.summarySearch = this.daypassSearch.value
     this.summarySearch['fecha'] = this.daypassSearch.get('fecha').value.format('YYYY-MM-DD')
+
+    this._api.restfulPut( this.summarySearch, 'Cotizador/daypass' )
+                .subscribe( res => {
+
+                  this.cotizacion = res['data']
+
+                }, err => {
+                  
+                  const error = err.error;
+                  this._init.snackbar('error', error.msg, 'Cerrar')
+                  console.error(err.statusText, error.msg);
+
+                });
   }
 
   chgOcc( f, e ){
@@ -75,14 +90,25 @@ export class CotizaDaypassComponent implements OnInit {
     console.log( this.daypassSearch.value )
   }
 
+  
+  reservar( p ){
+
+    let raw = JSON.parse(JSON.stringify(p))
+    
+    let data = {
+      daypass: raw,
+      summarySearch: this.summarySearch,
+      type: 'daypass'
+    }
+
+
+    this.rsv.emit({ action: 'doRsv', data, r: JSON.parse(JSON.stringify(raw)) })
+  }
+
 
   createForm(){
     this.daypassSearch =  this.fb.group({
       fecha:      [{ value: '',  disabled: false }, [ Validators.required ] ],
-      adults:     [{ value: 1,  disabled: false }, [ Validators.required ] ],
-      juniors:    [{ value: 0,  disabled: false }, [ Validators.required ] ],
-      childs:     [{ value: 0,  disabled: false }, [ Validators.required ] ],
-      isLocal:   [{ value: false,  disabled: false }, [ Validators.required ] ],
       isUSD:        [{ value: false,  disabled: false }, [ Validators.required ] ]
     })
 
@@ -92,22 +118,6 @@ export class CotizaDaypassComponent implements OnInit {
 
     this.daypassSearch.get('isUSD').valueChanges.subscribe( x => { 
       this.summarySearch['isUSD'] = x
-    })
-
-    this.daypassSearch.get('isLocal').valueChanges.subscribe( x => { 
-      this.summarySearch['isLocal'] = x
-    })
-
-    this.daypassSearch.get('adults').valueChanges.subscribe( x => { 
-      this.summarySearch['adults'] = x
-    })
-
-    this.daypassSearch.get('juniors').valueChanges.subscribe( x => { 
-      this.summarySearch['juniors'] = x
-    })
-
-    this.daypassSearch.get('childs').valueChanges.subscribe( x => { 
-      this.summarySearch['childs'] = x
     })
 
   }
@@ -147,5 +157,29 @@ export class CotizaDaypassComponent implements OnInit {
     }
     
     return 'El campo tiene errores';
+  }
+
+  increment( v, t ) {
+    if( !v['cantidad_' + t ] ){ v['cantidad_' + t ] = 0 }
+    if ( v['cantidad_' + t ] < 15) {
+       v['cantidad_' + t ]++;
+    }
+    this.calcularTotal( v, t )
+  }
+
+  decrement( v, t ) {
+    if( !v['cantidad_' + t ] ){ v['cantidad_' + t ] = 0 }
+    if (v['cantidad_' + t ] > 0) {
+      v['cantidad_' + t ]--;
+    }
+    this.calcularTotal( v, t )
+  }
+  
+  calcularTotal( p, t ) {
+    p['total_' + t + '_usd'] = p['dp_' + t + '_usd'] * p['cantidad_' + t];
+    p['total_' + t + '_mxn'] = p['dp_' + t + '_mxn'] * p['cantidad_' + t];
+
+    p['total_usd'] = (p['total_adulto_usd'] ?? 0) + (p['total_menor_usd'] ?? 0) + (p['total_junior_usd'] ?? 0)
+    p['total_mxn'] = (p['total_adulto_mxn'] ?? 0) + (p['total_menor_mxn'] ?? 0) + (p['total_junior_mxn'] ?? 0)
   }
 }
