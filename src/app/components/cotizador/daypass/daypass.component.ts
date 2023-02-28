@@ -160,24 +160,37 @@ export class CotizaDaypassComponent implements OnInit {
   }
 
   increment( v, t ) {
-    if( !v['cantidad_' + t ] ){ v['cantidad_' + t ] = 0 }
-    if ( v['cantidad_' + t ] < 15) {
+
+    let max_pax = parseInt(v['dp_max_pax'])
+    let min_pax = parseInt(v['dp_min_pax'])
+
+    if( !v['cantidad_' + t ] ){ 
+      v['cantidad_' + t ] = min_pax
+      this.calcularTotal( v, t )
+      return
+    }
+    
+    if ( v['cantidad_' + t ] < max_pax) {
        v['cantidad_' + t ]++;
     }
     this.calcularTotal( v, t )
   }
 
   decrement( v, t ) {
-    if( !v['cantidad_' + t ] ){ v['cantidad_' + t ] = 0 }
-    if (v['cantidad_' + t ] > 0) {
+    if( !v['cantidad_' + t ] ){ v['cantidad_' + t ] = v['dp_min_pax'] }
+    if (v['cantidad_' + t ] > v['dp_min_pax']) {
       v['cantidad_' + t ]--;
     }
     this.calcularTotal( v, t )
   }
   
   calcularTotal( p, t ) {
-    p['total_' + t + '_usd'] = p['dp_' + t + '_usd'] * p['cantidad_' + t];
-    p['total_' + t + '_mxn'] = p['dp_' + t + '_mxn'] * p['cantidad_' + t];
+
+    let baseUsd = parseInt(p['dp_precioBase_usd'])
+    let baseMxn = parseInt(p['dp_precioBase_mxn'])
+
+    p['total_' + t + '_usd'] = baseUsd + p['dp_' + t + '_usd'] * p['cantidad_' + t];
+    p['total_' + t + '_mxn'] = baseMxn + p['dp_' + t + '_mxn'] * p['cantidad_' + t];
 
     p['total_usd'] = (p['total_adulto_usd'] ?? 0) + (p['total_menor_usd'] ?? 0) + (p['total_junior_usd'] ?? 0)
     p['total_mxn'] = (p['total_adulto_mxn'] ?? 0) + (p['total_menor_mxn'] ?? 0) + (p['total_junior_mxn'] ?? 0)

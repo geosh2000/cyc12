@@ -56,7 +56,7 @@
                     <button mat-icon-button color="primary" (click)="decrement( producto, 'adulto' )">
                       <mat-icon>remove</mat-icon>
                     </button>
-                    <input type="number" [(ngModel)]="producto['cantidad_adulto']" min="0" max="15" step="1" class="number-input" />
+                    <input type="number" [(ngModel)]="producto['cantidad_adulto']" [min]="producto['dp_min_pax']" [max]="producto['dp_max_pax']" step="1" class="number-input" />
                     <button mat-icon-button color="primary" (click)="increment( producto, 'adulto' )">
                       <mat-icon>add</mat-icon>
                     </button>
