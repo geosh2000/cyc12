@@ -154,20 +154,7 @@ export class UploadsComponent implements OnInit {
                 break;
               case 'acInvoices':
 
-                let sheets = {}
-
-                if( workbook.SheetNames[5] ){
-                  sheets['start'] = [{[workbook.Sheets[workbook.SheetNames[0]]['A1']['v']]: 1}]
-                  sheets['folio'] = [{[workbook.Sheets[workbook.SheetNames[8]]['A1']['v']]: 1}]
-                  sheets['nc'] = [{[workbook.Sheets[workbook.SheetNames[6]]['A1']['v']]: 1}]
-                  sheets['detail'] = this.getSheet( workbook, 5)
-                  sheets['end'] = this.getSheet( workbook, 7)
-                }else{
-                  sheets['start'] = this.getSheet( workbook, 0)
-                  sheets['end'] = this.getSheet( workbook, 1)
-                }
-
-                flag = await this._aci.buildVouchers( sheets )
+                flag = await this._aci.preBuild( workbook )
                 Swal.close()
                 break;
               default:
@@ -190,6 +177,16 @@ export class UploadsComponent implements OnInit {
       return false
     }
 
+  }
+
+  handleDrop(event) {
+    // event.preventDefault();
+    const file = event.addedFiles;
+
+    console.log( 'dropped', file )
+    if (file.length > 0) {
+      this.buildForms( this.selectedType, file[0] )
+    }
   }
 
 }

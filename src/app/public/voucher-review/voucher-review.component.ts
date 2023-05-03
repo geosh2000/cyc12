@@ -14,6 +14,7 @@ export class VoucherReviewComponent implements OnInit {
 
   pagos = []
   trace = {}
+  itemData = {}
   accountSum = {}
   accounts = []
   searchFlag = false
@@ -83,6 +84,7 @@ export class VoucherReviewComponent implements OnInit {
 
     this.pagos = []
     this.trace = {}
+    this.itemData = {}
     this.accounts = []
     this.accountSum = {}
     this.confirmacion = l.value
@@ -108,6 +110,7 @@ export class VoucherReviewComponent implements OnInit {
                   }
                   Swal.close()
                   this.pagos = res['data']
+                  this.itemData = res['idata']
 
                   if( this.accounts.length > 0 ){
                     this.getTrace()

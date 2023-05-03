@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService, InitService } from 'src/app/services/service.index';
 
 import * as moment from 'moment-timezone';
+import { utils, read as readXlsx } from 'xlsx';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -22,6 +23,8 @@ export class UploadAssistcardInvoicesComponent implements OnInit {
   // Suggested 5000
   maxRegs = 5000
 
+  rawData = {}
+
   constructor(
       public _api:ApiService,
       private _init:InitService
@@ -30,8 +33,100 @@ export class UploadAssistcardInvoicesComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  buildVouchers( sh ){
+  getSheet( wb, i ){
 
+    if( wb.SheetNames[i] ){
+      let sheetName = wb.SheetNames[i]
+      let jsonFile = utils.sheet_to_json( wb.Sheets[sheetName], {raw: true, defval:null} )
+      console.log( jsonFile )
+      return jsonFile
+    }else{
+      return false
+    }
+
+  }
+
+  async preBuild( workbook ){
+    let sheets = {}
+
+    if( workbook.SheetNames[5] ){
+      sheets['start'] = [{[workbook.Sheets[workbook.SheetNames[0]]['A1']['v']]: 1}]
+
+      sheets['folio'] = await this.searchSheets( workbook, 'folio' )
+      if( sheets['folio'].length == 0 ){
+        delete sheets['folio']
+      }
+
+      sheets['nc'] = await this.searchSheets( workbook, 'nc' )
+      if( sheets['nc'].length == 0 ){
+        delete sheets['nc']
+      }
+
+      sheets['detail'] = await this.searchSheets( workbook, 'detail' )
+      if( sheets['detail'].length == 0 ){
+        delete sheets['detail']
+      }
+
+      sheets['montos'] = await this.searchSheets( workbook, 'montos' )
+      if( sheets['montos'].length == 0 ){
+        delete sheets['montos']
+      }
+      sheets['end'] = this.getSheet( workbook, 7)
+    }else{
+      sheets['start'] = this.getSheet( workbook, 0)
+      sheets['end'] = this.getSheet( workbook, 1)
+    }
+
+    this.buildVouchers( sheets, workbook )
+  }
+
+  searchSheets( wb, field ){
+
+    return new Promise(async resolve => {
+
+      let map = {
+        'detail': 'cantidad',
+      }
+
+      let i = 0
+      for( let s of wb.SheetNames ){
+        let fc = wb.Sheets[s]['A1']['v']
+
+        switch( field ){
+          case 'detail':
+            if( fc.toLowerCase() == map[field] ){
+              resolve( this.getSheet( wb, i) )
+            }
+            break
+          case 'folio':
+            if( fc.substring(0,8).toLowerCase() == 'este doc' ){
+              resolve( [{[wb.Sheets[s]['A1']['v']]: 1}] )
+            }
+            break
+          case 'nc':
+            if( fc.substring(0,15).toLowerCase() == 'total con letra' ){
+              resolve( [{[wb.Sheets[s]['A1']['v']]: 1}] )
+            }
+            break
+          case 'montos':
+            console.log( 'sheet montos', fc )
+            if( fc.toLowerCase() == 'subtotal:' ){
+              resolve( this.getSheet( wb, i) )
+            }
+            break
+        }
+
+        i++
+      }
+
+      resolve( [] )
+    })
+
+  }
+
+  buildVouchers( sh, wb ){
+
+    this.rawData = wb
     return new Promise(async resolve => {
 
       let json = []
@@ -261,6 +356,26 @@ export class UploadAssistcardInvoicesComponent implements OnInit {
       this.rawList = cieloRaw
       this.assistList = res
       this.loading['assist'] = false
+
+      console.log(sh)
+      if( (!res['fas_tax'] || res['fas_tax'] == null) && sh['montos'] ){
+        for( let r of sh['montos'] ){
+          
+          console.log( 'calculando neta', r )	
+          if( r['Subtotal:'].toLowerCase() == 'total:' ){
+            for( let i in r ){
+              if( i.toLowerCase() != 'subtotal:' ){
+                res['fas_neta'] = parseFloat(i.substring(1,100).replace(/,/g, '')).toFixed(2)
+                res['fas_tax'] = r[i] 
+              }
+            }
+          }
+
+          if( typeof r[0] == 'string' && r[0].toLowerCase() == 'total:' ){
+            res['fas_tax'] = r[1]
+          }
+        }
+      }
 
       // console.log(this.assistList)
       // console.log(this.summary)

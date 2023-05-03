@@ -16,7 +16,13 @@
     <!-- TABLA DE PAGOS -->
     <ng-container *ngIf="searchFlag">
         <div class="text-center upper"><h1>{{ confirmacion }}</h1></div><br>
-        <div class="text-center upper" *ngIf="pagos.length > 0"><h4><b>Notas actualizadas:</b><span style="color: blue"> {{ pagos[0]['itemData']['notasSugeridas'] }}</span></h4></div><br>
+        <ng-container>
+            <!-- DIV CON INFORMACION DE ITEMDATA['ORID'] SI ESTE VALOR ES DISTINTO A NULO -->
+            <div class="text-center upper" *ngIf="itemData['orId'] != NULL">
+                <b>Orewards: <span style="color: green">{{ itemData['orLevel'] }} - (Titular: {{ itemData['nombreCliente'] }})</span></b>
+            </div>
+        </ng-container>
+        <div class="text-center upper" *ngIf="itemData['notasSugeridas']"><h4><b>Notas actualizadas:</b><span style="color: blue"> {{ itemData['notasSugeridas'] }}</span></h4></div><br>
 
         <div class="alert alert-warning" role="alert" *ngIf="pagos.length == 0 && !gotten">
             No se encontraron pagos relacionados a esta reserva

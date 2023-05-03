@@ -54,7 +54,7 @@ export class UploadRoibackComponent implements OnInit {
         }
 
         let rs = {
-          'rb_voucher'  : tr['Código de confirmación'],
+          'rb_voucher'  : tr['Identificador de reserva'],
           'agencia'     : tr['Agencia'],
           'canal'       : tr['Canal'],
           'correo'      : tr['Correo electrónico'],
@@ -87,7 +87,7 @@ export class UploadRoibackComponent implements OnInit {
 
         // HABS
 
-        let habs = jsonFile['habs'].filter(e => e['Código de confirmación'] === rs['rb_voucher'])
+        let habs = jsonFile['habs'].filter(e => e['Identificador de reserva'] === rs['rb_voucher'])
 
         if( habs.length > 0 ){
           
@@ -101,7 +101,7 @@ export class UploadRoibackComponent implements OnInit {
 
         // TOURS
         if( rs['paquetes'] > 0 ){
-          let tour = jsonFile['tours'].filter(e => e['Código de confirmación'] === rs['rb_voucher'])
+          let tour = jsonFile['tours'].filter(e => e['Identificador de reserva'] === rs['rb_voucher'])
           
           if( tour.length > 0 ){
             for( let tr of tour ){
@@ -115,7 +115,7 @@ export class UploadRoibackComponent implements OnInit {
 
         // TRASLADOS
 
-        let xfer = jsonFile['traslados'].filter(e => e['Código de confirmación'] === rs['rb_voucher'])
+        let xfer = jsonFile['traslados'].filter(e => e['Identificador de reserva'] === rs['rb_voucher'])
           
         if( xfer.length > 0 ){
           rs['traslados'] = JSON.stringify(xfer)

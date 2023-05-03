@@ -12,6 +12,7 @@ import { UploadComplementosComponent } from './uploads/upload-complementos/uploa
 import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desplazos.component';
 import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.component';
 import { UploadAssistcardInvoicesComponent } from './uploads/upload-assistcard-invoices/upload-assistcard-invoices.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 
 
@@ -42,6 +43,7 @@ import { UploadAssistcardInvoicesComponent } from './uploads/upload-assistcard-i
     MatButtonModule,
     MatSelectModule,
     MatProgressBarModule,
+    NgxDropzoneModule,
   ]
 })
 export class ConfigModule { }

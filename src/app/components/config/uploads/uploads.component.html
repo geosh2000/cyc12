@@ -21,6 +21,9 @@
                     <button mat-flat-button color="primary" (click)="swalUpload()">Seleccionar Archivo</button>
                 </div>
            </div>
+           <ngx-dropzone (change)="handleDrop($event)" [multiple]="false">
+                Arrastra un archivo o haz clic para seleccionar
+            </ngx-dropzone>
        </mat-card-content>
 
     </mat-card>
