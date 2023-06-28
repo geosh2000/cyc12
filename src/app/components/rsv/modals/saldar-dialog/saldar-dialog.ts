@@ -207,7 +207,7 @@ export class SaldarDialog implements OnInit {
             return 'Debes introducir un tipo de cambio'
           }
 
-          if ( this._h.moneyInts( this._h.moneyCents( value ) ) <= 18 ){
+          if ( this._h.moneyInts( this._h.moneyCents( value ) ) <= 15 ){
             return 'El valor del tipo de cambio es muy bajo'
           }
         }

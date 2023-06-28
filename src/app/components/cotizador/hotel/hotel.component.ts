@@ -486,6 +486,17 @@ export class CotizaHotelComponent implements OnInit {
 
   }
 
+  checkFreeKids( arr, tfa ){
+    arr['m1'] = arr['m1'] ? true : (tfa['m1'] == 0 ? true : false)
+    arr['m2'] = arr['m2'] ? true : (tfa['m2'] == 0 ? true : false)
+    arr['m3'] = arr['m3'] ? true : (tfa['m3'] == 0 ? true : false)
+
+    let total = (arr['m1'] ? 1 : 0) + (arr['m2'] ? 1 : 0) + (arr['m3'] ? 1 : 0)
+    arr['total'] = total
+    arr['leyenda'] = `Menores Gratis: ${total}`
+  }
+  
+
   habPriceBuild( b, i, f, tc, test = false ){
 
     return new Promise(resolve => {
@@ -494,16 +505,34 @@ export class CotizaHotelComponent implements OnInit {
       let htl = i['hotel']
       let noR = this._init.checkSingleCredential('app_cotizador_allLevels')
       
+      b['promos'] = {
+        'menores_gratis': { 'm1': false, 'm2' : false, 'm3': false }
+      }
+
       for( let h in b['porHabitacion']){
+
         
         for( let f in r ){
+
+          this.checkFreeKids(b['promos']['menores_gratis'], r[f]['menores'] )
+
+          let menores_precio = this.getPriceMenores( b['porHabitacion'][h]['occ']['menores'], r[f]['menores'], false )
+          let menores_precio_m = this.getPriceMenores( b['porHabitacion'][h]['occ']['menores'], r[f]['menores'], true )
           
-          let neta = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] )
-          let neta_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] )
+          let neta_adultos = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] )
+          let neta_adultos_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] )
+
+          let neta = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio'] ) + menores_precio
+          let neta_m = this.getPrice( b['porHabitacion'][h]['occ']['adultos'], b['porHabitacion'][h]['occ']['menores'], r[f]['precio_m'] ) + menores_precio_m
+
           
           
           b['porHabitacion'][h]['fechas'][f] = {
             'neta': neta,
+            'neta_adultos': neta_adultos,
+            'neta_menores': menores_precio,
+            'neta_adultos_m': neta_adultos_m,
+            'neta_menores_m': menores_precio_m,
             'n1': {'monto_m': (neta_m * (1-r[f]['n1']['descuento'])), 'monto': (neta * (1-r[f]['n1']['descuento'])), 'descuento': r[f]['n1']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n1']['descuento'])) / neta) },
             'n2': {'monto_m': (neta_m * (1-r[f]['n2']['descuento'])), 'monto': (neta * (1-r[f]['n2']['descuento'])), 'descuento': r[f]['n2']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n2']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
             'n3': {'monto_m': (neta_m * (1-r[f]['n3']['descuento'])), 'monto': (neta * (1-r[f]['n3']['descuento'])), 'descuento': r[f]['n3']['descuento'], 'relativeDisc': 1 - ((neta * (1-r[f]['n3']['descuento'])) / (neta * (1-r[f]['n1']['descuento']))) },
@@ -513,12 +542,12 @@ export class CotizaHotelComponent implements OnInit {
           }
           
           // HAB TOTAL
-          b['porHabitacion'][h]['total']['neta']['monto'] += neta
+          b['porHabitacion'][h]['total']['neta']['monto'] += (neta)
+          b['porHabitacion'][h]['total']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
           b['porHabitacion'][h]['total']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
           b['porHabitacion'][h]['total']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
           b['porHabitacion'][h]['total']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
           b['porHabitacion'][h]['total']['n4']['monto'] += (neta * (1-r[f]['n4']['descuento']))
-          b['porHabitacion'][h]['total']['n5']['monto'] += (neta * (1-r[f]['n5']['descuento']))
           
           b['porHabitacion'][h]['total']['n1']['relativeDisc'] = 1 - (b['total']['monto']['n1']['monto'] / b['total']['monto']['neta']['monto'])
           b['porHabitacion'][h]['total']['n2']['relativeDisc'] = 1 - (b['total']['monto']['n2']['monto'] / b['total']['monto']['n1']['monto'])
@@ -527,7 +556,7 @@ export class CotizaHotelComponent implements OnInit {
           b['porHabitacion'][h]['total']['n5']['relativeDisc'] = 1 - (b['total']['monto']['n5']['monto'] / b['total']['monto']['n1']['monto'])
 
           // TOTALES GENERALES
-          b['total']['monto']['neta']['monto'] += neta
+          b['total']['monto']['neta']['monto'] += (neta)
           b['total']['monto']['n1']['monto'] += (neta * (1-r[f]['n1']['descuento']))
           b['total']['monto']['n2']['monto'] += (neta * (1-r[f]['n2']['descuento']))
           b['total']['monto']['n3']['monto'] += (neta * (1-r[f]['n3']['descuento']))
@@ -715,19 +744,49 @@ export class CotizaHotelComponent implements OnInit {
      return errors
   }
 
+  getPriceMenores(m, r, mxn = false){
+    let menores = 0
+    for( let i = 1; i <= m; i++ ){
+      // if( i == 3 ){
+      //   m3 += r['pax_min' + i]
+      // }
+      
+      // Comentar if, y descomentar esta linea para cobrar cada menor
+      menores += (100 * r['m'+i])    
+    }
+
+    return mxn ? 0 : menores
+  }
+
 
   getPrice( a, m, r, mxn = false ){
 
     let sfx = mxn ? '_m' : ''
     let m3 = 0 
 
-    if( a == 1 && m >= 2 ){
-      m = (a + m) - 2
-      a = 2
-    }
+    if( mxn ){
+      // 2 menores gratis
+      // if( a == 1 && m >= 2 ){
+      //   m = (a + m) - 2
+      //   a = 2
+      // }
+  
+      // costo tercer menor
+      // if( m == 3 ){
+      //   m3 = r['paxMenor' + sfx]
+      // }
+    }else{
+      // menores con costo
+      for( let i = 1; i <= m; i++ ){
+        // if( i == 3 ){
+        //   m3 += r['pax_min' + i]
+        // }
+        
+        // Comentar if, y descomentar esta linea para cobrar cada menor
+        // m3 += r['pax_min' + i]
+        
+      }
 
-    if( m == 3 ){
-      m3 = r['paxMenor' + sfx]
     }
 
     return r['pax' + a + sfx] + m3

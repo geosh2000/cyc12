@@ -328,16 +328,16 @@ export class ValidateTicketComponent implements OnInit, OnChanges {
           languaje:       [ user.idioma_cliente, [ Validators.required ]],
           hasTransfer:    [ r['habSelected']['hotel'] ? (r['habSelected']['hotel']['habs']['hasTransfer'] ? 1 : 0) : 0, [ Validators.required ]],
           xldPol:         [ r['habSelected']['hotel'] ? r['habSelected']['extraInfo']['grupo']['xldPolicy'] : 'default' ],
-          orId:           [ r['formRsv']['orId'], [ Validators.required ]],
-          orLevel:        [ r['formRsv']['orLevel'], [ Validators.required ]],
+          orId:           [ r['formRsv']['orId'], [  ]],
+          orLevel:        [ r['formRsv']['orLevel'], [  ]],
           clientePaisId:  [ r['formRsv']['zdUser']['pais']['id'], [ Validators.required ]],
           clientePais:    [ r['formRsv']['zdUser']['pais']['name'], [ Validators.required ]],
         }))
 
     }else{
       this.rsvForm.addControl('masterdata', this.fb.group({
-        orId:           [ r['formRsv']['orId'], [ Validators.required ]],
-        orLevel:        [ r['formRsv']['orLevel'], [ Validators.required ]],
+        orId:           [ r['formRsv']['orId'], [  ]],
+        orLevel:        [ r['formRsv']['orLevel'], [  ]],
         clientePaisId:  [ r['formRsv']['zdUser']['pais']['id'], [ Validators.required ]],
         clientePais:    [ r['formRsv']['zdUser']['pais']['name'], [ Validators.required ]],
       }))
