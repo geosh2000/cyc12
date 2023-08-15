@@ -13,6 +13,7 @@ import { UploadDesplazosComponent } from './uploads/upload-desplazos/upload-desp
 import { UploadRoibackComponent } from './uploads/upload-roiback/upload-roiback.component';
 import { UploadAssistcardInvoicesComponent } from './uploads/upload-assistcard-invoices/upload-assistcard-invoices.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { UploadParatyMlsComponent } from './uploads/upload-paraty-mls/upload-paraty-mls.component';
 
 
 
@@ -25,6 +26,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     UploadDesplazosComponent,
     UploadRoibackComponent,
     UploadAssistcardInvoicesComponent,
+    UploadParatyMlsComponent,
   ],
   exports: [
     UploadsComponent,
@@ -34,6 +36,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     UploadDesplazosComponent,
     UploadRoibackComponent,
     UploadAssistcardInvoicesComponent,
+    UploadParatyMlsComponent,
   ],
   imports: [
     CommonModule,

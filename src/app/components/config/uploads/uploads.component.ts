@@ -11,6 +11,7 @@ import { UploadComplementosComponent } from './upload-complementos/upload-comple
 import { UploadDesplazosComponent } from './upload-desplazos/upload-desplazos.component';
 import { UploadRoibackComponent } from './upload-roiback/upload-roiback.component';
 import { UploadAssistcardInvoicesComponent } from './upload-assistcard-invoices/upload-assistcard-invoices.component';
+import { UploadParatyMlsComponent } from './upload-paraty-mls/upload-paraty-mls.component';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class UploadsComponent implements OnInit {
   @ViewChild( UploadComplementosComponent ) private _complementos: UploadComplementosComponent
   @ViewChild( UploadDesplazosComponent ) private _desplazos: UploadDesplazosComponent
   @ViewChild( UploadRoibackComponent ) private _rb: UploadRoibackComponent
+  @ViewChild( UploadParatyMlsComponent ) private _prtMls: UploadParatyMlsComponent
   @ViewChild( UploadAssistcardInvoicesComponent ) private _aci: UploadAssistcardInvoicesComponent
 
   upList = []
@@ -146,6 +148,10 @@ export class UploadsComponent implements OnInit {
                 break;
               case 'desplazos':
                 flag = await this._desplazos.buildVouchers(jsonFile)
+                Swal.close()
+                break;
+              case 'paratyMls':
+                flag = await this._prtMls.buildVouchers(workbook)
                 Swal.close()
                 break;
               case 'rsvasRb':

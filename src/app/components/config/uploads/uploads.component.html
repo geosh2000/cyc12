@@ -13,6 +13,7 @@
                         <mat-option value="complementos">Complementos Cielo</mat-option>
                         <mat-option value="desplazos">Desplazos Cielo</mat-option>
                         <mat-option value="loyaltyRB">Loyalty ORewards</mat-option>
+                        <mat-option value="paratyMls">Rsvas Paraty</mat-option>
                         <mat-option value="rsvasRb">Rsvas Roiback</mat-option>
                         <mat-option value="acInvoices">Facturas Assistcard</mat-option>
                     </mat-select>
@@ -34,6 +35,7 @@
         <app-upload-desplazos *ngIf="selectedType=='desplazos'"></app-upload-desplazos>
         <app-upload-roiback *ngIf="selectedType=='rsvasRb'"></app-upload-roiback>
         <app-upload-assistcard-invoices *ngIf="selectedType=='acInvoices'"></app-upload-assistcard-invoices>
+        <app-upload-paraty-mls *ngIf="selectedType=='paratyMls'"></app-upload-paraty-mls>
     </div>
 </div>
  
