@@ -1,0 +1,195 @@
+<div class="container mt-4">
+
+    <mat-card>
+        <mat-card-title>
+            <h2>Filtros de Búsqueda</h2>
+        </mat-card-title>
+
+        <form [formGroup]="filterForm" #filterFormDom="ngForm" (ngSubmit)="getPayments()">
+
+            <!-- Filtros -->
+            <mat-card-content>
+                <div class="row">
+
+                    <!-- Complejo -->
+                    <div class="col-xs-12 col-sm-6 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Complejo</mat-label>
+                            <mat-select formControlName="complejo">
+                                <mat-option>Selecciona...</mat-option>
+                                <mat-option value="Cancun">Cancun</mat-option>
+                                <mat-option value="Palm">Palm</mat-option>
+                                <mat-option value="Smart">Smart</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="filterForm.get('complejo').invalid && filterForm.get('complejo').touched">{{ getErrorMessage('complejo') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Fecha Pago -->
+                    <div class="col-xs-12 col-sm-6 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Fecha Pago</mat-label>
+                            <mat-date-range-input [rangePicker]="pickerPago">
+                                <input matStartDate readonly autocomplete="off" formControlName="fechaPago_inicio" placeholder="Inicio">
+                                <input matEndDate   readonly autocomplete="off" formControlName="fechaPago_fin" placeholder="Fin">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="pickerPago"></mat-datepicker-toggle>
+                            <mat-date-range-picker #pickerPago></mat-date-range-picker>
+                            <mat-error *ngIf="filterForm.controls['fechaPago_inicio'].invalid">{{ getErrorMessage('fechaPago_inicio') }}</mat-error>
+                            <mat-error *ngIf="filterForm.controls['fechaPago_fin'].invalid">{{ getErrorMessage('fechaPago_fin') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Fecha Aplicacion -->
+                    <div class="col-xs-12 col-sm-6 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Fecha Aplicacion</mat-label>
+                            <mat-date-range-input [rangePicker]="pickerApply">
+                                <input matStartDate readonly autocomplete="off" formControlName="fechaAplicacion_inicio" placeholder="Inicio">
+                                <input matEndDate   readonly autocomplete="off" formControlName="fechaAplicacion_fin" placeholder="Fin">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="pickerApply"></mat-datepicker-toggle>
+                            <mat-date-range-picker #pickerApply></mat-date-range-picker>
+                            <mat-error *ngIf="filterForm.controls['fechaAplicacion_inicio'].invalid">{{ getErrorMessage('fechaAplicacion_inicio') }}</mat-error>
+                            <mat-error *ngIf="filterForm.controls['fechaAplicacion_fin'].invalid">{{ getErrorMessage('fechaAplicacion_fin') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Fecha Inicio -->
+                    <div class="col-xs-12 col-sm-6 col-lg-3">
+                        <mat-form-field appearance="outline" class="d-block">
+                            <mat-label>Fecha Inicio</mat-label>
+                            <mat-date-range-input [rangePicker]="pickerInicio">
+                                <input matStartDate readonly autocomplete="off" formControlName="fechaInicio_inicio" placeholder="Inicio">
+                                <input matEndDate   readonly autocomplete="off" formControlName="fechaInicio_fin" placeholder="Fin">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                            <mat-date-range-picker #pickerInicio></mat-date-range-picker>
+                            <mat-error *ngIf="filterForm.controls['fechaInicio_inicio'].invalid">{{ getErrorMessage('fechaInicio_inicio') }}</mat-error>
+                            <mat-error *ngIf="filterForm.controls['fechaInicio_fin'].invalid">{{ getErrorMessage('fechaInicio_fin') }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+            </mat-card-content>
+
+            <!-- Actions -->
+            <mat-card-actions>
+                <div class="d-flex justify-content-end">
+                    <button mat-raised-button color="warn" type="button" (click)="resetValues()">Reset</button>
+                    <!-- <button mat-raised-button color="primary" type="submit" [disabled]="loading['links']">Buscar</button> -->
+                    <button mat-raised-button color="primary" type="submit" [disabled]="!filterForm.valid || loading['links']">Buscar</button>
+                    <!-- <button mat-raised-button color="primary" type="submit" [disabled]="!filterForm.valid">Buscar</button> -->
+                </div>
+            </mat-card-actions>
+        </form>
+
+        <!-- Progressbar -->
+        <mat-card-footer>
+            <mat-progress-bar mode="indeterminate" *ngIf="loading['links']"></mat-progress-bar>
+        </mat-card-footer>
+    </mat-card>
+
+    <div class="container mt-5 d-flex justify-content-center">
+        
+        <div class="container mat-elevation-z8 m-0 p-0">
+
+            <mat-form-field appearance="standard" class="px-2">
+                <mat-label>Filtrar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Referencia" #filterInput>
+            </mat-form-field>
+
+            <table mat-table [dataSource]="dataSource" class="" [style.width.%]="100" matSort>
+    
+                <ng-container matColumnDef="itemLocatorId" [sticky]="false" sticky>
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Localizador</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.itemLocatorId}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="cashTransactionId" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>txId (itemId)</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.cashTransactionId}} ({{link.itemId}})</td>
+                </ng-container>
+    
+                <ng-container matColumnDef="accountId" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Operacion</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.accountId}} ({{link.tipo}})</td>
+                </ng-container>
+                    
+                <ng-container matColumnDef="monto" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Monto</b></th>
+                    <td mat-cell [ngClass]="{'text-danger': link.monto < 0}" *matCellDef="let link"> {{link.monto | currency:'USD':'symbol-narrow':'.2-2' }} {{ link.monedaAplicada }} ({{ link.complejoPago }}) </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="dtCreated" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Fecha Aplicacion</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.dtCreated}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="cieloTxId" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Id Cielo</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.cieloTxId}} {{ link.cieloApplied == 1 ? "(Aplicado)" : '' }}</td>
+                </ng-container>
+    
+                <ng-container matColumnDef="txType" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Tipo Tx</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.txType}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="hotel" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Hotel</b></th>
+                    <td mat-cell [ngClass]="{'text-danger': link.isCancel == '1'}"  *matCellDef="let link"> {{link.itemType}} {{ link.isCancel == '1' ? "(C)" : '' }} - {{link.hotel}} ({{link.confirmation}})</td>
+                </ng-container>
+                
+                <ng-container matColumnDef="inicio" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Inicio</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.inicio}}</td>
+                </ng-container>
+                
+                <ng-container matColumnDef="gpoTfa" [sticky]="false">
+                    <th mat-header-cell  *matHeaderCellDef mat-sort-header><b>Grupo</b></th>
+                    <td mat-cell *matCellDef="let link"> {{link.gpoTfa}}</td>
+                </ng-container>
+                    
+                <ng-container matColumnDef="Acciones" [sticky]="false" stickyEnd>
+                    <th mat-header-cell *matHeaderCellDef><b>Acciones</b></th>
+                    <td mat-cell *matCellDef="let link"> 
+
+                        <button mat-raised-button color="primary" aria-label="Aplicar" (click)="apply(link)" [disabled]="link.loading" *ngIf="!link.applied">
+                            Aplicar
+                        </button> 
+                        <mat-progressbar mode="'buffer" *ngIf="link.loading">
+
+                        </mat-progressbar>
+
+                    </td>
+                </ng-container>
+    
+                <!-- <ng-container matColumnDef="filler">
+                    <th mat-header-cell *matHeaderCellDef> Filler header cell </th>
+                    <td mat-cell *matCellDef="let element"> Filler data cell </td>
+                    <td mat-footer-cell *matFooterCellDef> Filler footer cell </td>
+                </ng-container> -->
+    
+                <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+     
+                <tr mat-row  *matRowDef="let row; columns: displayColumns;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4"><span *ngIf="filterInput.value != ''">No hay informaciòn que coincida con "{{filterInput.value}}"</span></td>
+                </tr>
+    
+            </table>
+            
+            <mat-paginator [pageSizeOptions]="[10, 20, 50]"
+                showFirstLastButtons 
+                aria-label="Selecciona la pagina">
+            </mat-paginator>
+        </div>
+
+    </div>
+
+    <!-- <pre>{{ list | json }}</pre> -->
+
+</div>

@@ -37,6 +37,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.component';
 import { RsvListComponent } from './rsv-list/rsv-list.component';
 import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.component';
+import { ActualizacionStatusAvalonComponent } from './actualizacion-status-avalon/actualizacion-status-avalon.component';
 
 
 
@@ -51,6 +52,7 @@ import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.co
     ExportarAvalonComponent,
     RsvListComponent,
     PagosPendientesComponent,
+    ActualizacionStatusAvalonComponent,
   ],
   exports: [
     ReportingDirective,
@@ -62,6 +64,7 @@ import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.co
     ExportarAvalonComponent,
     RsvListComponent,
     PagosPendientesComponent,
+    ActualizacionStatusAvalonComponent,
   ],
   imports: [    
     OrderModule,

@@ -6,6 +6,7 @@ import { ExportarAvalonComponent } from './exportar-avalon/exportar-avalon.compo
 import { PagosPendientesComponent } from './pagos-pendientes/pagos-pendientes.component';
 import { ReportingComponent } from './reporting.component';
 import { RsvListComponent } from './rsv-list/rsv-list.component';
+import { ActualizacionStatusAvalonComponent } from './actualizacion-status-avalon/actualizacion-status-avalon.component';
 
 const childRoutes: Routes = [
   { 
@@ -37,6 +38,12 @@ const childRoutes: Routes = [
     component: PagosPendientesComponent ,
     canActivate: [ AuthGuard ],
     data: { title: 'Pagos para subir a Avalon', role: 'rsv_reset_confirm', reporte: 'pagosPendientesAvalon' } 
+  },
+  { 
+    path: 'statusAvalon', 
+    component: ActualizacionStatusAvalonComponent ,
+    canActivate: [ AuthGuard ],
+    data: { title: 'Actualizar status de reservas', role: 'rsv_reset_confirm', reporte: 'statusAvalon' } 
   },
 ]
 
