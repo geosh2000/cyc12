@@ -9,7 +9,7 @@ export const CYCTITLE = 'ComeyCome';
 export const CYCYEAR = '2019';
 export const VER = 'v2.4.5';
 export const PRODENV = env;
-export const HREF = 'https://cyc-oasishoteles.com';
+export const HREF = 'https://geoshglobal.com';
 
 export const TRL = {
     'idioma_es': {
